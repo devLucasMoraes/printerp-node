@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import { Link } from "react-router";
-import LogoDark1 from "/assets/images/logos/dark1-logo.svg";
+import LogoLight from "/assets/images/logos/light-logo.svg";
 
 const LinkStyled = styled(Link)(() => ({
   height: "70px",
@@ -19,7 +19,7 @@ const Logo = () => {
         height: "70px",
       }}
     >
-      <img src={LogoDark1} alt="Logo" />
+      <img src={LogoLight} alt="Logo" />
     </LinkStyled>
   );
 };

@@ -4,102 +4,111 @@ import { ptBR as DataGridLocale } from "@mui/x-data-grid/locales";
 import typography from "./Typography";
 import components from "./components";
 
-// Cores comuns entre os temas
+// Common colors between themes - these maintain consistency across modes
 const commonColors = {
   primary: {
-    main: "#008069",
-    light: "#00a884",
-    dark: "#005c4b",
+    main: "#636BFF",
+    light: "#ECF2FF",
+    dark: "#5969FF",
+    contrastText: "#ffffff",
   },
   secondary: {
-    main: "#53bdeb",
-    light: "#85d1f2",
-    dark: "#0a7caf",
+    main: "#7DCCFF",
+    light: "#E8F7FF",
+    dark: "#49BEFF",
+    contrastText: "#ffffff",
   },
   success: {
-    main: "#008069",
-    light: "#00a884",
-    dark: "#005c4b",
+    main: "#13DEB9",
+    light: "#E6FFFA",
+    dark: "#02b3a9",
     contrastText: "#ffffff",
   },
   info: {
-    main: "#53bdeb",
-    light: "#7accf0",
-    dark: "#3fb3e8",
+    main: "#539BFF",
+    light: "#EBF3FE",
+    dark: "#1682d4",
     contrastText: "#ffffff",
   },
   error: {
-    main: "#ef697a",
-    light: "#ffd9dc",
-    dark: "#e15468",
+    main: "#FA896B",
+    light: "#FDEDE8",
+    dark: "#f3704d",
     contrastText: "#ffffff",
   },
   warning: {
-    main: "#ffa726",
-    light: "#fff4e5",
-    dark: "#f57c00",
+    main: "#FFAE1F",
+    light: "#FEF5E5",
+    dark: "#ae8e59",
     contrastText: "#ffffff",
   },
 };
 
-// Configurações específicas para o modo light
+// Light mode specific configuration
 const lightPalette = {
   mode: "light" as const,
   ...commonColors,
   background: {
-    default: "#f0f2f5",
+    default: "#F2F6FA", // Light grey background
     paper: "#ffffff",
   },
   text: {
-    primary: "#2b3942",
-    secondary: "#667781",
+    primary: "#2A3547",
+    secondary: "#5A6A85",
   },
   grey: {
-    100: "#f7f7f7",
-    200: "#f0f2f5",
-    300: "#e4e7ea",
-    400: "#8696a0",
-    500: "#667781",
-    600: "#2b3942",
+    100: "#F2F6FA",
+    200: "#EAEFF4",
+    300: "#DFE5EF",
+    400: "#7C8FAC",
+    500: "#5A6A85",
+    600: "#2A3547",
   },
   action: {
-    disabledBackground: "rgba(0,0,0,0.08)",
-    hoverOpacity: 0.04,
-    hover: "rgba(0,0,0,0.03)",
-    active: "#008f72",
+    active: "#636BFF",
+    hover: "#f6f9fc",
+    selected: "rgba(99, 107, 255, 0.08)",
+    disabled: "rgba(73, 82, 88, 0.26)",
+    disabledBackground: "rgba(73, 82, 88, 0.12)",
+    focus: "rgba(99, 107, 255, 0.12)",
+    hoverOpacity: 0.02,
   },
-  divider: "rgba(0,0,0,0.08)",
+  divider: "#e5eaef",
 };
 
-// Configurações específicas para o modo dark
+// Dark mode specific configuration
 const darkPalette = {
   mode: "dark" as const,
   ...commonColors,
   background: {
-    default: "#182229",
-    paper: "#202c33",
+    default: "#1a1f2b", // Darker background
+    paper: "#242836", // Slightly lighter than background
   },
   text: {
-    primary: "#e9edef",
-    secondary: "#8696a0",
+    primary: "#e2e8f0",
+    secondary: "#94a3b8",
   },
   grey: {
-    100: "#2a3942",
-    200: "#323f47",
-    300: "#aebac1",
-    400: "#8696a0",
-    500: "#667781",
-    600: "#e9edef",
+    100: "#2A3547",
+    200: "#242836",
+    300: "#374151",
+    400: "#94a3b8",
+    500: "#64748b",
+    600: "#e2e8f0",
   },
   action: {
-    disabledBackground: "rgba(255,255,255,0.08)",
-    hoverOpacity: 0.06,
-    hover: "rgba(255,255,255,0.06)",
-    active: "#1aac91",
+    active: "#636BFF",
+    hover: "rgba(255, 255, 255, 0.08)",
+    selected: "rgba(99, 107, 255, 0.16)",
+    disabled: "rgba(255, 255, 255, 0.3)",
+    disabledBackground: "rgba(255, 255, 255, 0.12)",
+    focus: "rgba(99, 107, 255, 0.12)",
+    hoverOpacity: 0.04,
   },
-  divider: "rgba(255,255,255,0.08)",
+  divider: "rgba(255, 255, 255, 0.12)",
 };
 
+// Theme creation function
 export const getTheme = (mode: "light" | "dark") =>
   createTheme(
     {
