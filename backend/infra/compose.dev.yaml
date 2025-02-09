@@ -1,0 +1,20 @@
+name: printerp
+services:
+  postgres_dev:
+    container_name: database_printerp_dev
+    image: postgres:16.0-alpine3.18
+    ports:
+      - "5432:5432"
+    env_file:
+      - ../.env.development
+    volumes:
+      - printerp_dev_data:/var/lib/postgresql/data
+    networks:
+      - printerp_network_dev
+
+volumes:
+  printerp_dev_data:
+
+networks:
+  printerp_network_dev:
+    driver: bridge

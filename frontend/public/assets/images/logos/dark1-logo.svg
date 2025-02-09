@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="70" viewBox="0 0 180 70" preserveAspectRatio="xMidYMid meet">
+  <!-- Message bubble - adjusted scale and position for better text fit -->
+  <g transform="translate(5, 15) scale(1.7)">
+    <path d="M2 0C0.895431 0 0 0.895431 0 2V15C0 16.1046 0.895431 17 2 17H4V21L8 17H18C19.1046 17 20 16.1046 20 15V2C20 0.895431 19.1046 0 18 0H2Z" fill="#25D366"/>
+
+    <!-- Border rectangle for smiley -->
+    <rect x="4" y="3.5" width="12" height="10" rx="4" ry="4" fill="none" stroke="white" stroke-width="0.8"/>
+
+    <!-- Bot face with vertical antennas -->
+    <!-- Antennas with nodes -->
+    <path d="M7.5 3.5L7.5 2.2M12.5 3.5L12.5 2.2" stroke="white" stroke-width="0.8" fill="none"/>
+    <circle cx="7.5" cy="2" r="0.4" fill="white"/>
+    <circle cx="12.5" cy="2" r="0.4" fill="white"/>
+
+    <!-- Eyes -->
+    <circle cx="7.5" cy="7.5" r="0.8" fill="white"/>
+    <circle cx="12.5" cy="7.5" r="0.8" fill="white"/>
+
+    <!-- Smile -->
+    <path d="M7.5 10.5C7.5 10.5 8.8 11.8 10 11.8C11.2 11.8 12.5 10.5 12.5 10.5" stroke="white" stroke-width="1.2" fill="none"/>
+  </g>
+
+  <!-- Text "Grenticket" - adjusted position and size -->
+  <text x="42" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="bold" fill="#25D366">
+    Grenticket
+  </text>
+</svg>
