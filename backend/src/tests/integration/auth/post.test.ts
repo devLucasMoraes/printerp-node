@@ -1,8 +1,8 @@
 // src/http/controllers/__tests__/AuthController.test.ts
 import request from "supertest";
 import app from "../../../app";
-import { userRepository } from "../../../database/repositories";
 import { User } from "../../../domain/entities/User";
+import { userRepository } from "../../../domain/repositories";
 
 describe("AuthController", () => {
   let testUser: User;
@@ -13,7 +13,7 @@ describe("AuthController", () => {
       name: "Test User",
       email: "test@example.com",
       password: "test123",
-      profile: "admin",
+      role: "admin",
     });
 
     await testUser.hashPassword();

@@ -1,20 +1,20 @@
+name: printerp
 services:
   postgres_test:
-    container_name: database_project_test
+    container_name: database_printerp_test
     image: postgres:16.0-alpine3.18
     ports:
       - "5433:5432"
     env_file:
       - ../.env.test
     networks:
-      - project_network_dev
+      - printerp_network_test
     volumes:
-      - project_test_data:/var/lib/postgresql/data
+      - printerp_test_data:/var/lib/postgresql/data
 
 volumes:
-  project_test_data:
-
+  printerp_test_data:
 
 networks:
-  project_network_dev:
+  printerp_network_test:
     driver: bridge

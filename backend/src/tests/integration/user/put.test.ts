@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../../app";
-import { userRepository } from "../../../database/repositories";
+import { userRepository } from "../../../domain/repositories";
 
 describe("PUT /api/v1/users", () => {
   let cookies: string[] = [];

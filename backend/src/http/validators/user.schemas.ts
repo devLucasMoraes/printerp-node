@@ -4,7 +4,7 @@ export const userCreateSchema = z.object({
   name: z.string().min(3, "Nome é obrigatório").max(100, "Nome muito longo"),
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha muito curta").max(100, "Nome muito longo"),
-  role: z.enum(["admin", "user"]),
+  role: z.enum(["admin", "user"]).default("user"),
 });
 
 export type UserCreateSchema = z.infer<typeof userCreateSchema>;
@@ -13,7 +13,7 @@ export const userUpdateSchema = z.object({
   name: z.string().min(3, "Nome é obrigatório").max(100, "Nome muito longo"),
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha muito curta").max(100, "Nome muito longo"),
-  role: z.enum(["admin", "user"]),
+  role: z.enum(["admin", "user"]).default("user"),
 });
 export type UserUpdateSchema = z.infer<typeof userUpdateSchema>;
 
