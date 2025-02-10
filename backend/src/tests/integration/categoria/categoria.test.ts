@@ -93,7 +93,7 @@ describe("CategoriaController", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("id", testCategoria.id);
-      expect(response.body).toHaveProperty("name", testCategoria.nome);
+      expect(response.body).toHaveProperty("nome", testCategoria.nome);
     });
 
     it("should return 404 for non-existent category", async () => {

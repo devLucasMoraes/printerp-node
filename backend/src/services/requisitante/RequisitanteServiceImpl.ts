@@ -1,26 +1,68 @@
+import { Requisitante } from "../../domain/entities/Requisitante";
+import { requisitanteRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
+import { BadRequestError, NotFoundError } from "../../shared/errors";
 
 export class RequisitanteServiceImpl implements RequisitanteService {
-  listPaginated(pageRequest?: PageRequest): Promise<Page<RequisitanteService>> {
-    throw new Error("Method not implemented.");
+  async listPaginated(pageRequest?: PageRequest): Promise<Page<Requisitante>> {
+    return await requisitanteRepository.findAllPaginated(pageRequest);
   }
-  list(): Promise<RequisitanteService[]> {
-    throw new Error("Method not implemented.");
+  async list(): Promise<Requisitante[]> {
+    return await requisitanteRepository.find();
   }
-  show(id: number): Promise<RequisitanteService> {
-    throw new Error("Method not implemented.");
+  async show(id: number): Promise<Requisitante> {
+    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
+
+    if (!requisitanteExists) {
+      throw new NotFoundError("Requisitante not found");
+    }
+
+    return requisitanteExists;
   }
-  create(entity: RequisitanteService): Promise<RequisitanteService> {
-    throw new Error("Method not implemented.");
+  async create(entity: Requisitante): Promise<Requisitante> {
+    const { nome } = entity;
+
+    const requisitanteExists = await requisitanteRepository.findOneBy({ nome });
+
+    if (requisitanteExists) {
+      throw new BadRequestError("Requisitante already exists");
+    }
+
+    const newRequisitante = requisitanteRepository.create(entity);
+
+    return await requisitanteRepository.save(newRequisitante);
   }
-  update(
-    id: number,
-    entity: RequisitanteService
-  ): Promise<RequisitanteService> {
-    throw new Error("Method not implemented.");
+  async update(id: number, entity: Requisitante): Promise<Requisitante> {
+    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
+
+    if (!requisitanteExists) {
+      throw new NotFoundError("Requisitante not found");
+    }
+
+    const { nome } = entity;
+
+    const nameExists = await requisitanteRepository.findOneBy({ nome });
+
+    if (nameExists && nameExists.id !== id) {
+      throw new BadRequestError("Requisitante already exists");
+    }
+
+    const updatedRequisitante = requisitanteRepository.merge(
+      requisitanteExists,
+      entity
+    );
+    return await requisitanteRepository.save(updatedRequisitante);
   }
-  delete(id: number): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: number): Promise<void> {
+    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
+
+    if (!requisitanteExists) {
+      throw new NotFoundError("Requisitante not found");
+    }
+
+    await requisitanteRepository.softDelete(id);
+
+    return Promise.resolve();
   }
 }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoutes from "./auth.routes";
 import categoriaRoutes from "./categoria.routes";
+import requisitanteRoutes from "./requisitantes.routes";
 import userRoutes from "./user.routes";
 
 const routes = Router();
@@ -8,5 +9,6 @@ const routes = Router();
 routes.use("/api/v1/auth", authRoutes);
 routes.use("/api/v1", userRoutes);
 routes.use("/api/v1", categoriaRoutes);
+routes.use("/api/v1", requisitanteRoutes);
 
 export default routes;
