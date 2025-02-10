@@ -123,7 +123,7 @@ describe("CategoriaController", () => {
         });
 
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty("name", "New Test Category");
+      expect(response.body).toHaveProperty("nome", "New Test Category");
 
       // Clean up
       if (response.body.id) {
@@ -163,7 +163,7 @@ describe("CategoriaController", () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("name", "Updated Test Category");
+      expect(response.body).toHaveProperty("nome", "Updated Test Category");
     });
 
     it("should return 404 when updating non-existent category", async () => {

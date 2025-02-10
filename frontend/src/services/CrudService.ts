@@ -5,8 +5,8 @@ export interface CrudService<ID, T> {
   getAllPaginated(params?: PageParams): Promise<Page<T>>;
   getAll(): Promise<T[]>;
   getById(id: ID): Promise<T>;
-  create(entity: T): Promise<T>;
-  update(id: ID, entity: T): Promise<T>;
+  create(entity: Partial<T>): Promise<T>;
+  update(id: ID, entity: Partial<T>): Promise<T>;
   delete(id: ID): Promise<void>;
 }
 

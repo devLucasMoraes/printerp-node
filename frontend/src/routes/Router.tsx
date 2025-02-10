@@ -14,6 +14,9 @@ const BlankLayout = Loadable(
 const Dashboard = Loadable(lazy(() => import("../page/dashboard/Dashboard")));
 const Settings = Loadable(lazy(() => import("../page/settings/Settings")));
 const Users = Loadable(lazy(() => import("../page/users/Users")));
+const Categorias = Loadable(
+  lazy(() => import("../page/categorias/Categorias"))
+);
 
 /* ****Public Pages***** */
 const Register = Loadable(
@@ -36,6 +39,7 @@ const Router = [
           { path: "/dashboard", exact: true, element: <Dashboard /> },
           { path: "/settings", exact: true, element: <Settings /> },
           { path: "/users", exact: true, element: <Users /> },
+          { path: "/categorias", exact: true, element: <Categorias /> },
         ],
       },
     ],

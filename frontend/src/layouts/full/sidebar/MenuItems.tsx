@@ -1,9 +1,9 @@
 import {
   IconAddressBook,
   IconBrandWhatsapp,
+  IconCategoryPlus,
   IconLayoutDashboard,
   IconMessages,
-  IconPlugConnected,
   IconSettings,
   IconStack2,
   IconUsers,
@@ -24,9 +24,9 @@ const Menuitems = [
   },
   {
     id: uuidv4(),
-    title: "Conexões",
-    icon: IconPlugConnected,
-    href: "/connections",
+    title: "Categorias",
+    icon: IconCategoryPlus,
+    href: "/categorias",
   },
   {
     id: uuidv4(),

@@ -82,7 +82,7 @@ export class CategoriaController {
   private toDTO(entity: Categoria) {
     return {
       id: entity.id,
-      name: entity.nome,
+      nome: entity.nome,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     };

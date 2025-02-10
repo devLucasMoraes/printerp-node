@@ -10,6 +10,13 @@ export type User = {
   deletedAt?: Date;
 };
 
+export type CategoriaDto = {
+  id: number;
+  nome: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;
