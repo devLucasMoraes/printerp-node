@@ -17,6 +17,9 @@ const Users = Loadable(lazy(() => import("../page/users/Users")));
 const Categorias = Loadable(
   lazy(() => import("../page/categorias/Categorias"))
 );
+const Requisitantes = Loadable(
+  lazy(() => import("../page/requisitantes/Requisitantes"))
+);
 
 /* ****Public Pages***** */
 const Register = Loadable(
@@ -40,6 +43,7 @@ const Router = [
           { path: "/settings", exact: true, element: <Settings /> },
           { path: "/users", exact: true, element: <Users /> },
           { path: "/categorias", exact: true, element: <Categorias /> },
+          { path: "/requisitantes", exact: true, element: <Requisitantes /> },
         ],
       },
     ],

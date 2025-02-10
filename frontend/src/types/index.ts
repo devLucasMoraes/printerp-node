@@ -17,6 +17,14 @@ export type CategoriaDto = {
   updatedAt: Date;
 };
 
+export type RequisitanteDto = {
+  id: number;
+  nome: string;
+  fone: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;

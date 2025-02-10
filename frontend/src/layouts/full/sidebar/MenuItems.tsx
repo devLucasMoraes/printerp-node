@@ -1,12 +1,12 @@
 import {
   IconAddressBook,
-  IconBrandWhatsapp,
   IconCategoryPlus,
   IconLayoutDashboard,
   IconMessages,
   IconSettings,
   IconStack2,
   IconUsers,
+  IconUserUp,
 } from "@tabler/icons-react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -30,9 +30,9 @@ const Menuitems = [
   },
   {
     id: uuidv4(),
-    title: "Tickets",
-    icon: IconBrandWhatsapp,
-    href: "/tickets",
+    title: "Requisitantes",
+    icon: IconUserUp,
+    href: "/requisitantes",
   },
   {
     id: uuidv4(),
