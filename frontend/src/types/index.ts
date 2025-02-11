@@ -25,6 +25,13 @@ export type RequisitanteDto = {
   updatedAt: Date;
 };
 
+export type EquipamentoDto = {
+  id: number;
+  nome: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;

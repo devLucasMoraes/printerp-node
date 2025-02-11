@@ -1,8 +1,8 @@
 import {
-  IconAddressBook,
   IconCategoryPlus,
   IconLayoutDashboard,
   IconMessages,
+  IconPrinter,
   IconSettings,
   IconStack2,
   IconUsers,
@@ -36,9 +36,9 @@ const Menuitems = [
   },
   {
     id: uuidv4(),
-    title: "Contatos",
-    icon: IconAddressBook,
-    href: "/contacts",
+    title: "Equipamentos",
+    icon: IconPrinter,
+    href: "/equipamentos",
   },
   {
     id: uuidv4(),
