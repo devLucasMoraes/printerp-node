@@ -1,35 +1,79 @@
-import { Box, Card, Grid, Stack, Typography } from "@mui/material";
+import { Box, Card, Grid, Stack, Typography, styled } from "@mui/material";
 import { Link } from "react-router";
-
-// components
 import PageContainer from "../../components/container/PageContainer";
 import Logo from "../../layouts/full/shared/logo/Logo";
 import AuthLogin from "./auth/AuthLogin";
 
-const Login2 = () => {
+// Styled Components
+const StyledRoot = styled(Box)(({ theme }) => ({
+  position: "relative",
+  minHeight: "100vh",
+  overflow: "hidden",
+  "&:before": {
+    content: '""',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background: `radial-gradient(circle at top left, ${theme.palette.primary.light}, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+    backgroundSize: "400% 400%",
+    animation: "gradient 15s ease infinite",
+    opacity: theme.palette.mode === "dark" ? 0.15 : 0.1,
+  },
+  "@keyframes gradient": {
+    "0%": { backgroundPosition: "0% 50%" },
+    "50%": { backgroundPosition: "100% 50%" },
+    "100%": { backgroundPosition: "0% 50%" },
+  },
+}));
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  padding: theme.spacing(4),
+  width: "100%",
+  maxWidth: "500px",
+  backdropFilter: "blur(20px)",
+  background:
+    theme.palette.mode === "dark"
+      ? `linear-gradient(180deg, ${theme.palette.background.paper}f0, ${theme.palette.background.paper}e8)`
+      : `linear-gradient(180deg, ${theme.palette.background.paper}f8, ${theme.palette.background.paper}f0)`,
+  border: `1px solid ${
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, 0.1)"
+      : "rgba(255, 255, 255, 0.7)"
+  }`,
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 8px 32px rgba(0, 0, 0, 0.4)"
+      : "0 8px 32px rgba(0, 0, 0, 0.1)",
+  borderRadius: "16px",
+  transition: "all 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 12px 40px rgba(0, 0, 0, 0.5)"
+        : "0 12px 40px rgba(0, 0, 0, 0.15)",
+  },
+}));
+
+const StyledLink = styled(Link)(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.palette.primary.main,
+  fontWeight: 500,
+  transition: "color 0.2s ease-in-out",
+  "&:hover": {
+    color: theme.palette.primary.dark,
+  },
+}));
+
+const Login = () => {
   return (
     <PageContainer title="Login" description="this is Login page">
-      <Box
-        sx={{
-          position: "relative",
-          "&:before": {
-            content: '""',
-            background:
-              "radial-gradient(circle at top left,#25D366, #128C7E, #075E54)",
-            backgroundSize: "400% 400%",
-            animation: "gradient 15s ease infinite",
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            opacity: "0.2",
-          },
-        }}
-      >
+      <StyledRoot>
         <Grid
           container
           spacing={0}
           justifyContent="center"
-          sx={{ height: "100vh" }}
+          sx={{ minHeight: "100vh" }}
         >
           <Grid
             item
@@ -41,67 +85,49 @@ const Login2 = () => {
             justifyContent="center"
             alignItems="center"
           >
-            <Card
-              elevation={9}
-              sx={{
-                p: 4,
-                zIndex: 1,
-                width: "100%",
-                maxWidth: "500px",
-                opacity: 0.95,
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-              }}
-            >
+            <StyledCard elevation={0}>
               <Box display="flex" alignItems="center" justifyContent="center">
                 <Logo />
               </Box>
-              <AuthLogin
-                subtext={
-                  <Typography
-                    variant="subtitle1"
-                    textAlign="center"
-                    color="textSecondary"
-                    mb={1}
-                  >
-                    Entre com sua conta Grenticket
+              <Box mt={4}>
+                <Typography
+                  variant="h5"
+                  textAlign="center"
+                  color="textPrimary"
+                  gutterBottom
+                  fontWeight="500"
+                >
+                  Bem-vindo de volta!
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  textAlign="center"
+                  color="textSecondary"
+                  mb={4}
+                >
+                  Entre com sua conta Printerp
+                </Typography>
+
+                <AuthLogin />
+
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  justifyContent="center"
+                  mt={4}
+                >
+                  <Typography color="textSecondary" variant="body1">
+                    Novo no Printerp?
                   </Typography>
-                }
-                subtitle={
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    justifyContent="center"
-                    mt={3}
-                  >
-                    <Typography
-                      color="textSecondary"
-                      variant="h6"
-                      fontWeight="500"
-                    >
-                      Novo no Grenticket?
-                    </Typography>
-                    <Typography
-                      component={Link}
-                      to="/auth/register"
-                      fontWeight="500"
-                      sx={{
-                        textDecoration: "none",
-                        color: "primary.main",
-                      }}
-                    >
-                      Crie sua conta
-                    </Typography>
-                  </Stack>
-                }
-              />
-            </Card>
+                  <StyledLink to="/auth/register">Crie sua conta</StyledLink>
+                </Stack>
+              </Box>
+            </StyledCard>
           </Grid>
         </Grid>
-      </Box>
+      </StyledRoot>
     </PageContainer>
   );
 };
 
-export default Login2;
+export default Login;
