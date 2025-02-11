@@ -1,7 +1,7 @@
 import {
+  IconBox,
   IconCategoryPlus,
   IconLayoutDashboard,
-  IconMessages,
   IconPrinter,
   IconSettings,
   IconStack2,
@@ -42,9 +42,9 @@ const Menuitems = [
   },
   {
     id: uuidv4(),
-    title: "Respostas Rápidas",
-    icon: IconMessages,
-    href: "/quickAnswers",
+    title: "Insumos",
+    icon: IconBox,
+    href: "/insumos",
   },
   {
     navlabel: true,

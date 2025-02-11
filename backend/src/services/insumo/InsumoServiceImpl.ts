@@ -12,7 +12,12 @@ export class InsumoServiceImpl implements InsumoService {
     return await insumoRepository.find();
   }
   async show(id: number): Promise<Insumo> {
-    const insumoExists = await insumoRepository.findOneBy({ id });
+    const insumoExists = await insumoRepository.findOne({
+      where: { id },
+      relations: {
+        categoria: true,
+      },
+    });
 
     if (!insumoExists) {
       throw new NotFoundError("Insumo not found");

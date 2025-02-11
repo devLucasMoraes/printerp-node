@@ -23,6 +23,7 @@ const Requisitantes = Loadable(
 const Equipamentos = Loadable(
   lazy(() => import("../page/equipamentos/Equipamentos"))
 );
+const Insumos = Loadable(lazy(() => import("../page/insumos/Insumos")));
 
 /* ****Public Pages***** */
 const Register = Loadable(
@@ -48,6 +49,7 @@ const Router = [
           { path: "/categorias", exact: true, element: <Categorias /> },
           { path: "/requisitantes", exact: true, element: <Requisitantes /> },
           { path: "/equipamentos", exact: true, element: <Equipamentos /> },
+          { path: "/insumos", exact: true, element: <Insumos /> },
         ],
       },
     ],

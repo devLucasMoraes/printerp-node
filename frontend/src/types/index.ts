@@ -1,3 +1,5 @@
+import { Unidade } from "../constants/Unidade";
+
 export type User = {
   id: string;
   name: string;
@@ -28,6 +30,18 @@ export type RequisitanteDto = {
 export type EquipamentoDto = {
   id: number;
   nome: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type InsumoDto = {
+  id: number;
+  descricao: string;
+  valorUntMed: number;
+  valorUntMedAuto: boolean;
+  undEstoque: Unidade;
+  estoqueMinimo: number;
+  categoria: CategoriaDto;
   createdAt: Date;
   updatedAt: Date;
 };

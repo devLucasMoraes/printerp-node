@@ -110,6 +110,7 @@ export class InsumoController {
       valorUntMedAuto: entity.valorUntMedAuto,
       undEstoque: entity.undEstoque,
       estoqueMinimo: entity.estoqueMinimo,
+      categoria: entity.categoria,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     };
