@@ -24,7 +24,7 @@ import {
 } from "../../../schemas/insumo.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto } from "../../../types";
-import { CategoriaAutoComplete } from "./categoriaAutoComplete";
+import { CategoriaAutoComplete } from "./CategoriaAutoComplete";
 
 interface InsumoModalProps {
   open: boolean;
