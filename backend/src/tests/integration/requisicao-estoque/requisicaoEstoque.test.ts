@@ -94,18 +94,17 @@ describe("RequisicaoEstoque Routes", () => {
       requisicaoEstoque
     );
 
-    console.log("savedRequisicao - ", savedRequisicao);
     requisicaoEstoqueId = savedRequisicao.id;
   });
 
   afterAll(async () => {
     // Cleanup
-    //await requisicaoEstoqueRepository.delete(requisicaoEstoqueId);
-    //await insumoRepository.delete(testInsumo.id);
-    //await categoriaRepository.delete(testCategoria.id);
-    //await requisitanteRepository.delete(testRequisitante.id);
-    //await equipamentoRepository.delete(testEquipamento.id);
-    //await userRepository.delete(testUser.id);
+    await requisicaoEstoqueRepository.softDelete(requisicaoEstoqueId);
+    await insumoRepository.softDelete(testInsumo.id);
+    await categoriaRepository.softDelete(testCategoria.id);
+    await requisitanteRepository.softDelete(testRequisitante.id);
+    await equipamentoRepository.softDelete(testEquipamento.id);
+    await userRepository.softDelete(testUser.id);
   });
 
   describe("GET /api/v1/requisicaoEstoques", () => {
@@ -151,11 +150,6 @@ describe("RequisicaoEstoque Routes", () => {
         .get(`/api/v1/requisicaoEstoques/${requisicaoEstoqueId}`)
         .set("Cookie", cookies);
 
-      console.log(
-        "should get requisicaoEstoque by id with valid authentication - ",
-        response.body
-      );
-
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("id", requisicaoEstoqueId);
       expect(response.body).toHaveProperty("ordemProducao", "OP001");
@@ -200,6 +194,7 @@ describe("RequisicaoEstoque Routes", () => {
           equipamento: { id: testEquipamento.id },
           itens: [
             {
+              id: null,
               quantidade: 3,
               undEstoque: Unidade.KG,
               valorUnitario: 50.25,
@@ -216,7 +211,7 @@ describe("RequisicaoEstoque Routes", () => {
         .post("/api/v1/requisicaoEstoques")
         .set("Cookie", cookies)
         .send({
-          dataRequisicao: new Date(),
+          dataRequisicao: "2024-02-12",
           ordemProducao: "OP002",
           valorTotal: 150.75,
           obs: "New requisicao",
@@ -224,6 +219,7 @@ describe("RequisicaoEstoque Routes", () => {
           equipamento: { id: testEquipamento.id },
           itens: [
             {
+              id: null,
               quantidade: 3,
               undEstoque: Unidade.KG,
               valorUnitario: 50.25,
@@ -234,7 +230,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("ordemProducao", "OP002");
-      expect(response.body).toHaveProperty("valorTotal", "150.75");
+      expect(response.body).toHaveProperty("valorTotal", 150.75);
       expect(response.body.requisitante).toHaveProperty(
         "id",
         testRequisitante.id
@@ -247,7 +243,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       // Cleanup
       if (response.body.id) {
-        await requisicaoEstoqueRepository.delete(response.body.id);
+        await requisicaoEstoqueRepository.softDelete(response.body.id);
       }
     });
   });
@@ -258,7 +254,7 @@ describe("RequisicaoEstoque Routes", () => {
         .put(`/api/v1/requisicaoEstoques/${requisicaoEstoqueId}`)
         .set("Cookie", cookies)
         .send({
-          dataRequisicao: new Date(),
+          dataRequisicao: "2024-02-12",
           ordemProducao: "OP003",
           valorTotal: 200.0,
           obs: "Updated requisicao",
@@ -266,6 +262,7 @@ describe("RequisicaoEstoque Routes", () => {
           equipamento: { id: testEquipamento.id },
           itens: [
             {
+              id: null,
               quantidade: 4,
               undEstoque: Unidade.KG,
               valorUnitario: 50.0,
@@ -276,7 +273,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("ordemProducao", "OP003");
-      expect(response.body).toHaveProperty("valorTotal", "200.00");
+      expect(response.body).toHaveProperty("valorTotal", 200.0);
       expect(response.body).toHaveProperty("obs", "Updated requisicao");
     });
 
@@ -285,7 +282,7 @@ describe("RequisicaoEstoque Routes", () => {
         .put("/api/v1/requisicaoEstoques/9999")
         .set("Cookie", cookies)
         .send({
-          dataRequisicao: new Date(),
+          dataRequisicao: "2024-02-12",
           ordemProducao: "OP004",
           valorTotal: 250.0,
           obs: "Test update",
@@ -293,6 +290,7 @@ describe("RequisicaoEstoque Routes", () => {
           equipamento: { id: testEquipamento.id },
           itens: [
             {
+              id: null,
               quantidade: 5,
               undEstoque: Unidade.KG,
               valorUnitario: 50.0,
@@ -323,7 +321,7 @@ describe("RequisicaoEstoque Routes", () => {
         .post("/api/v1/requisicaoEstoques")
         .set("Cookie", cookies)
         .send({
-          dataRequisicao: new Date(),
+          dataRequisicao: "2024-02-12",
           ordemProducao: "OP005",
           valorTotal: 300.0,
           obs: "To be deleted",
@@ -331,6 +329,7 @@ describe("RequisicaoEstoque Routes", () => {
           equipamento: { id: testEquipamento.id },
           itens: [
             {
+              id: null,
               quantidade: 6,
               undEstoque: Unidade.KG,
               valorUnitario: 50.0,

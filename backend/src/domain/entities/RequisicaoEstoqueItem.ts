@@ -32,7 +32,8 @@ export class RequisicaoEstoqueItem {
 
   @ManyToOne(
     () => RequisicaoEstoque,
-    (requisicaoEstoque) => requisicaoEstoque.itens
+    (requisicaoEstoque) => requisicaoEstoque.itens,
+    { orphanedRowAction: "delete" }
   )
   @JoinColumn({ name: "requisicoes_estoque_id" })
   requisicaoEstoque: RequisicaoEstoque;

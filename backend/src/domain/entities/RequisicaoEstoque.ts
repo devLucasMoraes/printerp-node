@@ -49,7 +49,8 @@ export class RequisicaoEstoque {
 
   @OneToMany(
     () => RequisicaoEstoqueItem,
-    (requisicaoEstoqueItem) => requisicaoEstoqueItem.requisicaoEstoque
+    (requisicaoEstoqueItem) => requisicaoEstoqueItem.requisicaoEstoque,
+    { cascade: true }
   )
   itens: RequisicaoEstoqueItem[];
 

@@ -17,7 +17,7 @@ const baseConfig: DataSourceOptions & SeederOptions = {
 export const databaseConfig = {
   development: {
     ...baseConfig,
-    logging: false,
+    logging: true,
   },
   test: {
     ...baseConfig,
