@@ -11,6 +11,16 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
   async findAllPaginated(
     pageRequest?: PageRequest
   ): Promise<Page<RequisicaoEstoque>> {
-    return this.paginate(pageRequest);
+    return this.paginate(
+      pageRequest,
+      {},
+      {
+        requisitante: true,
+        equipamento: true,
+        itens: {
+          insumo: true,
+        },
+      }
+    );
   }
 }

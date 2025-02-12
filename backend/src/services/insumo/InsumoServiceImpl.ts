@@ -64,7 +64,7 @@ export class InsumoServiceImpl implements InsumoService {
       throw new NotFoundError("Insumo not found");
     }
 
-    await insumoRepository.delete(id);
+    await insumoRepository.softDelete(id);
 
     return Promise.resolve();
   }

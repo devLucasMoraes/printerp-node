@@ -27,8 +27,8 @@ export class RequisicaoEstoque {
   @Column({ type: "varchar", length: 255 })
   ordemProducao: string;
 
-  @Column({ type: "varchar", length: 255 })
-  obs: string;
+  @Column({ type: "varchar", length: 255, nullable: true })
+  obs: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

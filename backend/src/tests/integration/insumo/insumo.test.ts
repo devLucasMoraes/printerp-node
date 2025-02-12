@@ -56,7 +56,6 @@ describe("Insumo Routes", () => {
   afterAll(async () => {
     // Cleanup
     await insumoRepository.delete(insumoId);
-    await categoriaRepository.delete(testCategoria.id);
     await userRepository.delete(testUser.id);
   });
 
