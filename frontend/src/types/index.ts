@@ -46,6 +46,36 @@ export type InsumoDto = {
   updatedAt: Date;
 };
 
+export type RequisicaoEstoqueDto = {
+  id: number;
+  dataRequisicao: Date;
+  ordemProducao: string;
+  obs: string | null;
+  valorTotal: number;
+  requisitante: {
+    id: number;
+    nome: string;
+    fone: string;
+  };
+  equipamento: {
+    id: number;
+    nome: string;
+    fone: string;
+  };
+  itens: {
+    id: number;
+    quantidade: number;
+    undEstoque: Unidade;
+    valorUnitario: number;
+    insumo: {
+      id: number;
+      descricao: string;
+    };
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;
