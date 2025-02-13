@@ -80,32 +80,32 @@ Content-Type: application/json
     },
     "itens": [
         {
-            "id": 3,
+            "id": null,
             "quantidade": 2,
-            "undEstoque": "KG",
+            "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
                 "id": 1
             }
         },
         {
-            "id": 4,
+            "id": null,
             "quantidade": 1,
-            "undEstoque": "KG",
+            "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
-                "id": 2
+                "id": 3
             }
         }
     ]
 }
 
 ### Update requisicaoEstoque
-PUT {{baseUrl}}/requisicaoEstoques/9 HTTP/1.1
+PUT {{baseUrl}}/requisicaoEstoques/14 HTTP/1.1
 Content-Type: application/json
 
 {
-    "id": 9,
+    "id": 14,
     "dataRequisicao": "2024-02-12T10:00:00.000Z",
     "ordemProducao": "OP001-updated",
     "valorTotal": 200.50,
@@ -118,7 +118,14 @@ Content-Type: application/json
     },
     "itens": [
         {
-            "id": 22,
+            "id": 33,
+            "quantidade": 300,
+            "undEstoque": "LITRO",
+            "valorUnitario": 50.25,
+            "insumo": {
+                "id": 1
+            },
+            "id": 34,
             "quantidade": 300,
             "undEstoque": "LITRO",
             "valorUnitario": 50.25,
@@ -130,5 +137,5 @@ Content-Type: application/json
 }
 
 ### Delete requisicaoEstoque
-DELETE {{baseUrl}}/requisicaoEstoques/1 HTTP/1.1
+DELETE {{baseUrl}}/requisicaoEstoques/13 HTTP/1.1
 Content-Type: application/json

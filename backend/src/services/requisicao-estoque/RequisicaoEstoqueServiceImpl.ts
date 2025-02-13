@@ -89,15 +89,22 @@ export class RequisicaoEstoqueServiceImpl implements RequisicaoEstoqueService {
     return await requisicaoEstoqueRepository.save(updatedRequisicaoEstoque);
   }
   async delete(id: number): Promise<void> {
-    const requisicaoEstoqueExists = await requisicaoEstoqueRepository.findOneBy(
-      { id }
-    );
+    const requisicaoEstoqueExists = await requisicaoEstoqueRepository.findOne({
+      where: { id },
+      relations: {
+        requisitante: true,
+        equipamento: true,
+        itens: {
+          insumo: true,
+        },
+      },
+    });
 
     if (!requisicaoEstoqueExists) {
       throw new NotFoundError("RequisicaoEstoque not found");
     }
 
-    await requisicaoEstoqueRepository.softDelete(id);
+    await requisicaoEstoqueRepository.softRemove(requisicaoEstoqueExists);
 
     return Promise.resolve();
   }
