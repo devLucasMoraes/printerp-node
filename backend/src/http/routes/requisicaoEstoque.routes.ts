@@ -18,27 +18,27 @@ const requisicaoEstoqueController = new RequisicaoEstoqueController(
 const requisicaoEstoqueRoutes = Router();
 
 requisicaoEstoqueRoutes.get(
-  "/requisicaoEstoques-all",
+  "/requisicoes-estoque-all",
   isAuth,
   requisicaoEstoqueController.list
 );
 
 requisicaoEstoqueRoutes.get(
-  "/requisicaoEstoques",
+  "/requisicoes-estoque",
   isAuth,
   validate({ query: requisicaoEstoqueQuerySchema }),
   requisicaoEstoqueController.listPaginated
 );
 
 requisicaoEstoqueRoutes.post(
-  "/requisicaoEstoques",
+  "/requisicoes-estoque",
   isAuth,
   validate({ body: requisicaoEstoqueCreateSchema }),
   requisicaoEstoqueController.create
 );
 
 requisicaoEstoqueRoutes.put(
-  "/requisicaoEstoques/:id",
+  "/requisicoes-estoque/:id",
   isAuth,
   validate({
     body: requisicaoEstoqueUpdateSchema,
@@ -48,14 +48,14 @@ requisicaoEstoqueRoutes.put(
 );
 
 requisicaoEstoqueRoutes.get(
-  "/requisicaoEstoques/:id",
+  "/requisicoes-estoque/:id",
   isAuth,
   validate({ params: requisicaoEstoqueParamsSchema }),
   requisicaoEstoqueController.show
 );
 
 requisicaoEstoqueRoutes.delete(
-  "/requisicaoEstoques/:id",
+  "/requisicoes-estoque/:id",
   isAuth,
   validate({ params: requisicaoEstoqueParamsSchema }),
   requisicaoEstoqueController.delete

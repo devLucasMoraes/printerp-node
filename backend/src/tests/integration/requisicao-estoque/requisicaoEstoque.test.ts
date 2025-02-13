@@ -142,10 +142,10 @@ describe("RequisicaoEstoque Routes", () => {
     }
   });
 
-  describe("POST /api/v1/requisicaoEstoques", () => {
+  describe("POST /api/v1/requisicoes-estoque", () => {
     it("should not create requisicaoEstoque without authentication", async () => {
       const response = await request(app)
-        .post("/api/v1/requisicaoEstoques")
+        .post("/api/v1/requisicoes-estoque")
         .send({
           dataRequisicao: new Date().toISOString(),
           ordemProducao: "OP002",
@@ -169,7 +169,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should not allow creating requisicaoEstoque with existing item ids", async () => {
       const response = await request(app)
-        .post("/api/v1/requisicaoEstoques")
+        .post("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .send({
           dataRequisicao: new Date().toISOString(),
@@ -216,7 +216,7 @@ describe("RequisicaoEstoque Routes", () => {
       };
 
       const response = await request(app)
-        .post("/api/v1/requisicaoEstoques")
+        .post("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .send(newRequisicao);
 
@@ -244,7 +244,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should validate required fields", async () => {
       const response = await request(app)
-        .post("/api/v1/requisicaoEstoques")
+        .post("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .send({
           // Omitindo campos obrigatórios
@@ -254,7 +254,7 @@ describe("RequisicaoEstoque Routes", () => {
       expect(response.status).toBe(400);
     });
   });
-  describe("PUT /api/v1/requisicaoEstoques/:id", () => {
+  describe("PUT /api/v1/requisicoes-estoque/:id", () => {
     let auxRequisicao: RequisicaoEstoque;
 
     // Criar uma requisição auxiliar para alguns testes
@@ -289,7 +289,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should not update requisicaoEstoque without authentication", async () => {
       const response = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .put(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .send({
           dataRequisicao: new Date().toISOString(),
           ordemProducao: "OP_UPDATE",
@@ -331,7 +331,7 @@ describe("RequisicaoEstoque Routes", () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .put(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .set("Cookie", cookies)
         .send(updateData);
 
@@ -370,7 +370,7 @@ describe("RequisicaoEstoque Routes", () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .put(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .set("Cookie", cookies)
         .send(updateData);
 
@@ -385,7 +385,7 @@ describe("RequisicaoEstoque Routes", () => {
     it("should remove items not included in the update", async () => {
       // Primeiro criar uma requisição com dois itens
       const createResponse = await request(app)
-        .post("/api/v1/requisicaoEstoques")
+        .post("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .send({
           dataRequisicao: new Date().toISOString(),
@@ -419,7 +419,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       // Atualizar mantendo apenas o primeiro item
       const updateResponse = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${createResponse.body.id}`)
+        .put(`/api/v1/requisicoes-estoque/${createResponse.body.id}`)
         .set("Cookie", cookies)
         .send({
           dataRequisicao: new Date().toISOString(),
@@ -467,7 +467,7 @@ describe("RequisicaoEstoque Routes", () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .put(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .set("Cookie", cookies)
         .send(updateData);
 
@@ -480,7 +480,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should validate required fields in update", async () => {
       const response = await request(app)
-        .put(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .put(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .set("Cookie", cookies)
         .send({
           // Omitindo campos obrigatórios
@@ -492,7 +492,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should return 404 when updating non-existent requisicao", async () => {
       const response = await request(app)
-        .put("/api/v1/requisicaoEstoques/9999999")
+        .put("/api/v1/requisicoes-estoque/9999999")
         .set("Cookie", cookies)
         .send({
           dataRequisicao: new Date().toISOString(),
@@ -519,7 +519,7 @@ describe("RequisicaoEstoque Routes", () => {
       );
     });
   });
-  describe("GET /api/v1/requisicaoEstoques", () => {
+  describe("GET /api/v1/requisicoes-estoque", () => {
     let additionalRequisicoes: RequisicaoEstoque[] = [];
 
     // Criar requisições adicionais para testar paginação
@@ -567,14 +567,14 @@ describe("RequisicaoEstoque Routes", () => {
       }
     });
 
-    it("should not get requisicaoEstoques without authentication", async () => {
-      const response = await request(app).get("/api/v1/requisicaoEstoques");
+    it("should not get requisicoes-estoque without authentication", async () => {
+      const response = await request(app).get("/api/v1/requisicoes-estoque");
       expect(response.status).toBe(401);
     });
 
-    it("should get list of requisicaoEstoques with pagination", async () => {
+    it("should get list of requisicoes-estoque with pagination", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques")
+        .get("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .query({ page: 0, size: 2 });
 
@@ -598,9 +598,9 @@ describe("RequisicaoEstoque Routes", () => {
       expect(Array.isArray(firstItem.itens)).toBe(true);
     });
 
-    it("should get second page of requisicaoEstoques", async () => {
+    it("should get second page of requisicoes-estoque", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques")
+        .get("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .query({ page: 1, size: 2 });
 
@@ -611,7 +611,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should handle sorting by ordemProducao", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques")
+        .get("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .query({ sort: "ordemProducao,ASC" });
 
@@ -624,9 +624,9 @@ describe("RequisicaoEstoque Routes", () => {
       expect(ordens).toEqual(ordensSorted);
     });
 
-    it("should get all requisicaoEstoques without pagination", async () => {
+    it("should get all requisicoes-estoque without pagination", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques-all")
+        .get("/api/v1/requisicoes-estoque-all")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(200);
@@ -637,24 +637,24 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should handle invalid page parameters", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques")
+        .get("/api/v1/requisicoes-estoque")
         .set("Cookie", cookies)
         .query({ page: -1, size: 0 });
 
       expect(response.status).toBe(400);
     });
   });
-  describe("GET /api/v1/requisicaoEstoques/:id", () => {
+  describe("GET /api/v1/requisicoes-estoque/:id", () => {
     it("should not get requisicaoEstoque without authentication", async () => {
       const response = await request(app).get(
-        `/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`
+        `/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`
       );
       expect(response.status).toBe(401);
     });
 
     it("should get requisicaoEstoque by id with valid authentication", async () => {
       const response = await request(app)
-        .get(`/api/v1/requisicaoEstoques/${testRequisicaoEstoque.id}`)
+        .get(`/api/v1/requisicoes-estoque/${testRequisicaoEstoque.id}`)
         .set("Cookie", cookies);
 
       expect(response.status).toBe(200);
@@ -683,7 +683,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should return 404 for non-existent requisicaoEstoque", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques/9999999")
+        .get("/api/v1/requisicoes-estoque/9999999")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
@@ -719,7 +719,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       // Tentar buscar
       const response = await request(app)
-        .get(`/api/v1/requisicaoEstoques/${requisicao.id}`)
+        .get(`/api/v1/requisicoes-estoque/${requisicao.id}`)
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
@@ -727,13 +727,13 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should validate id parameter format", async () => {
       const response = await request(app)
-        .get("/api/v1/requisicaoEstoques/invalid-id")
+        .get("/api/v1/requisicoes-estoque/invalid-id")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(400);
     });
   });
-  describe("DELETE /api/v1/requisicaoEstoques/:id", () => {
+  describe("DELETE /api/v1/requisicoes-estoque/:id", () => {
     let requisicaoToDelete: RequisicaoEstoque;
 
     beforeEach(async () => {
@@ -785,7 +785,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should not delete requisicaoEstoque without authentication", async () => {
       const response = await request(app).delete(
-        `/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`
+        `/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`
       );
 
       expect(response.status).toBe(401);
@@ -799,7 +799,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should soft delete requisicaoEstoque and its items", async () => {
       const response = await request(app)
-        .delete(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .delete(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       expect(response.status).toBe(204);
@@ -834,7 +834,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       // Verificar se não é possível acessar via GET
       const getResponse = await request(app)
-        .get(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .get(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       expect(getResponse.status).toBe(404);
@@ -842,7 +842,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should return 404 when deleting non-existent requisicaoEstoque", async () => {
       const response = await request(app)
-        .delete("/api/v1/requisicaoEstoques/9999999")
+        .delete("/api/v1/requisicoes-estoque/9999999")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
@@ -854,7 +854,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should validate id parameter format", async () => {
       const response = await request(app)
-        .delete("/api/v1/requisicaoEstoques/invalid-id")
+        .delete("/api/v1/requisicoes-estoque/invalid-id")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(400);
@@ -863,12 +863,12 @@ describe("RequisicaoEstoque Routes", () => {
     it("should not delete already deleted requisicaoEstoque", async () => {
       // Primeiro delete
       await request(app)
-        .delete(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .delete(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       // Tentativa de segundo delete
       const response = await request(app)
-        .delete(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .delete(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
@@ -880,7 +880,7 @@ describe("RequisicaoEstoque Routes", () => {
 
     it("should maintain referential integrity after delete", async () => {
       await request(app)
-        .delete(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .delete(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       // Verificar se o insumo ainda existe
@@ -914,7 +914,7 @@ describe("RequisicaoEstoque Routes", () => {
 
       // Executar o delete
       await request(app)
-        .delete(`/api/v1/requisicaoEstoques/${requisicaoToDelete.id}`)
+        .delete(`/api/v1/requisicoes-estoque/${requisicaoToDelete.id}`)
         .set("Cookie", cookies);
 
       // Verificar se todos os itens foram soft deleted
