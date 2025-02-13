@@ -80,7 +80,7 @@ Content-Type: application/json
     },
     "itens": [
         {
-            "id": null,
+            "id": 3,
             "quantidade": 2,
             "undEstoque": "KG",
             "valorUnitario": 50.25,
@@ -89,12 +89,12 @@ Content-Type: application/json
             }
         },
         {
-            "id": null,
+            "id": 4,
             "quantidade": 1,
             "undEstoque": "KG",
             "valorUnitario": 50.25,
             "insumo": {
-                "id": 3
+                "id": 2
             }
         }
     ]

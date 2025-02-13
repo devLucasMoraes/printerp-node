@@ -1,5 +1,6 @@
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -30,10 +31,13 @@ export class RequisicaoEstoqueItem {
   @Column({ type: "numeric" })
   valorUnitario: number;
 
+  @DeleteDateColumn()
+  deletedAt?: Date;
+
   @ManyToOne(
     () => RequisicaoEstoque,
     (requisicaoEstoque) => requisicaoEstoque.itens,
-    { orphanedRowAction: "delete" }
+    { orphanedRowAction: "soft-delete" }
   )
   @JoinColumn({ name: "requisicoes_estoque_id" })
   requisicaoEstoque: RequisicaoEstoque;

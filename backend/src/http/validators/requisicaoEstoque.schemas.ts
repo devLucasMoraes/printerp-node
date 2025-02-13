@@ -2,7 +2,17 @@ import { z } from "zod";
 
 import { Unidade } from "../../domain/entities/Unidade";
 
-const requisicaoEstoqueItemSchema = z.object({
+const requisicaoEstoqueItemCreateSchema = z.object({
+  id: z.null(),
+  quantidade: z.number().nonnegative(),
+  undEstoque: z.nativeEnum(Unidade),
+  valorUnitario: z.number().nonnegative(),
+  insumo: z.object({
+    id: z.number(),
+  }),
+});
+
+const requisicaoEstoqueItemUpdateSchema = z.object({
   id: z.number().nullable(),
   quantidade: z.number().nonnegative(),
   undEstoque: z.nativeEnum(Unidade),
@@ -23,7 +33,7 @@ export const requisicaoEstoqueCreateSchema = z.object({
   equipamento: z.object({
     id: z.number(),
   }),
-  itens: z.array(requisicaoEstoqueItemSchema),
+  itens: z.array(requisicaoEstoqueItemCreateSchema),
 });
 
 export type RequisicaoEstoqueCreateDto = z.infer<
@@ -41,7 +51,7 @@ export const requisicaoEstoqueUpdateSchema = z.object({
   equipamento: z.object({
     id: z.number(),
   }),
-  itens: z.array(requisicaoEstoqueItemSchema),
+  itens: z.array(requisicaoEstoqueItemUpdateSchema),
 });
 
 export type RequisicaoEstoqueUpdateDto = z.infer<
@@ -62,11 +72,13 @@ export const requisicaoEstoqueQuerySchema = z.object({
   page: z
     .string()
     .optional()
-    .transform((val) => (val ? Number(val) : 1)),
+    .transform((val) => (val ? Number(val) : 1))
+    .refine((val) => val >= 0, "Page must be greater than or equal to 0"),
   size: z
     .string()
     .optional()
-    .transform((val) => (val ? Number(val) : 10)),
+    .transform((val) => (val ? Number(val) : 10))
+    .refine((val) => val >= 0, "Page must be greater than or equal to 0"),
   sort: z
     .union([
       z.string().refine((val) => {

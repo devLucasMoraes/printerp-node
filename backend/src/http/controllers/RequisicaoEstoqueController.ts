@@ -6,7 +6,10 @@ import { RequisicaoEstoqueItem } from "../../domain/entities/RequisicaoEstoqueIt
 import { Requisitante } from "../../domain/entities/Requisitante";
 import { RequisicaoEstoqueService } from "../../domain/services/RequisicaoEstoqueService";
 import { pageable } from "../../shared/utils/pageable";
-import { RequisicaoEstoqueCreateDto } from "../validators/requisicaoEstoque.schemas";
+import {
+  RequisicaoEstoqueCreateDto,
+  RequisicaoEstoqueUpdateDto,
+} from "../validators/requisicaoEstoque.schemas";
 
 export class RequisicaoEstoqueController {
   constructor(
@@ -100,7 +103,7 @@ export class RequisicaoEstoqueController {
       equipamento,
       requisitante,
       itens,
-    }: RequisicaoEstoqueCreateDto = req.body;
+    }: RequisicaoEstoqueUpdateDto = req.body;
 
     const requisicaoEstoque = new RequisicaoEstoque({
       dataRequisicao,

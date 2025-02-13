@@ -2,7 +2,7 @@ import { RequisicaoEstoque } from "../../domain/entities/RequisicaoEstoque";
 import { requisicaoEstoqueRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { RequisicaoEstoqueService } from "../../domain/services/RequisicaoEstoqueService";
-import { NotFoundError } from "../../shared/errors";
+import { BadRequestError, NotFoundError } from "../../shared/errors";
 
 export class RequisicaoEstoqueServiceImpl implements RequisicaoEstoqueService {
   async listPaginated(
@@ -48,16 +48,41 @@ export class RequisicaoEstoqueServiceImpl implements RequisicaoEstoqueService {
     id: number,
     entity: RequisicaoEstoque
   ): Promise<RequisicaoEstoque> {
-    const requisicaoEstoqueExists = await requisicaoEstoqueRepository.findOneBy(
-      { id }
-    );
+    const requisicaoEstoqueExists = await requisicaoEstoqueRepository.findOne({
+      where: { id },
+      relations: {
+        requisitante: true,
+        equipamento: true,
+        itens: {
+          insumo: true,
+        },
+      },
+    });
 
     if (!requisicaoEstoqueExists) {
       throw new NotFoundError("RequisicaoEstoque not found");
     }
 
+    const itensComId = entity.itens.filter((item) => item.id !== undefined);
+    const todosItensPertencem = itensComId.every((item) =>
+      requisicaoEstoqueExists.itens.some(
+        (existingItem) => existingItem.id === item.id
+      )
+    );
+
+    if (!todosItensPertencem) {
+      throw new BadRequestError("Cannot update item from another requisicao");
+    }
+
+    const {
+      requisitante: _r,
+      equipamento: _e,
+      itens: _i,
+      ...requisicaoEstoqueBase
+    } = requisicaoEstoqueExists;
+
     const updatedRequisicaoEstoque = requisicaoEstoqueRepository.merge(
-      requisicaoEstoqueExists,
+      requisicaoEstoqueBase as RequisicaoEstoque,
       entity
     );
 
