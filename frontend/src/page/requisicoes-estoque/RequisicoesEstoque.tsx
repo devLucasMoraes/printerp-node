@@ -50,24 +50,45 @@ const RequisicoesEstoque = () => {
   };
 
   const columns: GridColDef<RequisicaoEstoqueDto>[] = [
-    { field: "descricao", headerName: "Descrição", minWidth: 155, flex: 0.3 },
     {
-      field: "valorUntMed",
-      headerName: "Valor unitário",
+      field: "dataRequisicao",
+      headerName: "Requerido em",
+      minWidth: 155,
+      flex: 0.3,
+      type: "date",
+      valueGetter: (value) => value && new Date(value),
+    },
+    {
+      field: "valorTotal",
+      headerName: "Valor total",
       minWidth: 155,
       flex: 0.1,
     },
     {
-      field: "undEstoque",
-      headerName: "Unidade de estoque",
-      minWidth: 220,
-      flex: 0.2,
+      field: "requisitante",
+      headerName: "Requisitante",
+      minWidth: 200,
+      flex: 0.3,
+      display: "flex",
+      valueGetter: (_, row) => {
+        if (!row.requisitante?.nome) {
+          return "";
+        }
+        return row.requisitante.nome;
+      },
     },
     {
-      field: "estoqueMinimo",
-      headerName: "Estoque minimo",
-      minWidth: 220,
-      flex: 0.2,
+      field: "equipamento",
+      headerName: "Equipamento",
+      minWidth: 200,
+      flex: 0.3,
+      display: "flex",
+      valueGetter: (_, row) => {
+        if (!row.equipamento?.nome) {
+          return "";
+        }
+        return row.equipamento.nome;
+      },
     },
     {
       field: "actions",
@@ -105,7 +126,7 @@ const RequisicoesEstoque = () => {
           setFormOpen(false);
           setSelectedRequisicaoEstoque(undefined);
         }}
-        requisicao={selectedRequisicaoEstoque}
+        requisicaoEstoque={selectedRequisicaoEstoque}
       />
     </>
   );

@@ -1,6 +1,7 @@
 import {
   IconBox,
   IconCategoryPlus,
+  IconChecklist,
   IconLayoutDashboard,
   IconPrinter,
   IconSettings,
@@ -45,6 +46,12 @@ const Menuitems = [
     title: "Insumos",
     icon: IconBox,
     href: "/insumos",
+  },
+  {
+    id: uuidv4(),
+    title: "Requisições",
+    icon: IconChecklist,
+    href: "/requisicoes-estoque",
   },
   {
     navlabel: true,

@@ -1,11 +1,11 @@
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
-import { useCategoriaQueries } from "../../../hooks/queries/useCategoriaQueries";
-import { CategoriaDto } from "../../../types";
+import { useEquipamentoQueries } from "../../../hooks/queries/useEquipamentoQueries";
+import { EquipamentoDto } from "../../../types";
 
 type FieldProps = {
   field: {
-    value: CategoriaDto | null;
-    onChange: (value: CategoriaDto | null) => void;
+    value: EquipamentoDto | null;
+    onChange: (value: EquipamentoDto | null) => void;
     onBlur: () => void;
     name: string;
   };
@@ -14,11 +14,11 @@ type FieldProps = {
   };
 };
 
-export const CategoriaAutoComplete = ({ field, error }: FieldProps) => {
-  const { useGetAll: useGetAllCategorias } = useCategoriaQueries();
-  const { data: categorias = [], isLoading } = useGetAllCategorias();
+export const EquipamentoAutoComplete = ({ field, error }: FieldProps) => {
+  const { useGetAll: useGetAllEquipamentos } = useEquipamentoQueries();
+  const { data: equipamentos = [], isLoading } = useGetAllEquipamentos();
 
-  const options = [...categorias];
+  const options = [...equipamentos];
 
   return (
     <Autocomplete
@@ -33,7 +33,7 @@ export const CategoriaAutoComplete = ({ field, error }: FieldProps) => {
           {...params}
           error={!!error}
           helperText={error?.message}
-          label="Categoria"
+          label="Equipamento"
           slotProps={{
             input: {
               ...params.InputProps,

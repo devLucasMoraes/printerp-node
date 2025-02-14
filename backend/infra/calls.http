@@ -52,19 +52,19 @@ Content-Type: application/json
 ### RequisicaoEstoque Routes
 
 ### List requisicaoEstoque with pagination
-GET {{baseUrl}}/requisicaoEstoques?page=1&size=10 HTTP/1.1
+GET {{baseUrl}}/requisicoes-estoque?page=1&size=10 HTTP/1.1
 Content-Type: application/json
 
 ### List all requisicaoEstoque without pagination
-GET {{baseUrl}}/requisicaoEstoques-all HTTP/1.1
+GET {{baseUrl}}/requisicoes-estoque-all HTTP/1.1
 Content-Type: application/json
 
 ### Get requisicaoEstoque by ID
-GET {{baseUrl}}/requisicaoEstoques/1 HTTP/1.1
+GET {{baseUrl}}/requisicoes-estoque/1 HTTP/1.1
 Content-Type: application/json
 
 ### Create requisicaoEstoque
-POST {{baseUrl}}/requisicaoEstoques HTTP/1.1
+POST {{baseUrl}}/requisicoes-estoque HTTP/1.1
 Content-Type: application/json
 
 {
@@ -73,24 +73,15 @@ Content-Type: application/json
     "valorTotal": 150.75,
     "obs": "Observação teste",
     "requisitante": {
-        "id": 1
+        "id": 2
     },
     "equipamento": {
-        "id": 1
+        "id": 2
     },
     "itens": [
         {
             "id": null,
             "quantidade": 2,
-            "undEstoque": "LITRO",
-            "valorUnitario": 50.25,
-            "insumo": {
-                "id": 1
-            }
-        },
-        {
-            "id": null,
-            "quantidade": 1,
             "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
@@ -101,7 +92,7 @@ Content-Type: application/json
 }
 
 ### Update requisicaoEstoque
-PUT {{baseUrl}}/requisicaoEstoques/14 HTTP/1.1
+PUT {{baseUrl}}/requisicoes-estoque/14 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -137,5 +128,5 @@ Content-Type: application/json
 }
 
 ### Delete requisicaoEstoque
-DELETE {{baseUrl}}/requisicaoEstoques/13 HTTP/1.1
+DELETE {{baseUrl}}/requisicoes-estoque/13 HTTP/1.1
 Content-Type: application/json

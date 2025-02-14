@@ -52,16 +52,8 @@ export type RequisicaoEstoqueDto = {
   ordemProducao: string;
   obs: string | null;
   valorTotal: number;
-  requisitante: {
-    id: number;
-    nome: string;
-    fone: string;
-  };
-  equipamento: {
-    id: number;
-    nome: string;
-    fone: string;
-  };
+  requisitante: RequisitanteDto;
+  equipamento: EquipamentoDto;
   itens: {
     id: number;
     quantidade: number;

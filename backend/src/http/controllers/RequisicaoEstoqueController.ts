@@ -153,15 +153,8 @@ export class RequisicaoEstoqueController {
       ordemProducao: entity.ordemProducao,
       obs: entity.obs,
       valorTotal: entity.valorTotal,
-      requisitante: {
-        id: entity.requisitante.id,
-        nome: entity.requisitante.nome,
-        fone: entity.requisitante.fone,
-      },
-      equipamento: {
-        id: entity.equipamento.id,
-        nome: entity.equipamento.nome,
-      },
+      requisitante: entity.requisitante,
+      equipamento: entity.equipamento,
       itens: entity.itens.map((item) => {
         return {
           id: item.id,
