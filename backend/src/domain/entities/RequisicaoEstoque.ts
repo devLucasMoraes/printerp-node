@@ -18,7 +18,7 @@ export class RequisicaoEstoque {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "date" })
+  @Column({ type: "timestamp" })
   dataRequisicao: Date;
 
   @Column({ type: "numeric" })

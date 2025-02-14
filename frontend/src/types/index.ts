@@ -59,10 +59,7 @@ export type RequisicaoEstoqueDto = {
     quantidade: number;
     undEstoque: Unidade;
     valorUnitario: number;
-    insumo: {
-      id: number;
-      descricao: string;
-    };
+    insumo: InsumoDto;
   }[];
   createdAt: Date;
   updatedAt: Date;

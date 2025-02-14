@@ -22,7 +22,7 @@ const requisicaoEstoqueItemUpdateSchema = z.object({
 });
 
 export const requisicaoEstoqueCreateSchema = z.object({
-  dataRequisicao: z.string().transform((str) => new Date(str)),
+  dataRequisicao: z.date(),
   ordemProducao: z.string().nonempty(),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),
@@ -40,7 +40,7 @@ export type RequisicaoEstoqueCreateDto = z.infer<
 >;
 
 export const requisicaoEstoqueUpdateSchema = z.object({
-  dataRequisicao: z.string().transform((str) => new Date(str)),
+  dataRequisicao: z.date(),
   ordemProducao: z.string().nonempty(),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),

@@ -56,7 +56,7 @@ const RequisicoesEstoque = () => {
       minWidth: 155,
       flex: 0.3,
       type: "date",
-      valueGetter: (value) => value && new Date(value),
+      valueGetter: (value) => (value ? new Date(value) : ""),
     },
     {
       field: "valorTotal",
