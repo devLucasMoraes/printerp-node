@@ -11,6 +11,7 @@ import {
   Divider,
   Grid2,
   IconButton,
+  InputAdornment,
   MenuItem,
   Stack,
   TextField,
@@ -18,8 +19,8 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react";
-import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useCallback, useEffect } from "react";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { unidades } from "../../../constants";
 import { useRequisicaoEstoqueQueries } from "../../../hooks/queries/useRequisicaoEstoqueQueries";
 import {
@@ -27,10 +28,11 @@ import {
   requisicaoEstoqueUpdateSchema,
 } from "../../../schemas/requisicaoEstoque.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
-import { RequisicaoEstoqueDto } from "../../../types";
+import { InsumoDto, RequisicaoEstoqueDto } from "../../../types";
 import { EquipamentoAutoComplete } from "./EquipamentoAutoComplete";
 import { InsumoAutoComplete } from "./InsumoAutoComplete";
 import { RequisitanteAutoComplete } from "./RequisitanteAutoComplete";
+
 interface RequisicaoEstoqueModalProps {
   open: boolean;
   onClose: () => void;
@@ -58,7 +60,6 @@ export const RequisicaoEstoqueModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    watch,
     setValue,
   } = useForm<RequisicaoEstoqueDto>({
     resolver: zodResolver(schema),
@@ -79,12 +80,18 @@ export const RequisicaoEstoqueModal = ({
     name: "itens",
   });
 
-  const items = watch("itens");
+  const items = useWatch({
+    control,
+    name: "itens",
+    defaultValue: [],
+  });
 
   useEffect(() => {
     const total =
-      items?.reduce((acc, item) => {
-        return acc + item.quantidade * item.valorUnitario;
+      items?.reduce((total, item) => {
+        const quantidade = Number(item.quantidade) || 0;
+        const valorUnitario = Number(item.valorUnitario) || 0;
+        return total + quantidade * valorUnitario;
       }, 0) || 0;
 
     setValue("valorTotal", total);
@@ -157,6 +164,16 @@ export const RequisicaoEstoqueModal = ({
     }
   };
 
+  const handleInsumoChange = useCallback(
+    (index: number, insumo?: InsumoDto | null) => {
+      if (insumo) {
+        setValue(`itens.${index}.undEstoque`, insumo.undEstoque);
+        setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed));
+      }
+    },
+    [setValue]
+  );
+
   const handleAddItem = () => {
     prepend({
       id: null as any,
@@ -198,6 +215,13 @@ export const RequisicaoEstoqueModal = ({
                   {...field}
                   type="number"
                   label="Valor total"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">R$</InputAdornment>
+                      ),
+                    },
+                  }}
                   error={!!errors.valorTotal}
                   helperText={errors.valorTotal?.message}
                   value={field.value ?? ""}
@@ -335,131 +359,150 @@ export const RequisicaoEstoqueModal = ({
                 </Box>
               ) : (
                 <Box>
-                  {fields.map((field, index) => (
-                    <Box
-                      key={field.id}
-                      sx={{
-                        px: 2,
-                        py: 2,
-                        mb: 1,
-                        borderBottom: "1px solid",
-                        borderColor: "divider",
-                        "&:hover": {
-                          bgcolor: (theme) =>
-                            theme.palette.mode === "dark"
-                              ? "rgba(255, 255, 255, 0.03)"
-                              : "rgba(0, 0, 0, 0.02)",
-                        },
-                      }}
-                    >
-                      <Grid2 container spacing={2}>
-                        <Grid2 size={4}>
-                          <Controller
-                            name={`itens.${index}.insumo`}
-                            control={control}
-                            render={({ field }) => (
-                              <InsumoAutoComplete
-                                size="small"
-                                field={field}
-                                error={errors.itens?.[index]?.insumo}
-                              />
-                            )}
-                          />
-                        </Grid2>
+                  {fields.map((field, index) => {
+                    return (
+                      <Box
+                        key={field.id}
+                        sx={{
+                          px: 2,
+                          py: 2,
+                          mb: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          "&:hover": {
+                            bgcolor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "rgba(255, 255, 255, 0.03)"
+                                : "rgba(0, 0, 0, 0.02)",
+                          },
+                        }}
+                      >
+                        <Grid2 container spacing={2}>
+                          <Grid2 size={4}>
+                            <Controller
+                              name={`itens.${index}.insumo`}
+                              control={control}
+                              render={({ field }) => (
+                                <InsumoAutoComplete
+                                  size="small"
+                                  field={{
+                                    ...field,
+                                    onChange: (value) => {
+                                      field.onChange(value);
+                                      handleInsumoChange(index, value);
+                                    },
+                                  }}
+                                  error={errors.itens?.[index]?.insumo}
+                                />
+                              )}
+                            />
+                          </Grid2>
 
-                        <Grid2 size={2}>
-                          <Controller
-                            name={`itens.${index}.quantidade`}
-                            control={control}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                type="number"
-                                label="Quantidade"
-                                error={!!errors.itens?.[index]?.quantidade}
-                                helperText={
-                                  errors.itens?.[index]?.quantidade?.message
-                                }
-                                fullWidth
-                                size="small"
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                              />
-                            )}
-                          />
-                        </Grid2>
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${index}.quantidade`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  type="number"
+                                  label="Quantidade"
+                                  error={!!errors.itens?.[index]?.quantidade}
+                                  helperText={
+                                    errors.itens?.[index]?.quantidade?.message
+                                  }
+                                  fullWidth
+                                  size="small"
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              )}
+                            />
+                          </Grid2>
 
-                        <Grid2 size={3}>
-                          <Controller
-                            name={`itens.${index}.undEstoque`}
-                            control={control}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Und. Estoque"
-                                error={!!errors.itens?.[index]?.undEstoque}
-                                helperText={
-                                  errors.itens?.[index]?.undEstoque?.message
-                                }
-                                fullWidth
-                                select
-                                size="small"
-                              >
-                                {unidades.map((option) => (
-                                  <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </MenuItem>
-                                ))}
-                              </TextField>
-                            )}
-                          />
-                        </Grid2>
+                          <Grid2 size={3}>
+                            <Controller
+                              name={`itens.${index}.undEstoque`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  label="Und. Estoque"
+                                  error={!!errors.itens?.[index]?.undEstoque}
+                                  helperText={
+                                    errors.itens?.[index]?.undEstoque?.message
+                                  }
+                                  value={field.value || ""}
+                                  fullWidth
+                                  select
+                                  size="small"
+                                >
+                                  {unidades.map((option) => (
+                                    <MenuItem
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </MenuItem>
+                                  ))}
+                                </TextField>
+                              )}
+                            />
+                          </Grid2>
 
-                        <Grid2 size={2}>
-                          <Controller
-                            name={`itens.${index}.valorUnitario`}
-                            control={control}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                type="number"
-                                label="Valor Unitário"
-                                error={!!errors.itens?.[index]?.valorUnitario}
-                                helperText={
-                                  errors.itens?.[index]?.valorUnitario?.message
-                                }
-                                fullWidth
-                                size="small"
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                              />
-                            )}
-                          />
-                        </Grid2>
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${index}.valorUnitario`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  type="number"
+                                  label="Valor Unitário"
+                                  error={!!errors.itens?.[index]?.valorUnitario}
+                                  helperText={
+                                    errors.itens?.[index]?.valorUnitario
+                                      ?.message
+                                  }
+                                  fullWidth
+                                  size="small"
+                                  slotProps={{
+                                    input: {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          R$
+                                        </InputAdornment>
+                                      ),
+                                    },
+                                  }}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              )}
+                            />
+                          </Grid2>
 
-                        <Grid2
-                          size={1}
-                          container
-                          direction="row"
-                          alignItems="center"
-                          justifyContent="flex-end"
-                        >
-                          <IconButton
-                            onClick={() => remove(index)}
-                            color="error"
-                            size="small"
+                          <Grid2
+                            size={1}
+                            container
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="flex-end"
                           >
-                            <IconCircleMinus />
-                          </IconButton>
+                            <IconButton
+                              onClick={() => remove(index)}
+                              color="error"
+                              size="small"
+                            >
+                              <IconCircleMinus />
+                            </IconButton>
+                          </Grid2>
                         </Grid2>
-                      </Grid2>
-                    </Box>
-                  ))}
+                      </Box>
+                    );
+                  })}
                 </Box>
               )}
             </Box>
