@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { IconEdit, IconEraser } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
@@ -13,7 +13,10 @@ import { CategoriaModal } from "./components/CategoriaModal";
 
 const Categorias = () => {
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedCategoria, setSelectedCategoria] = useState<CategoriaDto>();
+  const [selectedCategoria, setSelectedCategoria] = useState<{
+    data: CategoriaDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -45,7 +48,12 @@ const Categorias = () => {
   };
 
   const handleEdit = (categoria: CategoriaDto) => {
-    setSelectedCategoria(categoria);
+    setSelectedCategoria({ data: categoria, type: "UPDATE" });
+    setFormOpen(true);
+  };
+
+  const handleCopy = (categoria: CategoriaDto): void => {
+    setSelectedCategoria({ data: categoria, type: "COPY" });
     setFormOpen(true);
   };
 
@@ -54,12 +62,19 @@ const Categorias = () => {
     {
       field: "actions",
       headerName: "Ações",
-      minWidth: 120,
-      flex: 0.5,
+      minWidth: 130,
+      flex: 0.1,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
         <>
+          <IconButton
+            size="small"
+            color="inherit"
+            onClick={() => handleCopy(params.row)}
+          >
+            <IconCopy />
+          </IconButton>
           <IconButton
             size="small"
             color="inherit"

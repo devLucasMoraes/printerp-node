@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { IconEdit, IconEraser } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
@@ -13,8 +13,10 @@ import { RequisitanteModal } from "./components/RequisitanteModal";
 
 const Requisitantes = () => {
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedRequisitante, setSelectedRequisitante] =
-    useState<RequisitanteDto>();
+  const [selectedRequisitante, setSelectedRequisitante] = useState<{
+    data: RequisitanteDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -46,7 +48,12 @@ const Requisitantes = () => {
   };
 
   const handleEdit = (requisitante: RequisitanteDto) => {
-    setSelectedRequisitante(requisitante);
+    setSelectedRequisitante({ data: requisitante, type: "UPDATE" });
+    setFormOpen(true);
+  };
+
+  const handleCopy = (requisitante: RequisitanteDto): void => {
+    setSelectedRequisitante({ data: requisitante, type: "COPY" });
     setFormOpen(true);
   };
 
@@ -56,12 +63,19 @@ const Requisitantes = () => {
     {
       field: "actions",
       headerName: "Ações",
-      minWidth: 120,
-      flex: 0.5,
+      minWidth: 130,
+      flex: 0.1,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
         <>
+          <IconButton
+            size="small"
+            color="inherit"
+            onClick={() => handleCopy(params.row)}
+          >
+            <IconCopy />
+          </IconButton>
           <IconButton
             size="small"
             color="inherit"

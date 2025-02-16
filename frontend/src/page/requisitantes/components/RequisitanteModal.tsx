@@ -22,7 +22,7 @@ import { RequisitanteDto } from "../../../types";
 interface RequisitanteModalProps {
   open: boolean;
   onClose: () => void;
-  requisitante?: RequisitanteDto;
+  requisitante?: { data: RequisitanteDto; type: "UPDATE" | "COPY" | "CREATE" };
 }
 
 export const RequisitanteModal = ({
@@ -32,9 +32,10 @@ export const RequisitanteModal = ({
 }: RequisitanteModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const schema = requisitante
-    ? requisitanteUpdateSchema
-    : requisitanteCreateSchema;
+  const schema =
+    requisitante?.data && requisitante.type === "UPDATE"
+      ? requisitanteUpdateSchema
+      : requisitanteCreateSchema;
 
   const { useCreate: useCreateRequisitante, useUpdate: useUpdateRequisitante } =
     useRequisitanteQueries();
@@ -52,14 +53,21 @@ export const RequisitanteModal = ({
   });
 
   useEffect(() => {
-    if (requisitante) {
+    if (requisitante?.data && requisitante.type === "UPDATE") {
       reset({
-        id: requisitante.id,
-        nome: requisitante.nome,
-        fone: requisitante.fone,
+        id: requisitante.data.id,
+        nome: requisitante.data.nome,
+        fone: requisitante.data.fone,
+      });
+    } else if (requisitante?.data && requisitante.type === "COPY") {
+      reset({
+        id: null as any,
+        nome: requisitante.data.nome,
+        fone: requisitante.data.fone,
       });
     } else {
       reset({
+        id: null as any,
         nome: "",
         fone: "",
       });
@@ -71,9 +79,9 @@ export const RequisitanteModal = ({
   const { mutate: updateRequisitante } = useUpdateRequisitante();
 
   const onSubmit = (data: RequisitanteDto) => {
-    if (requisitante) {
+    if (requisitante?.data && requisitante.type === "UPDATE") {
       updateRequisitante(
-        { id: requisitante.id, data },
+        { id: requisitante.data.id, data },
         {
           onSuccess: () => {
             onClose();
@@ -112,10 +120,12 @@ export const RequisitanteModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{requisitante ? "Editar" : "Novo"}</DialogTitle>
+      <DialogTitle>
+        {requisitante?.type === "UPDATE" ? "Editar" : "Novo"}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {requisitante
+          {requisitante?.type === "UPDATE"
             ? "Preencha os campos abaixo para editar o requisitante"
             : "Preencha os campos abaixo para criar um novo requisitante"}
         </DialogContentText>

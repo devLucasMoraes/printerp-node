@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { IconEdit, IconEraser } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
@@ -12,8 +12,10 @@ import { RequisicaoEstoqueModal } from "./components/RequisicaoEstoqueModal";
 
 const RequisicoesEstoque = () => {
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] =
-    useState<RequisicaoEstoqueDto>();
+  const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] = useState<{
+    data: RequisicaoEstoqueDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -44,8 +46,13 @@ const RequisicoesEstoque = () => {
     });
   };
 
-  const handleEdit = (requisicao: RequisicaoEstoqueDto) => {
-    setSelectedRequisicaoEstoque(requisicao);
+  const handleEdit = (requisicaoEstoque: RequisicaoEstoqueDto) => {
+    setSelectedRequisicaoEstoque({ data: requisicaoEstoque, type: "UPDATE" });
+    setFormOpen(true);
+  };
+
+  const handleCopy = (requisicaoEstoque: RequisicaoEstoqueDto): void => {
+    setSelectedRequisicaoEstoque({ data: requisicaoEstoque, type: "COPY" });
     setFormOpen(true);
   };
 
@@ -93,12 +100,19 @@ const RequisicoesEstoque = () => {
     {
       field: "actions",
       headerName: "Ações",
-      minWidth: 120,
-      flex: 0.5,
+      minWidth: 130,
+      flex: 0.1,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
         <>
+          <IconButton
+            size="small"
+            color="inherit"
+            onClick={() => handleCopy(params.row)}
+          >
+            <IconCopy />
+          </IconButton>
           <IconButton
             size="small"
             color="inherit"

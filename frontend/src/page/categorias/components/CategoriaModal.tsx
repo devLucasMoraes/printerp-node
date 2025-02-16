@@ -22,7 +22,7 @@ import { CategoriaDto } from "../../../types";
 interface CategoriaModalProps {
   open: boolean;
   onClose: () => void;
-  categoria?: CategoriaDto;
+  categoria?: { data: CategoriaDto; type: "UPDATE" | "COPY" | "CREATE" };
 }
 
 export const CategoriaModal = ({
@@ -32,7 +32,10 @@ export const CategoriaModal = ({
 }: CategoriaModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const schema = categoria ? categoriaUpdateSchema : categoriaCreateSchema;
+  const schema =
+    categoria?.data && categoria.type === "UPDATE"
+      ? categoriaUpdateSchema
+      : categoriaCreateSchema;
 
   const { useCreate: useCreateCategoria, useUpdate: useUpdateCategoria } =
     useCategoriaQueries();
@@ -50,13 +53,19 @@ export const CategoriaModal = ({
   });
 
   useEffect(() => {
-    if (categoria) {
+    if (categoria?.data && categoria.type === "UPDATE") {
       reset({
-        id: categoria.id,
-        nome: categoria.nome,
+        id: categoria.data.id,
+        nome: categoria.data.nome,
+      });
+    } else if (categoria?.data && categoria.type === "COPY") {
+      reset({
+        id: null as any,
+        nome: categoria.data.nome,
       });
     } else {
       reset({
+        id: null as any,
         nome: "",
       });
     }
@@ -67,9 +76,9 @@ export const CategoriaModal = ({
   const { mutate: updateCategoria } = useUpdateCategoria();
 
   const onSubmit = (data: CategoriaDto) => {
-    if (categoria) {
+    if (categoria?.data && categoria.type === "UPDATE") {
       updateCategoria(
-        { id: categoria.id, data },
+        { id: categoria.data.id, data },
         {
           onSuccess: () => {
             onClose();
@@ -108,10 +117,12 @@ export const CategoriaModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{categoria ? "Editar" : "Nova"}</DialogTitle>
+      <DialogTitle>
+        {categoria?.type === "UPDATE" ? "Editar" : "Nova"}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {categoria
+          {categoria?.type === "UPDATE"
             ? "Preencha os campos abaixo para editar a categoria"
             : "Preencha os campos abaixo para criar uma nova categoria"}
         </DialogContentText>

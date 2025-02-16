@@ -22,7 +22,7 @@ import { EquipamentoDto } from "../../../types";
 interface EquipamentoModalProps {
   open: boolean;
   onClose: () => void;
-  equipamento?: EquipamentoDto;
+  equipamento?: { data: EquipamentoDto; type: "UPDATE" | "COPY" | "CREATE" };
 }
 
 export const EquipamentoModal = ({
@@ -32,9 +32,10 @@ export const EquipamentoModal = ({
 }: EquipamentoModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const schema = equipamento
-    ? equipamentoUpdateSchema
-    : equipamentoCreateSchema;
+  const schema =
+    equipamento?.data && equipamento.type === "UPDATE"
+      ? equipamentoUpdateSchema
+      : equipamentoCreateSchema;
 
   const { useCreate: useCreateEquipamento, useUpdate: useUpdateEquipamento } =
     useEquipamentoQueries();
@@ -52,13 +53,19 @@ export const EquipamentoModal = ({
   });
 
   useEffect(() => {
-    if (equipamento) {
+    if (equipamento?.data && equipamento.type === "UPDATE") {
       reset({
-        id: equipamento.id,
-        nome: equipamento.nome,
+        id: equipamento.data.id,
+        nome: equipamento.data.nome,
+      });
+    } else if (equipamento?.data && equipamento.type === "COPY") {
+      reset({
+        id: null as any,
+        nome: equipamento.data.nome,
       });
     } else {
       reset({
+        id: null as any,
         nome: "",
       });
     }
@@ -69,9 +76,9 @@ export const EquipamentoModal = ({
   const { mutate: updateEquipamento } = useUpdateEquipamento();
 
   const onSubmit = (data: EquipamentoDto) => {
-    if (equipamento) {
+    if (equipamento?.data && equipamento.type === "UPDATE") {
       updateEquipamento(
-        { id: equipamento.id, data },
+        { id: equipamento.data.id, data },
         {
           onSuccess: () => {
             onClose();
@@ -110,10 +117,12 @@ export const EquipamentoModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{equipamento ? "Editar" : "Novo"}</DialogTitle>
+      <DialogTitle>
+        {equipamento?.type === "UPDATE" ? "Editar" : "Novo"}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {equipamento
+          {equipamento?.type === "UPDATE"
             ? "Preencha os campos abaixo para editar o equipamento"
             : "Preencha os campos abaixo para criar um novo equipamento"}
         </DialogContentText>

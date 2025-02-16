@@ -36,7 +36,10 @@ import { RequisitanteAutoComplete } from "./RequisitanteAutoComplete";
 interface RequisicaoEstoqueModalProps {
   open: boolean;
   onClose: () => void;
-  requisicaoEstoque?: RequisicaoEstoqueDto;
+  requisicaoEstoque?: {
+    data: RequisicaoEstoqueDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  };
 }
 
 export const RequisicaoEstoqueModal = ({
@@ -46,9 +49,10 @@ export const RequisicaoEstoqueModal = ({
 }: RequisicaoEstoqueModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const schema = requisicaoEstoque
-    ? requisicaoEstoqueUpdateSchema
-    : requisicaoEstoqueCreateSchema;
+  const schema =
+    requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE"
+      ? requisicaoEstoqueUpdateSchema
+      : requisicaoEstoqueCreateSchema;
 
   const {
     useCreate: useCreateRequisicaoEstoque,
@@ -98,17 +102,34 @@ export const RequisicaoEstoqueModal = ({
   }, [items, setValue]);
 
   useEffect(() => {
-    if (requisicaoEstoque) {
+    if (requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE") {
       reset({
-        id: requisicaoEstoque.id,
-        dataRequisicao: new Date(requisicaoEstoque.dataRequisicao),
-        ordemProducao: requisicaoEstoque.ordemProducao,
-        obs: requisicaoEstoque.obs,
-        equipamento: requisicaoEstoque.equipamento,
-        requisitante: requisicaoEstoque.requisitante,
-        valorTotal: Number(requisicaoEstoque.valorTotal),
-        itens: requisicaoEstoque.itens.map((item) => ({
+        id: requisicaoEstoque.data.id,
+        dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
+        ordemProducao: requisicaoEstoque.data.ordemProducao,
+        obs: requisicaoEstoque.data.obs,
+        equipamento: requisicaoEstoque.data.equipamento,
+        requisitante: requisicaoEstoque.data.requisitante,
+        valorTotal: Number(requisicaoEstoque.data.valorTotal),
+        itens: requisicaoEstoque.data.itens.map((item) => ({
           id: item.id,
+          insumo: item.insumo,
+          quantidade: Number(item.quantidade),
+          valorUnitario: Number(item.valorUnitario),
+          undEstoque: item.undEstoque,
+        })),
+      });
+    } else if (requisicaoEstoque?.data && requisicaoEstoque.type === "COPY") {
+      reset({
+        id: null as any,
+        dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
+        ordemProducao: requisicaoEstoque.data.ordemProducao,
+        obs: requisicaoEstoque.data.obs,
+        equipamento: requisicaoEstoque.data.equipamento,
+        requisitante: requisicaoEstoque.data.requisitante,
+        valorTotal: Number(requisicaoEstoque.data.valorTotal),
+        itens: requisicaoEstoque.data.itens.map((item) => ({
+          id: null as any,
           insumo: item.insumo,
           quantidade: Number(item.quantidade),
           valorUnitario: Number(item.valorUnitario),
@@ -134,9 +155,9 @@ export const RequisicaoEstoqueModal = ({
   const { mutate: updateRequisicaoEstoque } = useUpdateRequisicaoEstoque();
 
   const onSubmit = (data: RequisicaoEstoqueDto) => {
-    if (requisicaoEstoque) {
+    if (requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE") {
       updateRequisicaoEstoque(
-        { id: requisicaoEstoque.id, data },
+        { id: requisicaoEstoque.data.id, data },
         {
           onSuccess: () => {
             onClose();
@@ -198,10 +219,12 @@ export const RequisicaoEstoqueModal = ({
       fullWidth
       maxWidth="xl"
     >
-      <DialogTitle>{requisicaoEstoque ? "Editar" : "Nova"}</DialogTitle>
+      <DialogTitle>
+        {requisicaoEstoque?.type === "UPDATE" ? "Editar" : "Nova"}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {requisicaoEstoque
+          {requisicaoEstoque?.type === "UPDATE"
             ? "Preencha os campos abaixo para editar a requisicao de estoque"
             : "Preencha os campos abaixo para criar uma nova requisicao de estoque"}
         </DialogContentText>

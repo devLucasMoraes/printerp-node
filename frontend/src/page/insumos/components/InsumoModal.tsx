@@ -29,13 +29,19 @@ import { CategoriaAutoComplete } from "./CategoriaAutoComplete";
 interface InsumoModalProps {
   open: boolean;
   onClose: () => void;
-  insumo?: InsumoDto;
+  insumo?: {
+    data: InsumoDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  };
 }
 
 export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const schema = insumo ? insumoUpdateSchema : insumoCreateSchema;
+  const schema =
+    insumo?.data && insumo.type === "UPDATE"
+      ? insumoUpdateSchema
+      : insumoCreateSchema;
 
   const { useCreate: useCreateInsumo, useUpdate: useUpdateInsumo } =
     useInsumoQueries();
@@ -58,15 +64,25 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
   });
 
   useEffect(() => {
-    if (insumo) {
+    if (insumo?.data && insumo.type === "UPDATE") {
       reset({
-        id: insumo.id,
-        descricao: insumo.descricao,
-        valorUntMedAuto: insumo.valorUntMedAuto,
-        valorUntMed: insumo.valorUntMed,
-        undEstoque: insumo.undEstoque,
-        estoqueMinimo: insumo.estoqueMinimo,
-        categoria: insumo.categoria,
+        id: insumo.data.id,
+        descricao: insumo.data.descricao,
+        valorUntMedAuto: insumo.data.valorUntMedAuto,
+        valorUntMed: insumo.data.valorUntMed,
+        undEstoque: insumo.data.undEstoque,
+        estoqueMinimo: insumo.data.estoqueMinimo,
+        categoria: insumo.data.categoria,
+      });
+    } else if (insumo?.data && insumo.type === "COPY") {
+      reset({
+        id: null as any,
+        descricao: insumo.data.descricao,
+        valorUntMedAuto: insumo.data.valorUntMedAuto,
+        valorUntMed: insumo.data.valorUntMed,
+        undEstoque: insumo.data.undEstoque,
+        estoqueMinimo: insumo.data.estoqueMinimo,
+        categoria: insumo.data.categoria,
       });
     } else {
       reset({
@@ -86,9 +102,9 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
   const { mutate: updateInsumo } = useUpdateInsumo();
 
   const onSubmit = (data: InsumoDto) => {
-    if (insumo) {
+    if (insumo?.data && insumo.type === "UPDATE") {
       updateInsumo(
-        { id: insumo.id, data },
+        { id: insumo.data.id, data },
         {
           onSuccess: () => {
             onClose();
@@ -127,10 +143,10 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{insumo ? "Editar" : "Novo"}</DialogTitle>
+      <DialogTitle>{insumo?.type === "UPDATE" ? "Editar" : "Novo"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {insumo
+          {insumo?.type === "UPDATE"
             ? "Preencha os campos abaixo para editar o insumo"
             : "Preencha os campos abaixo para criar um novo insumo"}
         </DialogContentText>
@@ -225,6 +241,7 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
                   label="Und. Estoque"
                   error={!!errors.undEstoque}
                   helperText={errors.undEstoque?.message}
+                  value={field.value || ""}
                   fullWidth
                   select
                 >

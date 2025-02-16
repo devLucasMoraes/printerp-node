@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { IconEdit, IconEraser } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
@@ -12,8 +12,10 @@ import { EquipamentoModal } from "./components/EquipamentoModal";
 
 const Equipamentos = () => {
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedEquipamento, setSelectedEquipamento] =
-    useState<EquipamentoDto>();
+  const [selectedEquipamento, setSelectedEquipamento] = useState<{
+    data: EquipamentoDto;
+    type: "UPDATE" | "COPY" | "CREATE";
+  }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -45,7 +47,12 @@ const Equipamentos = () => {
   };
 
   const handleEdit = (equipamento: EquipamentoDto) => {
-    setSelectedEquipamento(equipamento);
+    setSelectedEquipamento({ data: equipamento, type: "UPDATE" });
+    setFormOpen(true);
+  };
+
+  const handleCopy = (equipamento: EquipamentoDto): void => {
+    setSelectedEquipamento({ data: equipamento, type: "COPY" });
     setFormOpen(true);
   };
 
@@ -54,12 +61,19 @@ const Equipamentos = () => {
     {
       field: "actions",
       headerName: "Ações",
-      minWidth: 120,
-      flex: 0.5,
+      minWidth: 130,
+      flex: 0.1,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
         <>
+          <IconButton
+            size="small"
+            color="inherit"
+            onClick={() => handleCopy(params.row)}
+          >
+            <IconCopy />
+          </IconButton>
           <IconButton
             size="small"
             color="inherit"
