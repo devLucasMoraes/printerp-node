@@ -23,4 +23,17 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
       }
     );
   }
+
+  async findOneWithRelations(id: number): Promise<RequisicaoEstoque | null> {
+    return await this.findOne({
+      where: { id },
+      relations: {
+        requisitante: true,
+        equipamento: true,
+        itens: {
+          insumo: true,
+        },
+      },
+    });
+  }
 }

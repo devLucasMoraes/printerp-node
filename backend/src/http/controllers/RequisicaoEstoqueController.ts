@@ -1,14 +1,10 @@
 import { RequestHandler } from "express";
-import { Equipamento } from "../../domain/entities/Equipamento";
-import { Insumo } from "../../domain/entities/Insumo";
 import { RequisicaoEstoque } from "../../domain/entities/RequisicaoEstoque";
-import { RequisicaoEstoqueItem } from "../../domain/entities/RequisicaoEstoqueItem";
-import { Requisitante } from "../../domain/entities/Requisitante";
 import { RequisicaoEstoqueService } from "../../domain/services/RequisicaoEstoqueService";
 import { pageable } from "../../shared/utils/pageable";
 import {
-  RequisicaoEstoqueCreateDto,
-  RequisicaoEstoqueUpdateDto,
+  CreateRequisicaoEstoqueDTO,
+  UpdateRequisicaoEstoqueDTO,
 } from "../validators/requisicaoEstoque.schemas";
 
 export class RequisicaoEstoqueController {
@@ -40,43 +36,9 @@ export class RequisicaoEstoqueController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const {
-      dataRequisicao,
-      ordemProducao,
-      obs,
-      valorTotal,
-      equipamento,
-      requisitante,
-      itens,
-    }: RequisicaoEstoqueCreateDto = req.body;
+    const dto: CreateRequisicaoEstoqueDTO = req.body;
 
-    const requisicaoEstoque = new RequisicaoEstoque({
-      dataRequisicao,
-      ordemProducao,
-      obs,
-      valorTotal,
-      equipamento: new Equipamento({
-        id: equipamento.id,
-      }),
-      requisitante: new Requisitante({
-        id: requisitante.id,
-      }),
-      itens: itens.map((item) => {
-        return new RequisicaoEstoqueItem({
-          id: item.id ?? undefined,
-          quantidade: item.quantidade,
-          undEstoque: item.undEstoque,
-          valorUnitario: item.valorUnitario,
-          insumo: new Insumo({
-            id: item.insumo.id,
-          }),
-        });
-      }),
-    });
-
-    const result = await this.requisicaoEstoqueService.create(
-      requisicaoEstoque
-    );
+    const result = await this.requisicaoEstoqueService.create(dto);
 
     const mappedResult = this.toDTO(result);
 
@@ -95,43 +57,11 @@ export class RequisicaoEstoqueController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const {
-      dataRequisicao,
-      ordemProducao,
-      obs,
-      valorTotal,
-      equipamento,
-      requisitante,
-      itens,
-    }: RequisicaoEstoqueUpdateDto = req.body;
-
-    const requisicaoEstoque = new RequisicaoEstoque({
-      dataRequisicao,
-      ordemProducao,
-      obs,
-      valorTotal,
-      equipamento: new Equipamento({
-        id: equipamento.id,
-      }),
-      requisitante: new Requisitante({
-        id: requisitante.id,
-      }),
-      itens: itens.map((item) => {
-        return new RequisicaoEstoqueItem({
-          id: item.id ?? undefined,
-          quantidade: item.quantidade,
-          undEstoque: item.undEstoque,
-          valorUnitario: item.valorUnitario,
-          insumo: new Insumo({
-            id: item.insumo.id,
-          }),
-        });
-      }),
-    });
+    const dto: UpdateRequisicaoEstoqueDTO = req.body;
 
     const result = await this.requisicaoEstoqueService.update(
       parseInt(id),
-      requisicaoEstoque
+      dto
     );
     const mappedResult = this.toDTO(result);
 
@@ -155,6 +85,7 @@ export class RequisicaoEstoqueController {
       valorTotal: entity.valorTotal,
       requisitante: entity.requisitante,
       equipamento: entity.equipamento,
+      armazem: entity.armazem,
       itens: entity.itens.map((item) => {
         return {
           id: item.id,

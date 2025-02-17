@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Insumo } from "./Insumo";
 import { RequisicaoEstoque } from "./RequisicaoEstoque";
@@ -15,11 +17,7 @@ export class RequisicaoEstoqueItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Insumo, (insumo) => insumo.id)
-  @JoinColumn({ name: "insumos_id" })
-  insumo: Insumo;
-
-  @Column({ type: "numeric" })
+  @Column({ type: "numeric", precision: 10, scale: 2 })
   quantidade: number;
 
   @Column({
@@ -28,11 +26,21 @@ export class RequisicaoEstoqueItem {
   })
   undEstoque: Unidade;
 
-  @Column({ type: "numeric" })
+  @Column({ type: "numeric", precision: 10, scale: 2 })
   valorUnitario: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @ManyToOne(() => Insumo, (insumo) => insumo.id)
+  @JoinColumn({ name: "insumos_id" })
+  insumo: Insumo;
 
   @ManyToOne(
     () => RequisicaoEstoque,

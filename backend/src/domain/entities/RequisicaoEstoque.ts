@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Armazem } from "./Armazem";
 import { Equipamento } from "./Equipamento";
 import { RequisicaoEstoqueItem } from "./RequisicaoEstoqueItem";
 import { Requisitante } from "./Requisitante";
@@ -21,11 +22,11 @@ export class RequisicaoEstoque {
   @Column({ type: "timestamp" })
   dataRequisicao: Date;
 
-  @Column({ type: "numeric" })
+  @Column({ type: "numeric", precision: 10, scale: 2 })
   valorTotal: number;
 
-  @Column({ type: "varchar", length: 255 })
-  ordemProducao: string;
+  @Column({ type: "varchar", length: 255, nullable: true })
+  ordemProducao: string | null;
 
   @Column({ type: "varchar", length: 255, nullable: true })
   obs: string | null;
@@ -46,6 +47,10 @@ export class RequisicaoEstoque {
   @ManyToOne(() => Equipamento, (equipamento) => equipamento.requisicoes)
   @JoinColumn({ name: "equipamentos_id" })
   equipamento: Equipamento;
+
+  @ManyToOne(() => Armazem)
+  @JoinColumn({ name: "armazem_id" })
+  armazem: Armazem;
 
   @OneToMany(
     () => RequisicaoEstoqueItem,

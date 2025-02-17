@@ -72,11 +72,14 @@ Content-Type: application/json
     "ordemProducao": "OP001",
     "valorTotal": 150.75,
     "obs": "Observação teste",
+    "armazem": {
+        "id": 1
+    },
     "requisitante": {
-        "id": 2
+        "id": 4
     },
     "equipamento": {
-        "id": 2
+        "id": 4
     },
     "itens": [
         {
@@ -85,43 +88,48 @@ Content-Type: application/json
             "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
-                "id": 3
+                "id": 4
             }
         }
     ]
 }
 
 ### Update requisicaoEstoque
-PUT {{baseUrl}}/requisicoes-estoque/14 HTTP/1.1
+PUT {{baseUrl}}/requisicoes-estoque/10 HTTP/1.1
 Content-Type: application/json
 
 {
-    "id": 14,
+    "id": 10,
     "dataRequisicao": "2024-02-12T10:00:00.000Z",
     "ordemProducao": "OP001-updated",
     "valorTotal": 200.50,
     "obs": "Observação atualizada",
-    "requisitante": {
+    "armazem": {
         "id": 1
     },
+    "requisitante": {
+        "id": 4
+    },
     "equipamento": {
-        "id": 1
+        "id": 4
     },
     "itens": [
         {
-            "id": 33,
-            "quantidade": 300,
+            "id": 13,
+            "quantidade": 100,
             "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
-                "id": 1
-            },
-            "id": 34,
-            "quantidade": 300,
+                "id": 4
+            }
+        },
+        {
+            "id": null,
+            "quantidade": 20,
             "undEstoque": "LITRO",
             "valorUnitario": 50.25,
             "insumo": {
-                "id": 1
+                "id": 5
             }
         }
     ]

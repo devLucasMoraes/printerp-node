@@ -5,10 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Categoria } from "./Categoria";
+import { Estoque } from "./Estoque";
+import { MovimentoEstoque } from "./MovimentoEstoque";
 import { Unidade } from "./Unidade";
 
 @Entity("insumos")
@@ -19,10 +22,10 @@ export class Insumo {
   @Column({ type: "varchar", length: 255 })
   descricao: string;
 
-  @Column({ type: "numeric" })
-  valorUntMed = 0;
+  @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
+  valorUntMed: number = 0;
 
-  @Column({ type: "boolean" })
+  @Column({ type: "boolean", default: false })
   valorUntMedAuto = false;
 
   @Column({
@@ -31,14 +34,8 @@ export class Insumo {
   })
   undEstoque: Unidade;
 
-  @Column({ type: "numeric" })
+  @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
   estoqueMinimo: number;
-
-  @Column({ type: "numeric" })
-  totalEntradas = 0;
-
-  @Column({ type: "numeric" })
-  totalSaidas = 0;
 
   @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
   @JoinColumn({ name: "categoria_id" })
@@ -53,22 +50,31 @@ export class Insumo {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @OneToMany(() => Estoque, (estoque) => estoque.insumo)
+  estoques: Estoque[];
+
+  @OneToMany(() => MovimentoEstoque, (movimento) => movimento.insumo)
+  movimentos: MovimentoEstoque[];
+
   constructor(data?: Partial<Insumo>) {
     if (data) {
       Object.assign(this, data);
     }
   }
 
-  public getSaldo() {
-    return this.totalEntradas - this.totalSaidas;
+  getSaldoTotal(): number {
+    return this.estoques.reduce(
+      (total, estoque) => total + estoque.quantidade,
+      0
+    );
   }
 
   public getValorTotal() {
-    var saldo = this.getSaldo();
+    var saldo = this.getSaldoTotal();
     return saldo * this.valorUntMed;
   }
 
-  public getAbaixoDoMinimo() {
-    return this.getSaldo() < 0 ? true : false;
+  estaAbaixoDoMinimo(): boolean {
+    return this.getSaldoTotal() < this.estoqueMinimo;
   }
 }

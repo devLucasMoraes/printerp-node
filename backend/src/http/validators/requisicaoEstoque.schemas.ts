@@ -33,10 +33,13 @@ export const requisicaoEstoqueCreateSchema = z.object({
   equipamento: z.object({
     id: z.number(),
   }),
+  armazem: z.object({
+    id: z.number(),
+  }),
   itens: z.array(requisicaoEstoqueItemCreateSchema),
 });
 
-export type RequisicaoEstoqueCreateDto = z.infer<
+export type CreateRequisicaoEstoqueDTO = z.infer<
   typeof requisicaoEstoqueCreateSchema
 >;
 
@@ -51,10 +54,13 @@ export const requisicaoEstoqueUpdateSchema = z.object({
   equipamento: z.object({
     id: z.number(),
   }),
+  armazem: z.object({
+    id: z.number(),
+  }),
   itens: z.array(requisicaoEstoqueItemUpdateSchema),
 });
 
-export type RequisicaoEstoqueUpdateDto = z.infer<
+export type UpdateRequisicaoEstoqueDTO = z.infer<
   typeof requisicaoEstoqueUpdateSchema
 >;
 

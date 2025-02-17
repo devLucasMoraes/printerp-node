@@ -103,10 +103,10 @@ describe("Insumo Routes", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("id", insumoId);
       expect(response.body).toHaveProperty("descricao", "Test Insumo");
-      expect(response.body).toHaveProperty("valorUntMed", "10.5");
+      expect(response.body).toHaveProperty("valorUntMed", "10.50");
       expect(response.body).toHaveProperty("valorUntMedAuto", false);
       expect(response.body).toHaveProperty("undEstoque", Unidade.KG);
-      expect(response.body).toHaveProperty("estoqueMinimo", "5");
+      expect(response.body).toHaveProperty("estoqueMinimo", "5.00");
     });
 
     it("should return 404 for non-existent insumo", async () => {
@@ -150,10 +150,10 @@ describe("Insumo Routes", () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("descricao", "New Insumo");
-      expect(response.body).toHaveProperty("valorUntMed", 15.75);
+      expect(response.body).toHaveProperty("valorUntMed", "15.75");
       expect(response.body).toHaveProperty("valorUntMedAuto", true);
       expect(response.body).toHaveProperty("undEstoque", Unidade.KG);
-      expect(response.body).toHaveProperty("estoqueMinimo", 10);
+      expect(response.body).toHaveProperty("estoqueMinimo", "10.00");
 
       // Cleanup
       if (response.body.id) {
