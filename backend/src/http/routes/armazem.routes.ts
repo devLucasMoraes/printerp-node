@@ -13,24 +13,24 @@ const armazemController = ArmazemControllerFactory.create();
 
 const armazemRoutes = Router();
 
-armazemRoutes.get("/armazem-all", isAuth, armazemController.list);
+armazemRoutes.get("/armazens-all", isAuth, armazemController.list);
 
 armazemRoutes.get(
-  "/armazem",
+  "/armazens",
   isAuth,
   validate({ query: armazemQuerySchema }),
   armazemController.listPaginated
 );
 
 armazemRoutes.post(
-  "/armazem",
+  "/armazens",
   isAuth,
   validate({ body: armazemCreateSchema }),
   armazemController.create
 );
 
 armazemRoutes.put(
-  "/armazem/:id",
+  "/armazens/:id",
   isAuth,
   validate({
     body: armazemUpdateSchema,
@@ -40,14 +40,14 @@ armazemRoutes.put(
 );
 
 armazemRoutes.get(
-  "/armazem/:id",
+  "/armazens/:id",
   isAuth,
   validate({ params: armazemParamsSchema }),
   armazemController.show
 );
 
 armazemRoutes.delete(
-  "/armazem/:id",
+  "/armazens/:id",
   isAuth,
   validate({ params: armazemParamsSchema }),
   armazemController.delete

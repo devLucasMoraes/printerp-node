@@ -45,15 +45,15 @@ describe("Armazem Routes", () => {
     await userRepository.delete(testUser.id);
   });
 
-  describe("GET /api/v1/armazem", () => {
+  describe("GET /api/v1/armazens", () => {
     it("should not get armazens without authentication", async () => {
-      const response = await request(app).get("/api/v1/armazem");
+      const response = await request(app).get("/api/v1/armazens");
       expect(response.status).toBe(401);
     });
 
     it("should get list of armazens with pagination", async () => {
       const response = await request(app)
-        .get("/api/v1/armazem")
+        .get("/api/v1/armazens")
         .set("Cookie", cookies)
         .query({ page: 1, size: 10 });
 
@@ -66,7 +66,7 @@ describe("Armazem Routes", () => {
 
     it("should get all armazens without pagination", async () => {
       const response = await request(app)
-        .get("/api/v1/armazem-all")
+        .get("/api/v1/armazens-all")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(200);
@@ -75,15 +75,15 @@ describe("Armazem Routes", () => {
     });
   });
 
-  describe("GET /api/v1/armazem/:id", () => {
+  describe("GET /api/v1/armazens/:id", () => {
     it("should not get armazem without authentication", async () => {
-      const response = await request(app).get(`/api/v1/armazem/${armazemId}`);
+      const response = await request(app).get(`/api/v1/armazens/${armazemId}`);
       expect(response.status).toBe(401);
     });
 
     it("should get armazem by id with valid authentication", async () => {
       const response = await request(app)
-        .get(`/api/v1/armazem/${armazemId}`)
+        .get(`/api/v1/armazens/${armazemId}`)
         .set("Cookie", cookies);
 
       expect(response.status).toBe(200);
@@ -94,7 +94,7 @@ describe("Armazem Routes", () => {
 
     it("should return 404 for non-existent armazem", async () => {
       const response = await request(app)
-        .get("/api/v1/armazem/9999")
+        .get("/api/v1/armazens/9999")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
@@ -102,9 +102,9 @@ describe("Armazem Routes", () => {
     });
   });
 
-  describe("POST /api/v1/armazem", () => {
+  describe("POST /api/v1/armazens", () => {
     it("should not create armazem without authentication", async () => {
-      const response = await request(app).post("/api/v1/armazem").send({
+      const response = await request(app).post("/api/v1/armazens").send({
         nome: "New Armazem",
         ativo: true,
       });
@@ -114,7 +114,7 @@ describe("Armazem Routes", () => {
 
     it("should create new armazem with valid data", async () => {
       const response = await request(app)
-        .post("/api/v1/armazem")
+        .post("/api/v1/armazens")
         .set("Cookie", cookies)
         .send({
           nome: "New Armazem",
@@ -133,7 +133,7 @@ describe("Armazem Routes", () => {
 
     it("should return 400 when nome already exists", async () => {
       const response = await request(app)
-        .post("/api/v1/armazem")
+        .post("/api/v1/armazens")
         .set("Cookie", cookies)
         .send({
           nome: "Test Armazem", // nome already exists
@@ -145,10 +145,10 @@ describe("Armazem Routes", () => {
     });
   });
 
-  describe("PUT /api/v1/armazem/:id", () => {
+  describe("PUT /api/v1/armazens/:id", () => {
     it("should update armazem successfully", async () => {
       const response = await request(app)
-        .put(`/api/v1/armazem/${armazemId}`)
+        .put(`/api/v1/armazens/${armazemId}`)
         .set("Cookie", cookies)
         .send({
           id: armazemId,
@@ -163,7 +163,7 @@ describe("Armazem Routes", () => {
 
     it("should return 404 when updating non-existent armazem", async () => {
       const response = await request(app)
-        .put("/api/v1/armazem/9999")
+        .put("/api/v1/armazens/9999")
         .set("Cookie", cookies)
         .send({
           id: 9999,
@@ -177,7 +177,7 @@ describe("Armazem Routes", () => {
 
     it("should return 400 when trying to change armazem id", async () => {
       const response = await request(app)
-        .put(`/api/v1/armazem/${armazemId}`)
+        .put(`/api/v1/armazens/${armazemId}`)
         .set("Cookie", cookies)
         .send({
           id: 9999, // Different from path parameter
@@ -202,7 +202,7 @@ describe("Armazem Routes", () => {
       );
 
       const response = await request(app)
-        .put(`/api/v1/armazem/${armazemId}`)
+        .put(`/api/v1/armazens/${armazemId}`)
         .set("Cookie", cookies)
         .send({
           id: armazemId,
@@ -233,7 +233,7 @@ describe("Armazem Routes", () => {
       await armazemRepository.softDelete(anotherArmazem.id);
 
       const response = await request(app)
-        .put(`/api/v1/armazem/${armazemId}`)
+        .put(`/api/v1/armazens/${armazemId}`)
         .set("Cookie", cookies)
         .send({
           id: armazemId,
@@ -249,10 +249,10 @@ describe("Armazem Routes", () => {
     });
   });
 
-  describe("DELETE /api/v1/armazem/:id", () => {
+  describe("DELETE /api/v1/armazens/:id", () => {
     it("should not delete armazem without authentication", async () => {
       const response = await request(app).delete(
-        `/api/v1/armazem/${armazemId}`
+        `/api/v1/armazens/${armazemId}`
       );
       expect(response.status).toBe(401);
     });
@@ -260,7 +260,7 @@ describe("Armazem Routes", () => {
     it("should delete armazem successfully", async () => {
       // First create an armazem to delete
       const createResponse = await request(app)
-        .post("/api/v1/armazem")
+        .post("/api/v1/armazens")
         .set("Cookie", cookies)
         .send({
           nome: "Armazem to Delete",
@@ -268,14 +268,14 @@ describe("Armazem Routes", () => {
         });
 
       const deleteResponse = await request(app)
-        .delete(`/api/v1/armazem/${createResponse.body.id}`)
+        .delete(`/api/v1/armazens/${createResponse.body.id}`)
         .set("Cookie", cookies);
 
       expect(deleteResponse.status).toBe(204);
 
       // Verify deletion
       const getResponse = await request(app)
-        .get(`/api/v1/armazem/${createResponse.body.id}`)
+        .get(`/api/v1/armazens/${createResponse.body.id}`)
         .set("Cookie", cookies);
 
       expect(getResponse.status).toBe(404);
@@ -283,7 +283,7 @@ describe("Armazem Routes", () => {
 
     it("should return 404 when deleting non-existent armazem", async () => {
       const response = await request(app)
-        .delete("/api/v1/armazem/9999")
+        .delete("/api/v1/armazens/9999")
         .set("Cookie", cookies);
 
       expect(response.status).toBe(400);
