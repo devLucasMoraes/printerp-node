@@ -28,6 +28,9 @@ export class Insumo {
   @Column({ type: "boolean", default: false })
   valorUntMedAuto = false;
 
+  @Column({ type: "boolean", default: false })
+  permiteEstoqueNegativo = false;
+
   @Column({
     type: "enum",
     enum: Unidade,
