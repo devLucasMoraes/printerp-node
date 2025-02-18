@@ -1,4 +1,5 @@
 import { Router } from "express";
+import armazemRoutes from "./armazem.routes";
 import authRoutes from "./auth.routes";
 import categoriaRoutes from "./categoria.routes";
 import equipamentoRoutes from "./equipamento.routes";
@@ -16,5 +17,6 @@ routes.use("/api/v1", requisitanteRoutes);
 routes.use("/api/v1", equipamentoRoutes);
 routes.use("/api/v1", insumoRoutes);
 routes.use("/api/v1", requisicaoEstoqueRoutes);
+routes.use("/api/v1", armazemRoutes);
 
 export default routes;
