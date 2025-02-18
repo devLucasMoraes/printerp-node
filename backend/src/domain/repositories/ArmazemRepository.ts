@@ -11,4 +11,15 @@ export class ArmazemRepository extends BaseRepository<Armazem> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Armazem>> {
     return this.paginate(pageRequest, {}, {});
   }
+
+  async findOneWithRelations(id: number): Promise<Armazem | null> {
+    return await this.findOne({
+      where: { id },
+      relations: {
+        estoques: true,
+        movimentosSaida: true,
+        movimentosEntrada: true,
+      },
+    });
+  }
 }
