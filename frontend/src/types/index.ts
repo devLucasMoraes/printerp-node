@@ -65,6 +65,12 @@ export type RequisicaoEstoqueDto = {
   updatedAt: Date;
 };
 
+export type ArmazemDto = {
+  id: number;
+  nome: string;
+  ativo: boolean;
+};
+
 export type Setting = {
   key: string;
   value: string;

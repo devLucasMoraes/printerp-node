@@ -1,5 +1,6 @@
 import {
   IconBox,
+  IconBuildingWarehouse,
   IconCategoryPlus,
   IconChecklist,
   IconLayoutDashboard,
@@ -22,6 +23,12 @@ const Menuitems = [
     title: "Dashboard",
     icon: IconLayoutDashboard,
     href: "/dashboard",
+  },
+  {
+    id: uuidv4(),
+    title: "Armazéns",
+    icon: IconBuildingWarehouse,
+    href: "/armazens",
   },
   {
     id: uuidv4(),

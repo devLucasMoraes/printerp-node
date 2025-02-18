@@ -27,6 +27,7 @@ const Insumos = Loadable(lazy(() => import("../page/insumos/Insumos")));
 const RequisicoesEstoque = Loadable(
   lazy(() => import("../page/requisicoes-estoque/RequisicoesEstoque"))
 );
+const Armazens = Loadable(lazy(() => import("../page/armazens/Armazens")));
 
 /* ****Public Pages***** */
 const Register = Loadable(
@@ -58,6 +59,7 @@ const Router = [
             exact: true,
             element: <RequisicoesEstoque />,
           },
+          { path: "/armazens", exact: true, element: <Armazens /> },
         ],
       },
     ],
