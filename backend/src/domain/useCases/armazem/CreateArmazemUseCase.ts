@@ -9,13 +9,13 @@ export class CreateArmazemUseCase {
 
   async execute(dto: CreateArmazemDTO): Promise<Armazem> {
     return await this.armazemRepository.manager.transaction(async (manager) => {
-      await this.validacao(dto, manager);
-      const armazem = await this.criarArmazem(dto, manager);
+      await this.validate(dto, manager);
+      const armazem = await this.createArmazem(dto, manager);
       return armazem;
     });
   }
 
-  private async validacao(
+  private async validate(
     dto: CreateArmazemDTO,
     manager: EntityManager
   ): Promise<void> {
@@ -35,7 +35,7 @@ export class CreateArmazemUseCase {
     }
   }
 
-  private async criarArmazem(
+  private async createArmazem(
     dto: CreateArmazemDTO,
     manager: EntityManager
   ): Promise<Armazem> {

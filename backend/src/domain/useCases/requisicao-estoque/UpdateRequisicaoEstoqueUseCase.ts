@@ -21,14 +21,14 @@ export class UpdateRequisicaoEstoqueUseCase {
   ): Promise<RequisicaoEstoque> {
     return await this.requisicaoEstoqueRepository.manager.transaction(
       async (manager) => {
-        const requisicaoExistente = await this.buscarRequisicaoCompleta(
+        const requisicaoToUpdate = await this.findRequisicaoToUpdate(
           id,
           manager
         );
-        await this.validarAtualizacao(requisicaoExistente, dto, manager);
-        await this.reverterMovimentacoes(requisicaoExistente, manager);
+        await this.validate(requisicaoToUpdate, dto, manager);
+        await this.reverterMovimentacoes(requisicaoToUpdate, manager);
         const requisicaoAtualizada = await this.atualizarRequisicao(
-          requisicaoExistente,
+          requisicaoToUpdate,
           dto,
           manager
         );
@@ -39,7 +39,7 @@ export class UpdateRequisicaoEstoqueUseCase {
     );
   }
 
-  private async buscarRequisicaoCompleta(
+  private async findRequisicaoToUpdate(
     id: number,
     manager: EntityManager
   ): Promise<RequisicaoEstoque> {
@@ -62,7 +62,7 @@ export class UpdateRequisicaoEstoqueUseCase {
     return requisicao;
   }
 
-  private async validarAtualizacao(
+  private async validate(
     requisicaoExistente: RequisicaoEstoque,
     requisicaoDTO: UpdateRequisicaoEstoqueDTO,
     manager: EntityManager

@@ -1,58 +1,59 @@
 import { EntityManager } from "typeorm";
 import { CreateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
-import { NotFoundError } from "../../../shared/errors";
-import { Estoque } from "../../entities/Estoque";
-import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
+import { BadRequestError } from "../../../shared/errors";
+import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { MovimentoEstoqueRepository } from "../../repositories/MovimentoEstoqueRepository";
 import { RequisicaoEstoqueRepository } from "../../repositories/RequisicaoEstoqueRepository";
+import { RegistrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
 
 export class CreateRequisicaoEstoqueUseCase {
   constructor(
     private readonly requisicaoEstoqueRepository: RequisicaoEstoqueRepository,
-    private readonly movimentoEstoqueRepository: MovimentoEstoqueRepository
+    private readonly registrarSaidaEstoqueUseCase: RegistrarSaidaEstoqueUseCase
   ) {}
 
   async execute(dto: CreateRequisicaoEstoqueDTO): Promise<RequisicaoEstoque> {
     return await this.requisicaoEstoqueRepository.manager.transaction(
       async (manager) => {
-        await this.validarDisponibilidadeEstoque(dto, manager);
-        const requisicao = await this.criarRequisicao(dto, manager);
+        await this.validate(dto, manager);
+        const requisicao = await this.createRequisicao(dto, manager);
         await this.processarMovimentacoes(requisicao, manager);
         return requisicao;
       }
     );
   }
 
-  private async validarDisponibilidadeEstoque(
+  private async validate(
     dto: CreateRequisicaoEstoqueDTO,
     manager: EntityManager
   ): Promise<void> {
+    if (dto.itens.length === 0) {
+      throw new BadRequestError(
+        "Requisicao Estoque deve ter pelo menos um item"
+      );
+    }
+
     for (const item of dto.itens) {
-      const estoque = await manager.getRepository(Estoque).findOne({
-        where: {
-          insumo: { id: item.insumo.id },
-          armazem: { id: dto.armazem.id },
-        },
+      const insumo = await manager.findOne(Insumo, {
+        where: { id: item.insumo.id },
       });
-
-      if (!estoque) {
-        throw new NotFoundError(
-          `Insumo ${item.insumo.id} não encontrado no armazém ${dto.armazem.id}`
-        );
+      if (!insumo) {
+        throw new BadRequestError("Insumo nao encontrado");
       }
 
-      /*
-      if (!estoque.possuiQuantidadeSuficiente(item.quantidade)) {
+      if (item.quantidade <= 0) {
+        throw new BadRequestError("Quantidade deve ser maior que zero");
+      }
+
+      if (item.undEstoque !== insumo.undEstoque) {
         throw new BadRequestError(
-          `Quantidade insuficiente do insumo ${item.insumo.id} no armazém ${dto.armazem.id}`
+          "Unidade deve ser igual a unidade do estoque"
         );
       }
-      */
     }
   }
 
-  private async criarRequisicao(
+  private async createRequisicao(
     dto: CreateRequisicaoEstoqueDTO,
     manager: EntityManager
   ): Promise<RequisicaoEstoque> {
@@ -82,37 +83,18 @@ export class CreateRequisicaoEstoqueUseCase {
     manager: EntityManager
   ): Promise<void> {
     for (const item of requisicao.itens) {
-      const movimentoToCreate = this.movimentoEstoqueRepository.create({
-        tipo: "SAIDA",
-        data: new Date(),
-        insumo: item.insumo,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.undEstoque,
-        armazemOrigem: requisicao.armazem,
-        documentoOrigem: requisicao.id.toString(),
-        tipoDocumento: "REQUISICAO",
-        regularizado: true,
-      });
-
-      await manager.save(MovimentoEstoque, movimentoToCreate);
-
-      // Atualizar estoque
-      const estoque = await manager.findOne(Estoque, {
-        where: {
-          insumo: { id: item.insumo.id },
-          armazem: { id: requisicao.armazem.id },
+      await this.registrarSaidaEstoqueUseCase.execute(
+        {
+          insumo: item.insumo,
+          armazem: requisicao.armazem,
+          quantidade: item.quantidade,
+          valorUnitario: item.valorUnitario,
+          undEstoque: item.undEstoque,
+          documentoOrigem: requisicao.id.toString(),
+          tipoDocumento: "REQUISICAO",
         },
-      });
-
-      if (!estoque) {
-        throw new NotFoundError(
-          `Insumo ${item.insumo.id} não encontrado no armazém ${requisicao.armazem.id}`
-        );
-      }
-
-      estoque.quantidade -= item.quantidade;
-      await manager.save(Estoque, estoque);
+        manager
+      );
     }
   }
 }
