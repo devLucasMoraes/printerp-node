@@ -1,8 +1,10 @@
 import { EntityManager } from "typeorm";
 import { CreateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
 import { BadRequestError } from "../../../shared/errors";
+import { Equipamento } from "../../entities/Equipamento";
 import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
+import { Requisitante } from "../../entities/Requisitante";
 import { RequisicaoEstoqueRepository } from "../../repositories/RequisicaoEstoqueRepository";
 import { RegistrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
 
@@ -27,6 +29,22 @@ export class CreateRequisicaoEstoqueUseCase {
     dto: CreateRequisicaoEstoqueDTO,
     manager: EntityManager
   ): Promise<void> {
+    const requisitante = await manager.findOne(Requisitante, {
+      where: { id: dto.requisitante.id },
+    });
+
+    if (!requisitante) {
+      throw new BadRequestError("Requisitante nao encontrado");
+    }
+
+    const equipamento = await manager.findOne(Equipamento, {
+      where: { id: dto.equipamento.id },
+    });
+
+    if (!equipamento) {
+      throw new BadRequestError("Equipamento nao encontrado");
+    }
+
     if (dto.itens.length === 0) {
       throw new BadRequestError(
         "Requisicao Estoque deve ter pelo menos um item"

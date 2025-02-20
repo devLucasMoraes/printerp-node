@@ -22,6 +22,7 @@ export class RegistrarEntradaEstoqueUseCase {
       undEstoque: Unidade;
       tipoDocumento: string;
       documentoOrigem: string;
+      observacao: string;
     },
     manager: EntityManager
   ): Promise<void> {
@@ -33,6 +34,7 @@ export class RegistrarEntradaEstoqueUseCase {
       undEstoque,
       tipoDocumento,
       documentoOrigem,
+      observacao,
     } = params;
 
     const estoque = await this.inicializarEstoqueUseCase.execute(
@@ -52,6 +54,7 @@ export class RegistrarEntradaEstoqueUseCase {
       documentoOrigem,
       tipoDocumento,
       regularizado: true,
+      observacao,
     });
 
     await manager.save(MovimentoEstoque, movimento);

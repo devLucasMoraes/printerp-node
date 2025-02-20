@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../app";
+import { Armazem } from "../../../domain/entities/Armazem";
 import { Categoria } from "../../../domain/entities/Categoria";
 import { Equipamento } from "../../../domain/entities/Equipamento";
 import { Insumo } from "../../../domain/entities/Insumo";
@@ -9,6 +10,7 @@ import { Requisitante } from "../../../domain/entities/Requisitante";
 import { Unidade } from "../../../domain/entities/Unidade";
 import { User } from "../../../domain/entities/User";
 import {
+  armazemRepository,
   categoriaRepository,
   equipamentoRepository,
   insumoRepository,
@@ -26,6 +28,7 @@ describe("RequisicaoEstoque Routes", () => {
   let testCategoria: Categoria;
   let testRequisicaoEstoque: RequisicaoEstoque;
   let testRequisicaoEstoqueItem: RequisicaoEstoqueItem;
+  let testArmazem: Armazem;
 
   beforeAll(async () => {
     // Criar na ordem correta respeitando as dependências
@@ -74,7 +77,14 @@ describe("RequisicaoEstoque Routes", () => {
     await equipamentoRepository.save(testEquipamento);
     expect(testEquipamento.id).toBeDefined();
 
-    // 6. Fazer login e obter cookies
+    // 6. Criar armazem
+    testArmazem = armazemRepository.create({
+      nome: "Test Armazem",
+    });
+    await armazemRepository.save(testArmazem);
+    expect(testArmazem.id).toBeDefined();
+
+    // 7. Fazer login e obter cookies
     const loginResponse = await request(app)
       .post("/api/v1/auth/login")
       .send({ email: "test@example.com", password: "123456" });
@@ -84,7 +94,7 @@ describe("RequisicaoEstoque Routes", () => {
     cookies = Array.isArray(setCookies) ? setCookies : [setCookies as string];
     expect(cookies.length).toBeGreaterThan(0);
 
-    // 7. Criar requisição de estoque inicial com item
+    // 8. Criar requisição de estoque inicial com item
     testRequisicaoEstoque = requisicaoEstoqueRepository.create({
       dataRequisicao: new Date(),
       ordemProducao: "OP001",
@@ -92,6 +102,7 @@ describe("RequisicaoEstoque Routes", () => {
       obs: "Test observation",
       requisitante: testRequisitante,
       equipamento: testEquipamento,
+      armazem: testArmazem,
       itens: [
         {
           quantidade: 2,
@@ -137,6 +148,10 @@ describe("RequisicaoEstoque Routes", () => {
       await equipamentoRepository.softDelete(testEquipamento.id);
     }
 
+    if (testArmazem?.id) {
+      await armazemRepository.softDelete(testArmazem.id);
+    }
+
     if (testUser?.id) {
       await userRepository.softDelete(testUser.id);
     }
@@ -153,6 +168,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "New requisicao",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: null,
@@ -178,6 +194,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "New requisicao",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: testRequisicaoEstoqueItem.id, // Tentando usar ID existente
@@ -204,6 +221,7 @@ describe("RequisicaoEstoque Routes", () => {
         obs: "New requisicao",
         requisitante: { id: testRequisitante.id },
         equipamento: { id: testEquipamento.id },
+        armazem: { id: testArmazem.id },
         itens: [
           {
             id: null,
@@ -224,6 +242,7 @@ describe("RequisicaoEstoque Routes", () => {
       expect(response.body.id).toBeDefined();
       expect(response.body.requisitante.id).toBe(testRequisitante.id);
       expect(response.body.equipamento.id).toBe(testEquipamento.id);
+      expect(response.body.armazem.id).toBe(testArmazem.id);
       expect(response.body.itens).toHaveLength(1);
       expect(response.body.itens[0].id).toBeDefined();
       expect(response.body.itens[0].id).not.toBe(testRequisicaoEstoqueItem.id);
@@ -267,6 +286,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "Aux requisicao",
           requisitante: testRequisitante,
           equipamento: testEquipamento,
+          armazem: { id: testArmazem.id },
           itens: [
             {
               quantidade: 1,
@@ -297,6 +317,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "Updated requisicao",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: testRequisicaoEstoqueItem.id,
@@ -319,6 +340,7 @@ describe("RequisicaoEstoque Routes", () => {
         obs: "Updated requisicao",
         requisitante: { id: testRequisitante.id },
         equipamento: { id: testEquipamento.id },
+        armazem: { id: testArmazem.id },
         itens: [
           {
             id: testRequisicaoEstoqueItem.id,
@@ -351,6 +373,7 @@ describe("RequisicaoEstoque Routes", () => {
         obs: "Updated with new item",
         requisitante: { id: testRequisitante.id },
         equipamento: { id: testEquipamento.id },
+        armazem: { id: testArmazem.id },
         itens: [
           {
             id: testRequisicaoEstoqueItem.id,
@@ -394,6 +417,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "Two items",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: null,
@@ -428,6 +452,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "One item removed",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: firstItemId,
@@ -455,6 +480,7 @@ describe("RequisicaoEstoque Routes", () => {
         obs: "Try to use item from another requisicao",
         requisitante: { id: testRequisitante.id },
         equipamento: { id: testEquipamento.id },
+        armazem: { id: testArmazem.id },
         itens: [
           {
             id: auxRequisicao.itens[0].id, // Item de outra requisição
@@ -474,7 +500,7 @@ describe("RequisicaoEstoque Routes", () => {
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
         "message",
-        "Cannot update item from another requisicao"
+        "Não é possível atualizar o item de outra requisição"
       );
     });
 
@@ -501,6 +527,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "Non-existent requisicao",
           requisitante: { id: testRequisitante.id },
           equipamento: { id: testEquipamento.id },
+          armazem: { id: testArmazem.id },
           itens: [
             {
               id: null,
@@ -534,6 +561,7 @@ describe("RequisicaoEstoque Routes", () => {
             obs: `Requisicao page ${i}`,
             requisitante: testRequisitante,
             equipamento: testEquipamento,
+            armazem: { id: testArmazem.id },
             itens: [
               {
                 quantidade: i,
@@ -703,6 +731,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "To be deleted",
           requisitante: testRequisitante,
           equipamento: testEquipamento,
+          armazem: { id: testArmazem.id },
           itens: [
             {
               quantidade: 1,
@@ -746,6 +775,7 @@ describe("RequisicaoEstoque Routes", () => {
           obs: "To be deleted",
           requisitante: testRequisitante,
           equipamento: testEquipamento,
+          armazem: { id: testArmazem.id },
           itens: [
             {
               quantidade: 3,

@@ -1,6 +1,9 @@
 import { EstoqueRepository } from "../../domain/repositories/EstoqueRepository";
 import { MovimentoEstoqueRepository } from "../../domain/repositories/MovimentoEstoqueRepository";
 import { RequisicaoEstoqueRepository } from "../../domain/repositories/RequisicaoEstoqueRepository";
+import { InicializarEstoqueUseCase } from "../../domain/useCases/estoque/InicializarEstoqueUseCase";
+import { RegistrarEntradaEstoqueUseCase } from "../../domain/useCases/estoque/RegistrarEntradaEstoqueUseCase";
+import { RegistrarSaidaEstoqueUseCase } from "../../domain/useCases/estoque/RegistrarSaidaEstoqueUseCase";
 import { CreateRequisicaoEstoqueUseCase } from "../../domain/useCases/requisicao-estoque/CreateRequisicaoEstoqueUseCase";
 import { DeleteRequisicaoEstoqueUseCase } from "../../domain/useCases/requisicao-estoque/DeleteRequisicaoEstoqueUseCase";
 import { GetAllRequisicaoEstoqueUseCase } from "../../domain/useCases/requisicao-estoque/GetAllRequisicaoEstoqueUseCase";
@@ -11,50 +14,87 @@ import { RequisicaoEstoqueServiceImpl } from "../../services/requisicao-estoque/
 import { RequisicaoEstoqueController } from "../controllers/RequisicaoEstoqueController";
 
 export class RequisicaoEstoqueControllerFactory {
-  // Repositórios
-  private static repositories = {
-    requisicaoEstoque: new RequisicaoEstoqueRepository(),
-    estoque: new EstoqueRepository(),
-    movimentoEstoque: new MovimentoEstoqueRepository(),
-  };
+  private static createRepositories() {
+    const estoqueRepository = new EstoqueRepository();
+    const movimentoEstoqueRepository = new MovimentoEstoqueRepository();
+    const requisicaoEstoqueRepository = new RequisicaoEstoqueRepository();
 
-  // Cria e retorna uma instância configurada do controller
-  static create(): RequisicaoEstoqueController {
-    // Use cases
-    const useCases = {
-      create: new CreateRequisicaoEstoqueUseCase(
-        this.repositories.requisicaoEstoque,
-        this.repositories.movimentoEstoque
-      ),
-      update: new UpdateRequisicaoEstoqueUseCase(
-        this.repositories.requisicaoEstoque,
-        this.repositories.estoque,
-        this.repositories.movimentoEstoque
-      ),
-      delete: new DeleteRequisicaoEstoqueUseCase(
-        this.repositories.requisicaoEstoque,
-        this.repositories.movimentoEstoque
-      ),
-      get: new GetRequisicaoEstoqueUseCase(this.repositories.requisicaoEstoque),
-      getAll: new GetAllRequisicaoEstoqueUseCase(
-        this.repositories.requisicaoEstoque
-      ),
-      list: new ListRequisicaoEstoqueUseCase(
-        this.repositories.requisicaoEstoque
-      ),
+    return {
+      estoqueRepository,
+      movimentoEstoqueRepository,
+      requisicaoEstoqueRepository,
     };
+  }
 
-    // Service
-    const service = new RequisicaoEstoqueServiceImpl(
-      useCases.create,
-      useCases.update,
-      useCases.delete,
-      useCases.get,
-      useCases.getAll,
-      useCases.list
+  private static createEstoqueUseCases(
+    repos: ReturnType<
+      typeof RequisicaoEstoqueControllerFactory.createRepositories
+    >
+  ) {
+    const inicializarEstoque = new InicializarEstoqueUseCase(
+      repos.estoqueRepository
     );
 
-    // Controller
+    return {
+      inicializarEstoque,
+      registrarEntrada: new RegistrarEntradaEstoqueUseCase(
+        repos.movimentoEstoqueRepository,
+        inicializarEstoque
+      ),
+      registrarSaida: new RegistrarSaidaEstoqueUseCase(
+        repos.movimentoEstoqueRepository,
+        inicializarEstoque
+      ),
+    };
+  }
+
+  private static createRequisicaoUseCases(
+    repos: ReturnType<
+      typeof RequisicaoEstoqueControllerFactory.createRepositories
+    >,
+    estoqueUseCases: ReturnType<
+      typeof RequisicaoEstoqueControllerFactory.createEstoqueUseCases
+    >
+  ) {
+    return {
+      create: new CreateRequisicaoEstoqueUseCase(
+        repos.requisicaoEstoqueRepository,
+        estoqueUseCases.registrarSaida
+      ),
+      update: new UpdateRequisicaoEstoqueUseCase(
+        repos.requisicaoEstoqueRepository,
+        estoqueUseCases.registrarEntrada,
+        estoqueUseCases.registrarSaida
+      ),
+      delete: new DeleteRequisicaoEstoqueUseCase(
+        repos.requisicaoEstoqueRepository,
+        estoqueUseCases.registrarEntrada
+      ),
+      get: new GetRequisicaoEstoqueUseCase(repos.requisicaoEstoqueRepository),
+      getAll: new GetAllRequisicaoEstoqueUseCase(
+        repos.requisicaoEstoqueRepository
+      ),
+      list: new ListRequisicaoEstoqueUseCase(repos.requisicaoEstoqueRepository),
+    };
+  }
+
+  static create(): RequisicaoEstoqueController {
+    const repositories = this.createRepositories();
+    const estoqueUseCases = this.createEstoqueUseCases(repositories);
+    const requisicaoUseCases = this.createRequisicaoUseCases(
+      repositories,
+      estoqueUseCases
+    );
+
+    const service = new RequisicaoEstoqueServiceImpl(
+      requisicaoUseCases.create,
+      requisicaoUseCases.update,
+      requisicaoUseCases.delete,
+      requisicaoUseCases.get,
+      requisicaoUseCases.getAll,
+      requisicaoUseCases.list
+    );
+
     return new RequisicaoEstoqueController(service);
   }
 }
