@@ -72,6 +72,15 @@ export type ArmazemDto = {
   ativo: boolean;
 };
 
+export type EstoqueDto = {
+  id: number;
+  quantidade: number;
+  armazem: ArmazemDto;
+  insumo: InsumoDto;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;

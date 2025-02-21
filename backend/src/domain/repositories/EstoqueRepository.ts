@@ -9,6 +9,13 @@ export class EstoqueRepository extends BaseRepository<Estoque> {
   }
 
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Estoque>> {
-    return this.paginate(pageRequest, {}, {});
+    return this.paginate(
+      pageRequest,
+      {},
+      {
+        armazem: true,
+        insumo: true,
+      }
+    );
   }
 }

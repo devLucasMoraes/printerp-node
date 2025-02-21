@@ -3,11 +3,9 @@ import { Page, PageRequest } from "../../repositories/BaseRepository";
 import { EstoqueRepository } from "../../repositories/EstoqueRepository";
 
 export class ListEstoqueUseCase {
-  constructor(
-    private readonly requisicaoEstoqueRepository: EstoqueRepository
-  ) {}
+  constructor(private readonly estoqueRepository: EstoqueRepository) {}
 
   async execute(pageRequest?: PageRequest): Promise<Page<Estoque>> {
-    return await this.requisicaoEstoqueRepository.findAllPaginated(pageRequest);
+    return await this.estoqueRepository.findAllPaginated(pageRequest);
   }
 }

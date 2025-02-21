@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { unidades } from "../../../constants";
@@ -49,6 +50,8 @@ export const RequisicaoEstoqueModal = ({
   requisicaoEstoque,
 }: RequisicaoEstoqueModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
+
+  const queryClient = useQueryClient();
 
   const schema =
     requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE"
@@ -167,6 +170,7 @@ export const RequisicaoEstoqueModal = ({
           onSuccess: () => {
             onClose();
             reset();
+            queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
             showAlert("Requisicao atualizada com sucesso", "success");
           },
           onError: (error) => {
@@ -180,6 +184,8 @@ export const RequisicaoEstoqueModal = ({
         onSuccess: () => {
           onClose();
           reset();
+          queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
+
           showAlert("Requisicao criada com sucesso", "success");
         },
         onError: (error) => {
@@ -250,6 +256,7 @@ export const RequisicaoEstoqueModal = ({
                       ),
                     },
                   }}
+                  disabled
                   error={!!errors.valorTotal}
                   helperText={errors.valorTotal?.message}
                   value={field.value ?? ""}
@@ -503,6 +510,7 @@ export const RequisicaoEstoqueModal = ({
                                     errors.itens?.[index]?.valorUnitario
                                       ?.message
                                   }
+                                  disabled
                                   fullWidth
                                   size="small"
                                   slotProps={{

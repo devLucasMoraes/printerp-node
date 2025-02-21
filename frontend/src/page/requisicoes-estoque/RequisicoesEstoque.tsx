@@ -1,6 +1,7 @@
 import { Button, IconButton } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
@@ -21,6 +22,7 @@ const RequisicoesEstoque = () => {
     pageSize: 10,
   });
 
+  const queryClient = useQueryClient();
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -37,6 +39,7 @@ const RequisicoesEstoque = () => {
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
         showAlert("Requisição deletada com sucesso", "success");
       },
       onError: (error) => {

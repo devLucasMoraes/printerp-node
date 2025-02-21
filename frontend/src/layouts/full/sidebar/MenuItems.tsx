@@ -4,6 +4,7 @@ import {
   IconCategoryPlus,
   IconChecklist,
   IconLayoutDashboard,
+  IconPackages,
   IconPrinter,
   IconSettings,
   IconUsers,
@@ -28,6 +29,12 @@ const Menuitems = [
     title: "Armazéns",
     icon: IconBuildingWarehouse,
     href: "/armazens",
+  },
+  {
+    id: uuidv4(),
+    title: "Estoques",
+    icon: IconPackages,
+    href: "/estoques",
   },
   {
     id: uuidv4(),
