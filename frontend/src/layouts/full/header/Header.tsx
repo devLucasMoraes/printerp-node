@@ -2,7 +2,6 @@ import {
   AppBar,
   Badge,
   Box,
-  Button,
   IconButton,
   Stack,
   Toolbar,
@@ -66,14 +65,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           <ThemeToggle />
-          <Button
-            variant="contained"
-            color="primary"
-            target="_blank"
-            href="https://adminmart.com/product/modernize-react-mui-dashboard-template/"
-          >
-            Upgrade to Pro
-          </Button>
+
           <Profile />
         </Stack>
       </ToolbarStyled>

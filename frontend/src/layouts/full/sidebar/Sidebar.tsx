@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import Logo from "../shared/logo/Logo";
 import SidebarItems from "./SidebarItems";
-import { Upgrade } from "./Updrade";
 
 // Sidebar width constant
 const SIDEBAR_WIDTH = 270;
@@ -73,11 +72,6 @@ const Sidebar = ({
             <ScrollableBox>
               <SidebarItems />
             </ScrollableBox>
-
-            {/* Upgrade section */}
-            <BorderBox>
-              <Upgrade />
-            </BorderBox>
           </Box>
         </StyledDrawer>
       </Box>
@@ -105,8 +99,6 @@ const Sidebar = ({
           <SidebarItems />
         </ScrollableBox>
       )}
-      {/* Mobile upgrade section */}
-      <Upgrade />
     </StyledDrawer>
   );
 };

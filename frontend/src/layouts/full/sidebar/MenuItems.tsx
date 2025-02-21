@@ -6,7 +6,6 @@ import {
   IconLayoutDashboard,
   IconPrinter,
   IconSettings,
-  IconStack2,
   IconUsers,
   IconUserUp,
 } from "@tabler/icons-react";
@@ -69,12 +68,6 @@ const Menuitems = [
     title: "Usuários",
     icon: IconUsers,
     href: "/users",
-  },
-  {
-    id: uuidv4(),
-    title: "Filas",
-    icon: IconStack2,
-    href: "/queues",
   },
   {
     id: uuidv4(),
