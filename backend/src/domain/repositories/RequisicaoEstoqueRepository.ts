@@ -15,6 +15,7 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
       pageRequest,
       {},
       {
+        armazem: true,
         requisitante: true,
         equipamento: true,
         itens: {
@@ -28,6 +29,7 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
     return await this.findOne({
       where: { id },
       relations: {
+        armazem: true,
         requisitante: true,
         equipamento: true,
         itens: {

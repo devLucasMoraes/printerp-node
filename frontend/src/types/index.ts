@@ -54,6 +54,7 @@ export type RequisicaoEstoqueDto = {
   valorTotal: number;
   requisitante: RequisitanteDto;
   equipamento: EquipamentoDto;
+  armazem: ArmazemDto;
   itens: {
     id: number;
     quantidade: number;

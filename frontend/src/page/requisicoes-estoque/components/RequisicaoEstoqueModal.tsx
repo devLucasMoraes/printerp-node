@@ -29,6 +29,7 @@ import {
 } from "../../../schemas/requisicaoEstoque.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto, RequisicaoEstoqueDto } from "../../../types";
+import { ArmazemAutoComplete } from "./ArmazemAutoComplete";
 import { EquipamentoAutoComplete } from "./EquipamentoAutoComplete";
 import { InsumoAutoComplete } from "./InsumoAutoComplete";
 import { RequisitanteAutoComplete } from "./RequisitanteAutoComplete";
@@ -74,6 +75,7 @@ export const RequisicaoEstoqueModal = ({
       obs: "",
       equipamento: null as any,
       requisitante: null as any,
+      armazem: null as any,
       valorTotal: 0,
       itens: [],
     },
@@ -110,6 +112,7 @@ export const RequisicaoEstoqueModal = ({
         obs: requisicaoEstoque.data.obs,
         equipamento: requisicaoEstoque.data.equipamento,
         requisitante: requisicaoEstoque.data.requisitante,
+        armazem: requisicaoEstoque.data.armazem,
         valorTotal: Number(requisicaoEstoque.data.valorTotal),
         itens: requisicaoEstoque.data.itens.map((item) => ({
           id: item.id,
@@ -127,6 +130,7 @@ export const RequisicaoEstoqueModal = ({
         obs: requisicaoEstoque.data.obs,
         equipamento: requisicaoEstoque.data.equipamento,
         requisitante: requisicaoEstoque.data.requisitante,
+        armazem: requisicaoEstoque.data.armazem,
         valorTotal: Number(requisicaoEstoque.data.valorTotal),
         itens: requisicaoEstoque.data.itens.map((item) => ({
           id: null as any,
@@ -144,6 +148,7 @@ export const RequisicaoEstoqueModal = ({
         obs: "",
         equipamento: null as any,
         requisitante: null as any,
+        armazem: null as any,
         valorTotal: 0,
         itens: [],
       });
@@ -253,6 +258,16 @@ export const RequisicaoEstoqueModal = ({
                     field.onChange(value === "" ? null : Number(value));
                   }}
                 />
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={4}>
+            <Controller
+              name="armazem"
+              control={control}
+              render={({ field }) => (
+                <ArmazemAutoComplete field={field} error={errors.armazem} />
               )}
             />
           </Grid2>
