@@ -2,6 +2,7 @@ import {
   AppBar,
   Badge,
   Box,
+  Chip,
   IconButton,
   Stack,
   Toolbar,
@@ -10,6 +11,9 @@ import {
 
 // components
 import { IconBellRinging, IconMenu } from "@tabler/icons-react";
+import { useEffect } from "react";
+import { useSocket } from "../../../hooks/useSocket";
+import { useAlertStore } from "../../../stores/useAlertStore";
 import ThemeToggle from "../shared/ThemeToggle";
 import Profile from "./Profile";
 
@@ -33,6 +37,17 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
     width: "100%",
     color: theme.palette.text.secondary,
   }));
+
+  const { isConnected, emit, subscribe } = useSocket();
+  const showAlert = useAlertStore((state) => state.showAlert);
+
+  useEffect(() => {
+    const unsubscribe = subscribe("someEvent", (data) => {
+      showAlert(data.message, "info");
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <AppBarStyled position="sticky" color="default">
@@ -64,8 +79,11 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
+          <Chip
+            label={isConnected ? "Connected" : "Disconnected"}
+            color={isConnected ? "success" : "error"}
+          />
           <ThemeToggle />
-
           <Profile />
         </Stack>
       </ToolbarStyled>

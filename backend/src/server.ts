@@ -4,6 +4,7 @@ import "reflect-metadata";
 import app from "./app";
 import { config } from "./config/config";
 import { appDataSource } from "./database";
+import { SocketService } from "./services/socket/SocketService";
 
 async function startDatabase(): Promise<void> {
   try {
@@ -21,7 +22,10 @@ function createServer(): Server {
   });
 }
 
-function setupSocket(server: Server): void {}
+function setupSocket(server: Server): void {
+  SocketService.initialize(server);
+  console.log("Socket.IO initialized");
+}
 
 function setupGracefulShutdown(server: Server): void {
   gracefulShutdown(server);
