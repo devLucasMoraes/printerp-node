@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { Estoque } from "../../domain/entities/Estoque";
 import { EstoqueService } from "../../domain/services/EstoqueService";
 import { pageable } from "../../shared/utils/pageable";
+import { AdjustEstoqueDTO } from "../validators/estoque.schema";
 
 export class EstoqueController {
   constructor(private readonly estoqueService: EstoqueService) {}
@@ -17,6 +18,17 @@ export class EstoqueController {
       ...result,
       content: result.content.map(this.toDTO),
     };
+
+    res.status(200).json(mappedResult);
+  };
+
+  adjust: RequestHandler = async (req, res) => {
+    const { id } = req.params;
+    const dto: AdjustEstoqueDTO = req.body;
+
+    const result = await this.estoqueService.adjust(parseInt(id), dto);
+
+    const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);
   };

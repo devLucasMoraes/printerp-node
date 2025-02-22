@@ -13,7 +13,7 @@ import {
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useEstoqueQueries } from "../../../hooks/queries/useEstoqueQueries";
-import { estoqueAdjustSchema } from "../../../schemas/estoque.schema";
+import { adjustEstoqueSchema } from "../../../schemas/estoque.schema";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { EstoqueDto } from "../../../types";
 
@@ -29,7 +29,7 @@ interface EstoqueModalProps {
 export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
-  const {} = useEstoqueQueries();
+  const { useAdjustEstoque } = useEstoqueQueries();
 
   const {
     control,
@@ -37,7 +37,7 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
     formState: { errors, isSubmitting },
     reset,
   } = useForm<EstoqueDto>({
-    resolver: zodResolver(estoqueAdjustSchema),
+    resolver: zodResolver(adjustEstoqueSchema),
     defaultValues: {
       id: null as any,
       armazem: null as any,
@@ -58,18 +58,17 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
     });
   }, [estoque, reset]);
 
-  //const { mutate: adjustEstoque } = useUpdateEstoque();
+  const { mutate: adjustEstoque } = useAdjustEstoque();
 
   const onSubmit = (data: EstoqueDto) => {
     if (estoque?.data && estoque.type === "UPDATE") {
-      /*
       adjustEstoque(
         { id: estoque.data.id, data },
         {
           onSuccess: () => {
             onClose();
             reset();
-            showAlert("Estoque atualizada com sucesso", "success");
+            showAlert("Ajuste de estoque realizado com sucesso", "success");
           },
           onError: (error) => {
             console.error(error);
@@ -77,7 +76,6 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
           },
         }
       );
-      */
     }
   };
   const handleClose = () => {

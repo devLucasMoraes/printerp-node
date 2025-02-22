@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const estoqueAdjustSchema = z.object({
+export const adjustEstoqueSchema = z.object({
   id: z.number(),
   quantidade: z.number(),
 });
 
-export type EstoqueAdjustDTO = z.infer<typeof estoqueAdjustSchema>;
+export type AdjustEstoqueDTO = z.infer<typeof adjustEstoqueSchema>;
