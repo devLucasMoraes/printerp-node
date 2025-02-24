@@ -11,9 +11,7 @@ import {
 
 // components
 import { IconBellRinging, IconMenu } from "@tabler/icons-react";
-import { useEffect } from "react";
 import { useSocket } from "../../../hooks/useSocket";
-import { useAlertStore } from "../../../stores/useAlertStore";
 import ThemeToggle from "../shared/ThemeToggle";
 import Profile from "./Profile";
 
@@ -38,16 +36,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
     color: theme.palette.text.secondary,
   }));
 
-  const { isConnected, emit, subscribe } = useSocket();
-  const showAlert = useAlertStore((state) => state.showAlert);
-
-  useEffect(() => {
-    const unsubscribe = subscribe("someEvent", (data) => {
-      showAlert(data.message, "info");
-    });
-
-    return unsubscribe;
-  }, []);
+  const { isConnected } = useSocket();
 
   return (
     <AppBarStyled position="sticky" color="default">

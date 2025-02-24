@@ -26,9 +26,12 @@ export const databaseConfig = {
   production: {
     ...baseConfig,
     logging: false,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl:
+      process.env.POSTGRES_HOST === "localhost"
+        ? false
+        : {
+            rejectUnauthorized: false,
+          },
   },
 };
 

@@ -104,7 +104,7 @@ export function useEntityChangeSocket(
       handleNotification(`${memoizedOptions.entityLabel} foi atualizado(a)`);
     };
 
-    const handleDelete = async (data: { id: number | string }) => {
+    const handleDelete = async () => {
       await handleInvalidateQueries();
 
       handleNotification(`${memoizedOptions.entityLabel} foi removido(a)`);
