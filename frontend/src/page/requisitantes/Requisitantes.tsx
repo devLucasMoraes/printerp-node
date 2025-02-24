@@ -8,22 +8,35 @@ import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useRequisitanteQueries } from "../../hooks/queries/useRequisitanteQueries";
 import { useAlertStore } from "../../stores/useAlertStore";
 
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { RequisitanteDto } from "../../types";
 import { RequisitanteModal } from "./components/RequisitanteModal";
 
 const Requisitantes = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedRequisitante, setSelectedRequisitante] = useState<{
     data: RequisitanteDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
 
-  const isSocketConnected = useEntityChangeSocket("requisitante");
+  const isSocketConnected = useEntityChangeSocket(
+    "requisitante",
+    {
+      invalidate: ["requisicaoEstoque"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Requisitante",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -42,6 +55,11 @@ const Requisitantes = () => {
     }
   );
   const { mutate: deleteById } = useDeleteRequisitante();
+
+  const handleConfirmDelete = (requisitante: RequisitanteDto) => {
+    setSelectedRequisitante({ data: requisitante, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
@@ -94,7 +112,7 @@ const Requisitantes = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -113,6 +131,20 @@ const Requisitantes = () => {
         }}
         requisitante={selectedRequisitante}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedRequisitante(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedRequisitante) return;
+          handleDelete(selectedRequisitante.data.id);
+        }}
+        title="Deletar requisitante"
+      >
+        Tem certeza que deseja deletar esse requisitante?
+      </ConfirmationModal>
     </>
   );
 

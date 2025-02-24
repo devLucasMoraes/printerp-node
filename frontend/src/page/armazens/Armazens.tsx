@@ -8,22 +8,35 @@ import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useArmazemQueries } from "../../hooks/queries/useArmazemQueries";
 import { useAlertStore } from "../../stores/useAlertStore";
 
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { ArmazemDto } from "../../types";
 import { ArmazemModal } from "./components/ArmazemModal";
 
 const Armazens = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedArmazem, setSelectedArmazem] = useState<{
     data: ArmazemDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
 
-  const isSocketConnected = useEntityChangeSocket("armazem");
+  const isSocketConnected = useEntityChangeSocket(
+    "armazem",
+    {
+      invalidate: ["estoque", "requisicaoEstoque"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Armazém",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -42,6 +55,11 @@ const Armazens = () => {
     }
   );
   const { mutate: deleteById } = useDeleteArmazem();
+
+  const handleConfirmDelete = (armazem: ArmazemDto) => {
+    setSelectedArmazem({ data: armazem, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
@@ -93,7 +111,7 @@ const Armazens = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -112,6 +130,20 @@ const Armazens = () => {
         }}
         armazem={selectedArmazem}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedArmazem(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedArmazem) return;
+          handleDelete(selectedArmazem.data.id);
+        }}
+        title="Deletar armazém"
+      >
+        Tem certeza que deseja deletar esse armazém?
+      </ConfirmationModal>
     </>
   );
 

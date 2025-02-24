@@ -40,7 +40,7 @@ interface RequisicaoEstoqueModalProps {
   onClose: () => void;
   requisicaoEstoque?: {
     data: RequisicaoEstoqueDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   };
 }
 

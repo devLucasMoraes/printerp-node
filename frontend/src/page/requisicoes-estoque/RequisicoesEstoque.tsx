@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useRequisicaoEstoqueQueries } from "../../hooks/queries/useRequisicaoEstoqueQueries";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
@@ -14,9 +15,11 @@ import { RequisicaoEstoqueModal } from "./components/RequisicaoEstoqueModal";
 
 const RequisicoesEstoque = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] = useState<{
     data: RequisicaoEstoqueDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -25,9 +28,18 @@ const RequisicoesEstoque = () => {
 
   const queryClient = useQueryClient();
 
-  const isSocketConnected = useEntityChangeSocket("requisicaoEstoque", [
-    "estoque",
-  ]);
+  const isSocketConnected = useEntityChangeSocket(
+    "requisicaoEstoque",
+    {
+      invalidate: ["estoque"],
+      dependsOn: ["requisitante", "equipamento", "insumo", "armazem"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Requisição",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -46,6 +58,11 @@ const RequisicoesEstoque = () => {
     }
   );
   const { mutate: deleteById } = useDeleteRequisicaoEstoque();
+
+  const handleConfirmDelete = (requisicao: RequisicaoEstoqueDto) => {
+    setSelectedRequisicaoEstoque({ data: requisicao, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
@@ -137,7 +154,7 @@ const RequisicoesEstoque = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -156,6 +173,20 @@ const RequisicoesEstoque = () => {
         }}
         requisicaoEstoque={selectedRequisicaoEstoque}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedRequisicaoEstoque(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedRequisicaoEstoque) return;
+          handleDelete(selectedRequisicaoEstoque.data.id);
+        }}
+        title="Deletar requisição"
+      >
+        Tem certeza que deseja deletar essa requisição de estoque?
+      </ConfirmationModal>
     </>
   );
 

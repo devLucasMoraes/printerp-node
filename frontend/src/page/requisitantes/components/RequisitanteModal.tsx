@@ -22,7 +22,10 @@ import { RequisitanteDto } from "../../../types";
 interface RequisitanteModalProps {
   open: boolean;
   onClose: () => void;
-  requisitante?: { data: RequisitanteDto; type: "UPDATE" | "COPY" | "CREATE" };
+  requisitante?: {
+    data: RequisitanteDto;
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
+  };
 }
 
 export const RequisitanteModal = ({

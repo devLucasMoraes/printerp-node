@@ -4,6 +4,7 @@ import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useInsumoQueries } from "../../hooks/queries/useInsumoQueries";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
@@ -13,19 +14,29 @@ import { InsumoModal } from "./components/InsumoModal";
 
 const Insumos = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedInsumo, setSelectedInsumo] = useState<{
     data: InsumoDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
 
-  const isSocketConnected = useEntityChangeSocket("insumo", {
-    // Insumo depende das mudanças em categoria
-    dependsOn: ["categoria"],
-  });
+  const isSocketConnected = useEntityChangeSocket(
+    "insumo",
+    {
+      // Insumo depende das mudanças em categoria
+      dependsOn: ["categoria"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Insumo",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -44,6 +55,11 @@ const Insumos = () => {
     }
   );
   const { mutate: deleteById } = useDeleteInsumo();
+
+  const handleConfirmDelete = (insumo: InsumoDto) => {
+    setSelectedInsumo({ data: insumo, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
@@ -113,7 +129,7 @@ const Insumos = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -132,6 +148,20 @@ const Insumos = () => {
         }}
         insumo={selectedInsumo}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedInsumo(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedInsumo) return;
+          handleDelete(selectedInsumo.data.id);
+        }}
+        title="Deletar insumo"
+      >
+        Tem certeza que deseja deletar esse insumo?
+      </ConfirmationModal>
     </>
   );
 

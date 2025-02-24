@@ -23,7 +23,7 @@ import { ArmazemDto } from "../../../types";
 interface ArmazemModalProps {
   open: boolean;
   onClose: () => void;
-  armazem?: { data: ArmazemDto; type: "UPDATE" | "COPY" | "CREATE" };
+  armazem?: { data: ArmazemDto; type: "UPDATE" | "COPY" | "CREATE" | "DELETE" };
 }
 
 export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {

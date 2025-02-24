@@ -31,7 +31,7 @@ interface InsumoModalProps {
   onClose: () => void;
   insumo?: {
     data: InsumoDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   };
 }
 

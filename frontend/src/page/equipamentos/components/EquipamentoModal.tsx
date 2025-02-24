@@ -22,7 +22,10 @@ import { EquipamentoDto } from "../../../types";
 interface EquipamentoModalProps {
   open: boolean;
   onClose: () => void;
-  equipamento?: { data: EquipamentoDto; type: "UPDATE" | "COPY" | "CREATE" };
+  equipamento?: {
+    data: EquipamentoDto;
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
+  };
 }
 
 export const EquipamentoModal = ({

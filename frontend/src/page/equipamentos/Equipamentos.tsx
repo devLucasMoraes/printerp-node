@@ -4,6 +4,7 @@ import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useEquipamentoQueries } from "../../hooks/queries/useEquipamentoQueries";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
@@ -13,16 +14,28 @@ import { EquipamentoModal } from "./components/EquipamentoModal";
 
 const Equipamentos = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedEquipamento, setSelectedEquipamento] = useState<{
     data: EquipamentoDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
 
-  const isSocketConnected = useEntityChangeSocket("equipamento");
+  const isSocketConnected = useEntityChangeSocket(
+    "equipamento",
+    {
+      invalidate: ["requisicaoEstoque"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Equipamento",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -41,6 +54,11 @@ const Equipamentos = () => {
     }
   );
   const { mutate: deleteById } = useDeleteEquipamento();
+
+  const handleConfirmDelete = (equipamento: EquipamentoDto) => {
+    setSelectedEquipamento({ data: equipamento, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
@@ -92,7 +110,7 @@ const Equipamentos = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -111,6 +129,20 @@ const Equipamentos = () => {
         }}
         equipamento={selectedEquipamento}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedEquipamento(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedEquipamento) return;
+          handleDelete(selectedEquipamento.data.id);
+        }}
+        title="Deletar equipamento"
+      >
+        Tem certeza que deseja deletar esse equipamento?
+      </ConfirmationModal>
     </>
   );
 
