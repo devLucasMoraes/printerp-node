@@ -170,7 +170,7 @@ export const RequisicaoEstoqueModal = ({
           onSuccess: () => {
             onClose();
             reset();
-            queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
+            queryClient.invalidateQueries({ queryKey: ["estoque"] });
             showAlert("Requisicao atualizada com sucesso", "success");
           },
           onError: (error) => {
@@ -184,7 +184,7 @@ export const RequisicaoEstoqueModal = ({
         onSuccess: () => {
           onClose();
           reset();
-          queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
+          queryClient.invalidateQueries({ queryKey: ["estoque"] });
 
           showAlert("Requisicao criada com sucesso", "success");
         },

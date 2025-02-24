@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useArmazemQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "ARMAZEM-KEY",
+    resourceKey: "armazem",
     service: armazemService,
   });
 

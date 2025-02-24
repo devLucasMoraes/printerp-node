@@ -11,6 +11,7 @@ import {
   CreateRequisicaoEstoqueDTO,
   UpdateRequisicaoEstoqueDTO,
 } from "../../http/validators/requisicaoEstoque.schemas";
+import { SocketService } from "../socket/SocketService";
 
 export class RequisicaoEstoqueServiceImpl implements RequisicaoEstoqueService {
   constructor(
@@ -26,18 +27,36 @@ export class RequisicaoEstoqueServiceImpl implements RequisicaoEstoqueService {
   }
 
   async create(dto: CreateRequisicaoEstoqueDTO): Promise<RequisicaoEstoque> {
-    return await this.createRequisicaoEstoqueUseCase.execute(dto);
+    const requisicao = await this.createRequisicaoEstoqueUseCase.execute(dto);
+    SocketService.getInstance().emitEntityChange(
+      "requisicaoEstoque",
+      "create",
+      requisicao
+    );
+    return requisicao;
   }
 
   async update(
     id: number,
     dto: UpdateRequisicaoEstoqueDTO
   ): Promise<RequisicaoEstoque> {
-    return await this.updateRequisicaoEstoqueUseCase.execute(id, dto);
+    const requisicao = await this.updateRequisicaoEstoqueUseCase.execute(
+      id,
+      dto
+    );
+
+    SocketService.getInstance().emitEntityChange(
+      "requisicaoEstoque",
+      "update",
+      requisicao
+    );
+
+    return requisicao;
   }
 
   async delete(id: number): Promise<void> {
     await this.deleteRequisicaoEstoqueUseCase.execute(id);
+    SocketService.getInstance().emitEntityChange("requisicaoEstoque", "delete");
   }
 
   async show(id: number): Promise<RequisicaoEstoque> {

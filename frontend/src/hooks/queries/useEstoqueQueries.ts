@@ -10,7 +10,7 @@ import { AdjustEstoqueDTO } from "../../schemas/estoque.schema";
 import { estoqueService } from "../../services/EstoqueService";
 import { ErrorResponse, EstoqueDto, Page, PageParams } from "../../types";
 
-const resourceKey = "ESTOQUE-KEY";
+const resourceKey = "estoque";
 export function useEstoqueQueries() {
   const queryClient = useQueryClient();
   const useGetAllPaginated = (

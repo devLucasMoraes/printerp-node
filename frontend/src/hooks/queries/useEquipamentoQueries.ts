@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useEquipamentoQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "EQUIPAMENTO-KEY",
+    resourceKey: "equipamento",
     service: equipamentoService,
   });
 

@@ -6,6 +6,7 @@ import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useInsumoQueries } from "../../hooks/queries/useInsumoQueries";
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { useAlertStore } from "../../stores/useAlertStore";
 import { InsumoDto } from "../../types";
 import { InsumoModal } from "./components/InsumoModal";
@@ -21,6 +22,11 @@ const Insumos = () => {
     pageSize: 10,
   });
 
+  const isSocketConnected = useEntityChangeSocket("insumo", {
+    // Insumo depende das mudanças em categoria
+    dependsOn: ["categoria"],
+  });
+
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -28,10 +34,15 @@ const Insumos = () => {
     useDelete: useDeleteInsumo,
   } = useInsumoQueries();
 
-  const { data, isLoading } = useGetInsumosPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetInsumosPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteInsumo();
 
   const handleDelete = (id: number) => {

@@ -8,6 +8,7 @@ import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useArmazemQueries } from "../../hooks/queries/useArmazemQueries";
 import { useAlertStore } from "../../stores/useAlertStore";
 
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { ArmazemDto } from "../../types";
 import { ArmazemModal } from "./components/ArmazemModal";
 
@@ -22,6 +23,8 @@ const Armazens = () => {
     pageSize: 10,
   });
 
+  const isSocketConnected = useEntityChangeSocket("armazem");
+
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -29,10 +32,15 @@ const Armazens = () => {
     useDelete: useDeleteArmazem,
   } = useArmazemQueries();
 
-  const { data, isLoading } = useGetArmazensPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetArmazensPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteArmazem();
 
   const handleDelete = (id: number) => {

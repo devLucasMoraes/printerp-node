@@ -8,19 +8,36 @@ import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useCategoriaQueries } from "../../hooks/queries/useCategoriaQueries";
 import { useAlertStore } from "../../stores/useAlertStore";
 
+import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { CategoriaDto } from "../../types";
 import { CategoriaModal } from "./components/CategoriaModal";
 
 const Categorias = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const [selectedCategoria, setSelectedCategoria] = useState<{
     data: CategoriaDto;
-    type: "UPDATE" | "COPY" | "CREATE";
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
+
+  const isSocketConnected = useEntityChangeSocket(
+    "categoria",
+    {
+      // Quando categoria mudar, invalida insumos
+      invalidate: ["insumo"],
+    },
+    {
+      showNotifications: true,
+      entityLabel: "Categoria",
+      suppressSocketAlert: formOpen || confirmModalOpen,
+    }
+  );
 
   const { showAlert } = useAlertStore((state) => state);
 
@@ -29,15 +46,27 @@ const Categorias = () => {
     useDelete: useDeleteCategoria,
   } = useCategoriaQueries();
 
-  const { data, isLoading } = useGetCategoriasPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetCategoriasPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteCategoria();
+
+  const handleConfirmDelete = (categoria: CategoriaDto) => {
+    setSelectedCategoria({ data: categoria, type: "DELETE" });
+    setConfirmModalOpen(true);
+  };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        setSelectedCategoria(undefined);
+        setConfirmModalOpen(false);
         showAlert("Categoria deletado com sucesso", "success");
       },
       onError: (error) => {
@@ -85,7 +114,7 @@ const Categorias = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -104,6 +133,20 @@ const Categorias = () => {
         }}
         categoria={selectedCategoria}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setSelectedCategoria(undefined);
+        }}
+        onConfirm={() => {
+          if (!selectedCategoria) return;
+          handleDelete(selectedCategoria.data.id);
+        }}
+        title="Deletar categoria"
+      >
+        Tem certeza que deseja deletar essa categoria?
+      </ConfirmationModal>
     </>
   );
 

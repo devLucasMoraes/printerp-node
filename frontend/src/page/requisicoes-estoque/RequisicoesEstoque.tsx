@@ -7,6 +7,7 @@ import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useRequisicaoEstoqueQueries } from "../../hooks/queries/useRequisicaoEstoqueQueries";
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { useAlertStore } from "../../stores/useAlertStore";
 import { RequisicaoEstoqueDto } from "../../types";
 import { RequisicaoEstoqueModal } from "./components/RequisicaoEstoqueModal";
@@ -23,6 +24,11 @@ const RequisicoesEstoque = () => {
   });
 
   const queryClient = useQueryClient();
+
+  const isSocketConnected = useEntityChangeSocket("requisicaoEstoque", [
+    "estoque",
+  ]);
+
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -30,16 +36,21 @@ const RequisicoesEstoque = () => {
     useDelete: useDeleteRequisicaoEstoque,
   } = useRequisicaoEstoqueQueries();
 
-  const { data, isLoading } = useGetRequisicoesEstoquePaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetRequisicoesEstoquePaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteRequisicaoEstoque();
 
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["ESTOQUE-KEY"] });
+        queryClient.invalidateQueries({ queryKey: ["estoque"] });
         showAlert("Requisição deletada com sucesso", "success");
       },
       onError: (error) => {

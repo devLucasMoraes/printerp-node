@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Grid2,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -22,7 +23,10 @@ import { CategoriaDto } from "../../../types";
 interface CategoriaModalProps {
   open: boolean;
   onClose: () => void;
-  categoria?: { data: CategoriaDto; type: "UPDATE" | "COPY" | "CREATE" };
+  categoria?: {
+    data: CategoriaDto;
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
+  };
 }
 
 export const CategoriaModal = ({
@@ -118,7 +122,9 @@ export const CategoriaModal = ({
       onSubmit={handleSubmit(onSubmit)}
     >
       <DialogTitle>
-        {categoria?.type === "UPDATE" ? "Editar" : "Nova"}
+        <Typography>
+          {categoria?.type === "UPDATE" ? "Editar" : "Nova"}
+        </Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText>

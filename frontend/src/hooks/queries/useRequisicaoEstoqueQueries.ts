@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useRequisicaoEstoqueQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "REQUISICAO-ESTOQUE-KEY",
+    resourceKey: "requisicaoEstoque",
     service: requisicaoEstoqueService,
   });
 

@@ -6,6 +6,7 @@ import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useEquipamentoQueries } from "../../hooks/queries/useEquipamentoQueries";
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { useAlertStore } from "../../stores/useAlertStore";
 import { EquipamentoDto } from "../../types";
 import { EquipamentoModal } from "./components/EquipamentoModal";
@@ -21,6 +22,8 @@ const Equipamentos = () => {
     pageSize: 10,
   });
 
+  const isSocketConnected = useEntityChangeSocket("equipamento");
+
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -28,10 +31,15 @@ const Equipamentos = () => {
     useDelete: useDeleteEquipamento,
   } = useEquipamentoQueries();
 
-  const { data, isLoading } = useGetEquipamentosPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetEquipamentosPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteEquipamento();
 
   const handleDelete = (id: number) => {

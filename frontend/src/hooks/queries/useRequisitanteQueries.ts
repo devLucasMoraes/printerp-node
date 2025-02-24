@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useRequisitanteQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "REQUISITANTE-KEY",
+    resourceKey: "requisitante",
     service: requisitanteService,
   });
 

@@ -3,6 +3,7 @@ import { requisitanteRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
 import { BadRequestError, NotFoundError } from "../../shared/errors";
+import { SocketService } from "../socket/SocketService";
 
 export class RequisitanteServiceImpl implements RequisitanteService {
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Requisitante>> {
@@ -31,7 +32,15 @@ export class RequisitanteServiceImpl implements RequisitanteService {
 
     const newRequisitante = requisitanteRepository.create(entity);
 
-    return await requisitanteRepository.save(newRequisitante);
+    const requisitante = await requisitanteRepository.save(newRequisitante);
+
+    SocketService.getInstance().emitEntityChange(
+      "requisitante",
+      "create",
+      requisitante
+    );
+
+    return requisitante;
   }
   async update(id: number, entity: Requisitante): Promise<Requisitante> {
     const requisitanteExists = await requisitanteRepository.findOneBy({ id });
@@ -52,7 +61,16 @@ export class RequisitanteServiceImpl implements RequisitanteService {
       requisitanteExists,
       entity
     );
-    return await requisitanteRepository.save(updatedRequisitante);
+
+    const requisitante = await requisitanteRepository.save(updatedRequisitante);
+
+    SocketService.getInstance().emitEntityChange(
+      "requisitante",
+      "update",
+      requisitante
+    );
+
+    return requisitante;
   }
   async delete(id: number): Promise<void> {
     const requisitanteExists = await requisitanteRepository.findOneBy({ id });
@@ -62,6 +80,8 @@ export class RequisitanteServiceImpl implements RequisitanteService {
     }
 
     await requisitanteRepository.softDelete(id);
+
+    SocketService.getInstance().emitEntityChange("requisitante", "delete");
 
     return Promise.resolve();
   }

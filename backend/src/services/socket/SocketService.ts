@@ -107,6 +107,19 @@ export class SocketService {
     }
   }
 
+  public emitEntityChange(
+    entity: string,
+    action: "create" | "update" | "delete",
+    data?: any
+  ) {
+    try {
+      this.io.emit(`${entity}:${action}`, data);
+      console.log(`Emitted ${action} event for ${entity}`);
+    } catch (error) {
+      console.error(`Error emitting ${entity} update:`, error);
+    }
+  }
+
   public sendToUser(userId: string, event: string, data: any): boolean {
     try {
       this.io.to(userId).emit(event, data);

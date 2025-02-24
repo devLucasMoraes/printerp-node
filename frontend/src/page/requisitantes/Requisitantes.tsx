@@ -8,6 +8,7 @@ import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useRequisitanteQueries } from "../../hooks/queries/useRequisitanteQueries";
 import { useAlertStore } from "../../stores/useAlertStore";
 
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { RequisitanteDto } from "../../types";
 import { RequisitanteModal } from "./components/RequisitanteModal";
 
@@ -22,6 +23,8 @@ const Requisitantes = () => {
     pageSize: 10,
   });
 
+  const isSocketConnected = useEntityChangeSocket("requisitante");
+
   const { showAlert } = useAlertStore((state) => state);
 
   const {
@@ -29,10 +32,15 @@ const Requisitantes = () => {
     useDelete: useDeleteRequisitante,
   } = useRequisitanteQueries();
 
-  const { data, isLoading } = useGetRequisitantesPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetRequisitantesPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   const { mutate: deleteById } = useDeleteRequisitante();
 
   const handleDelete = (id: number) => {

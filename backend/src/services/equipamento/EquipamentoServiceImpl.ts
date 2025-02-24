@@ -3,6 +3,7 @@ import { equipamentoRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { EquipamentoService } from "../../domain/services/EquipamentoService";
 import { BadRequestError, NotFoundError } from "../../shared/errors";
+import { SocketService } from "../socket/SocketService";
 
 export class EquipamentoServiceImpl implements EquipamentoService {
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Equipamento>> {
@@ -31,12 +32,20 @@ export class EquipamentoServiceImpl implements EquipamentoService {
 
     const newEquipamento = equipamentoRepository.create(entity);
 
-    return equipamentoRepository.save(newEquipamento);
+    const equipamento = await equipamentoRepository.save(newEquipamento);
+
+    SocketService.getInstance().emitEntityChange(
+      "equipamento",
+      "create",
+      equipamento
+    );
+
+    return equipamento;
   }
   async update(id: number, entity: Equipamento): Promise<Equipamento> {
-    const requisitanteExists = await equipamentoRepository.findOneBy({ id });
+    const equipamentoExists = await equipamentoRepository.findOneBy({ id });
 
-    if (!requisitanteExists) {
+    if (!equipamentoExists) {
       throw new NotFoundError("Equipamento not found");
     }
 
@@ -48,12 +57,20 @@ export class EquipamentoServiceImpl implements EquipamentoService {
       throw new BadRequestError("Equipamento already exists");
     }
 
-    const updatedRequisitante = equipamentoRepository.merge(
-      requisitanteExists,
+    const updatedEquipamento = equipamentoRepository.merge(
+      equipamentoExists,
       entity
     );
 
-    return await equipamentoRepository.save(updatedRequisitante);
+    const equipamento = await equipamentoRepository.save(updatedEquipamento);
+
+    SocketService.getInstance().emitEntityChange(
+      "equipamento",
+      "update",
+      equipamento
+    );
+
+    return equipamento;
   }
   async delete(id: number): Promise<void> {
     const equipamentoExists = await equipamentoRepository.findOneBy({ id });
@@ -63,6 +80,8 @@ export class EquipamentoServiceImpl implements EquipamentoService {
     }
 
     await equipamentoRepository.softDelete(id);
+
+    SocketService.getInstance().emitEntityChange("equipamento", "delete");
 
     return Promise.resolve();
   }

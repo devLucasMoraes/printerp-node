@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useCategoriaQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "CATEGORIA-KEY",
+    resourceKey: "categoria",
     service: categoriaService,
   });
 

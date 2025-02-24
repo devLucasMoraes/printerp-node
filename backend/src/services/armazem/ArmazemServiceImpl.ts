@@ -11,6 +11,7 @@ import {
   CreateArmazemDTO,
   UpdateArmazemDTO,
 } from "../../http/validators/armazem.schema";
+import { SocketService } from "../socket/SocketService";
 
 export class ArmazemServiceImpl implements ArmazemService {
   constructor(
@@ -26,15 +27,24 @@ export class ArmazemServiceImpl implements ArmazemService {
   }
 
   async create(dto: CreateArmazemDTO): Promise<Armazem> {
-    return await this.createArmazemUseCase.execute(dto);
+    const armazem = await this.createArmazemUseCase.execute(dto);
+
+    SocketService.getInstance().emitEntityChange("armazem", "create", armazem);
+
+    return armazem;
   }
 
   async update(id: number, dto: UpdateArmazemDTO): Promise<Armazem> {
-    return await this.updateArmazemUseCase.execute(id, dto);
+    const armazem = await this.updateArmazemUseCase.execute(id, dto);
+
+    SocketService.getInstance().emitEntityChange("armazem", "update", armazem);
+
+    return armazem;
   }
 
   async delete(id: number): Promise<void> {
     await this.deleteArmazemUseCase.execute(id);
+    SocketService.getInstance().emitEntityChange("armazem", "delete");
   }
 
   async show(id: number): Promise<Armazem> {

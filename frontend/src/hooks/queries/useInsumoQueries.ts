@@ -3,7 +3,7 @@ import { useResourceQuery } from "./useResourceQuery";
 
 export function useInsumoQueries() {
   const baseQueries = useResourceQuery({
-    resourceKey: "INSUMO-KEY",
+    resourceKey: "insumo",
     service: insumoService,
   });
 

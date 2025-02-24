@@ -6,6 +6,7 @@ import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
 import { useEstoqueQueries } from "../../hooks/queries/useEstoqueQueries";
+import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { EstoqueDto } from "../../types";
 import { EstoqueModal } from "./components/EstoqueModal";
 
@@ -20,12 +21,19 @@ const Estoques = () => {
     pageSize: 10,
   });
 
+  const isSocketConnected = useEntityChangeSocket("estoque");
+
   const { useGetAllPaginated: useGetEstoquesPaginated } = useEstoqueQueries();
 
-  const { data, isLoading } = useGetEstoquesPaginated({
-    page: paginationModel.page,
-    size: paginationModel.pageSize,
-  });
+  const { data, isLoading } = useGetEstoquesPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
 
   const handleEdit = (estoque: EstoqueDto) => {
     setSelectedEstoque({ data: estoque, type: "UPDATE" });

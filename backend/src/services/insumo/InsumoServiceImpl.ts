@@ -3,6 +3,7 @@ import { insumoRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { InsumoService } from "../../domain/services/InsumoService";
 import { BadRequestError, NotFoundError } from "../../shared/errors";
+import { SocketService } from "../socket/SocketService";
 
 export class InsumoServiceImpl implements InsumoService {
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Insumo>> {
@@ -36,7 +37,11 @@ export class InsumoServiceImpl implements InsumoService {
 
     const newInsumo = insumoRepository.create(entity);
 
-    return await insumoRepository.save(newInsumo);
+    const insumo = await insumoRepository.save(newInsumo);
+
+    SocketService.getInstance().emitEntityChange("insumo", "create", insumo);
+
+    return insumo;
   }
   async update(id: number, entity: Insumo): Promise<Insumo> {
     const insumoExists = await insumoRepository.findOneBy({ id });
@@ -55,7 +60,11 @@ export class InsumoServiceImpl implements InsumoService {
 
     const updatedInsumo = insumoRepository.merge(insumoExists, entity);
 
-    return await insumoRepository.save(updatedInsumo);
+    const insumo = await insumoRepository.save(updatedInsumo);
+
+    SocketService.getInstance().emitEntityChange("insumo", "update", insumo);
+
+    return insumo;
   }
   async delete(id: number): Promise<void> {
     const insumoExists = await insumoRepository.findOneBy({ id });
@@ -65,6 +74,8 @@ export class InsumoServiceImpl implements InsumoService {
     }
 
     await insumoRepository.softDelete(id);
+
+    SocketService.getInstance().emitEntityChange("insumo", "delete");
 
     return Promise.resolve();
   }
