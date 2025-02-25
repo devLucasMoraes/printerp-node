@@ -35,8 +35,9 @@ export class ArmazemController {
 
   create: RequestHandler = async (req, res) => {
     const dto: CreateArmazemDTO = req.body;
+    const userId = req.user.id;
 
-    const result = await this.armazemService.create(dto);
+    const result = await this.armazemService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -56,8 +57,12 @@ export class ArmazemController {
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const dto: UpdateArmazemDTO = req.body;
+    const userId = req.user.id;
 
-    const result = await this.armazemService.update(parseInt(id), dto);
+    const result = await this.armazemService.update(parseInt(id), {
+      ...dto,
+      userId,
+    });
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);

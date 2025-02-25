@@ -40,6 +40,9 @@ export class RequisicaoEstoque {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @ManyToOne(() => Requisitante, (requisitante) => requisitante.requisicoes)
   @JoinColumn({ name: "requisitante_id" })
   requisitante: Requisitante;

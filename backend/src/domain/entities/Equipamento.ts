@@ -26,6 +26,9 @@ export class Equipamento {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @OneToMany(
     () => RequisicaoEstoque,
     (requisicaoEstoque) => requisicaoEstoque.requisitante

@@ -33,6 +33,9 @@ export class Armazem {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.armazemOrigem)
   movimentosSaida: MovimentoEstoque[];
 

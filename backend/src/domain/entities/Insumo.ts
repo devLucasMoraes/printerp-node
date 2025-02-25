@@ -53,6 +53,9 @@ export class Insumo {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @OneToMany(() => Estoque, (estoque) => estoque.insumo)
   estoques: Estoque[];
 

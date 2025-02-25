@@ -26,6 +26,9 @@ export class Categoria {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @OneToMany(() => Insumo, (insumo) => insumo.categoria)
   insumos: Insumo[];
 

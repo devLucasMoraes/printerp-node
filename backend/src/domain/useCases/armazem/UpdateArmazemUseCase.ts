@@ -64,6 +64,7 @@ export class UpdateArmazemUseCase {
     const armazemDTO = this.armazemRepository.create({
       id: dto.id,
       nome: dto.nome,
+      userId: dto.userId,
     });
 
     const armazem = this.armazemRepository.merge(armazemToUpdate, armazemDTO);

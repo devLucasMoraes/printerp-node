@@ -28,6 +28,9 @@ export class Estoque {
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Column({ type: "varchar", length: 255 })
+  userId: string;
+
   @ManyToOne(() => Armazem, (armazem) => armazem.estoques)
   @JoinColumn({ name: "armazem_id" })
   armazem: Armazem;

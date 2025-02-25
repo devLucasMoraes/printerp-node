@@ -41,6 +41,7 @@ export class CreateArmazemUseCase {
   ): Promise<Armazem> {
     const armazemToCreate = this.armazemRepository.create({
       nome: dto.nome,
+      userId: dto.userId,
     });
 
     return await manager.save(Armazem, armazemToCreate);
