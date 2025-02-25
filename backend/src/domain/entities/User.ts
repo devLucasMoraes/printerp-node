@@ -23,19 +23,24 @@ export class User {
   @Column({ type: "varchar", length: 255 })
   password: string;
 
-  @Column({ type: "varchar", length: 255, nullable: true })
+  @Column({
+    name: "token_version",
+    type: "varchar",
+    length: 255,
+    nullable: true,
+  })
   tokenVersion: string | null;
 
-  @Column({ type: "varchar", length: 255, default: "user" })
-  role: string;
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  userId: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
   async hashPassword() {

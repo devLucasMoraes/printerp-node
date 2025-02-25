@@ -49,7 +49,7 @@ export class RegistrarEntradaEstoqueUseCase {
       insumo,
       quantidade,
       valorUnitario,
-      undEstoque,
+      undidade: undEstoque,
       armazemDestino: armazem,
       documentoOrigem,
       tipoDocumento,

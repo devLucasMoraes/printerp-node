@@ -57,7 +57,7 @@ export class RegistrarSaidaEstoqueUseCase {
       insumo,
       quantidade,
       valorUnitario,
-      undEstoque,
+      undidade: undEstoque,
       armazemOrigem: armazem,
       documentoOrigem,
       tipoDocumento,

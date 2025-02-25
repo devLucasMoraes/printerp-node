@@ -15,12 +15,15 @@ export class Setting {
   @Column({ type: "text" })
   value: string;
 
-  @CreateDateColumn()
-  createdDate: Date;
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  userId: string;
 
-  @UpdateDateColumn()
-  updatedDate: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @DeleteDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 }

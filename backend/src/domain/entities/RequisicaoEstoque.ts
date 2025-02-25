@@ -19,28 +19,33 @@ export class RequisicaoEstoque {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "timestamp" })
+  @Column({ name: "data_requisicao", type: "timestamp" })
   dataRequisicao: Date;
 
-  @Column({ type: "numeric", precision: 10, scale: 2 })
+  @Column({ name: "valor_total", type: "numeric", precision: 10, scale: 2 })
   valorTotal: number;
 
-  @Column({ type: "varchar", length: 255, nullable: true })
+  @Column({
+    name: "ordem_producao",
+    type: "varchar",
+    length: 255,
+    nullable: true,
+  })
   ordemProducao: string | null;
 
   @Column({ type: "varchar", length: 255, nullable: true })
   obs: string | null;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
   userId: string;
 
   @ManyToOne(() => Requisitante, (requisitante) => requisitante.requisicoes)

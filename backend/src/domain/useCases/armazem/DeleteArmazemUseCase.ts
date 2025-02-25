@@ -6,10 +6,10 @@ import { ArmazemRepository } from "../../repositories/ArmazemRepository";
 export class DeleteArmazemUseCase {
   constructor(private readonly armazemRepository: ArmazemRepository) {}
 
-  async execute(id: number): Promise<void> {
+  async execute(id: number, userId: string): Promise<void> {
     return await this.armazemRepository.manager.transaction(async (manager) => {
       const armazem = await this.findArmazem(id, manager);
-      await this.disable(armazem, manager);
+      await this.disable(armazem, manager, userId);
     });
   }
 
@@ -28,9 +28,11 @@ export class DeleteArmazemUseCase {
 
   private async disable(
     armazem: Armazem,
-    manager: EntityManager
+    manager: EntityManager,
+    userId: string
   ): Promise<void> {
     armazem.ativo = false;
+    armazem.userId = userId;
 
     await manager.save(Armazem, armazem);
 

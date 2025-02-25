@@ -6,5 +6,5 @@ export interface CrudService<ID, T, CreateDTO, UpdateDTO> {
   show(id: ID): Promise<T>;
   create(dto: CreateDTO): Promise<T>;
   update(id: ID, dto: UpdateDTO): Promise<T>;
-  delete(id: ID): Promise<void>;
+  delete(id: ID, userID?: string): Promise<void>;
 }

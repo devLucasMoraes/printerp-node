@@ -21,21 +21,22 @@ export class RequisicaoEstoqueItem {
   quantidade: number;
 
   @Column({
+    name: "unidade",
     type: "enum",
     enum: Unidade,
   })
-  undEstoque: Unidade;
+  unidade: Unidade;
 
-  @Column({ type: "numeric", precision: 10, scale: 2 })
+  @Column({ name: "valor_unitario", type: "numeric", precision: 10, scale: 2 })
   valorUnitario: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
   @ManyToOne(() => Insumo, (insumo) => insumo.id)

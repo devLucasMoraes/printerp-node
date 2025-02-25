@@ -106,7 +106,7 @@ describe("RequisicaoEstoque Routes", () => {
       itens: [
         {
           quantidade: 2,
-          undEstoque: Unidade.KG,
+          unidade: Unidade.KG,
           valorUnitario: 50.25,
           insumo: testInsumo,
         },
@@ -290,7 +290,7 @@ describe("RequisicaoEstoque Routes", () => {
           itens: [
             {
               quantidade: 1,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 100.0,
               insumo: testInsumo,
             },
@@ -565,7 +565,7 @@ describe("RequisicaoEstoque Routes", () => {
             itens: [
               {
                 quantidade: i,
-                undEstoque: Unidade.KG,
+                unidade: Unidade.KG,
                 valorUnitario: 100.0,
                 insumo: testInsumo,
               },
@@ -735,7 +735,7 @@ describe("RequisicaoEstoque Routes", () => {
           itens: [
             {
               quantidade: 1,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 100.0,
               insumo: testInsumo,
             },
@@ -779,13 +779,13 @@ describe("RequisicaoEstoque Routes", () => {
           itens: [
             {
               quantidade: 3,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.0,
               insumo: testInsumo,
             },
             {
               quantidade: 2,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 75.0,
               insumo: testInsumo,
             },

@@ -58,7 +58,7 @@ export class DeleteRequisicaoEstoqueUseCase {
           armazem: requisicaoToDelete.armazem,
           quantidade: item.quantidade,
           valorUnitario: item.valorUnitario,
-          undEstoque: item.undEstoque,
+          undEstoque: item.unidade,
           documentoOrigem: requisicaoToDelete.id.toString(),
           tipoDocumento: "ESTORNO_REQUISICAO",
           observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,

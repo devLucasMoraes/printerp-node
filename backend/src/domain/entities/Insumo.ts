@@ -22,38 +22,51 @@ export class Insumo {
   @Column({ type: "varchar", length: 255 })
   descricao: string;
 
-  @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
+  @Column({
+    name: "valor_unt_med",
+    type: "numeric",
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
   valorUntMed: number = 0;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "valor_unt_med_auto", type: "boolean", default: false })
   valorUntMedAuto = false;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "permite_estoque_negativo", type: "boolean", default: false })
   permiteEstoqueNegativo = false;
 
   @Column({
+    name: "und_estoque",
     type: "enum",
     enum: Unidade,
   })
   undEstoque: Unidade;
 
-  @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
+  @Column({
+    name: "estoque_minimo",
+    type: "numeric",
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
   estoqueMinimo: number;
 
   @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
   @JoinColumn({ name: "categoria_id" })
   categoria: Categoria;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
   userId: string;
 
   @OneToMany(() => Estoque, (estoque) => estoque.insumo)

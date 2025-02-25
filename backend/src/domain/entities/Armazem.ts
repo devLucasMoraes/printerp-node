@@ -24,16 +24,16 @@ export class Armazem {
   @OneToMany(() => Estoque, (estoque) => estoque.armazem)
   estoques: Estoque[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
   userId: string;
 
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.armazemOrigem)

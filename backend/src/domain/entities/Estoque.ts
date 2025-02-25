@@ -19,16 +19,16 @@ export class Estoque {
   @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
   quantidade: number = 0;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
   userId: string;
 
   @ManyToOne(() => Armazem, (armazem) => armazem.estoques)

@@ -90,7 +90,7 @@ export class RequisicaoEstoqueController {
         return {
           id: item.id,
           quantidade: item.quantidade,
-          undEstoque: item.undEstoque,
+          undEstoque: item.unidade,
           valorUnitario: item.valorUnitario,
           insumo: {
             id: item.insumo.id,

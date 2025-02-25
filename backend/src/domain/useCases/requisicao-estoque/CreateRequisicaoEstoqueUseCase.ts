@@ -107,7 +107,7 @@ export class CreateRequisicaoEstoqueUseCase {
           armazem: requisicao.armazem,
           quantidade: item.quantidade,
           valorUnitario: item.valorUnitario,
-          undEstoque: item.undEstoque,
+          undEstoque: item.unidade,
           documentoOrigem: requisicao.id.toString(),
           tipoDocumento: "REQUISICAO",
         },

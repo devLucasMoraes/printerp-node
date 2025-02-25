@@ -26,14 +26,15 @@ export class MovimentoEstoque {
   @Column({ type: "numeric", precision: 10, scale: 2 })
   quantidade: number;
 
-  @Column({ type: "numeric", precision: 10, scale: 2 })
+  @Column({ name: "valor_unitario", type: "numeric", precision: 10, scale: 2 })
   valorUnitario: number;
 
   @Column({
+    name: "undidade",
     type: "enum",
     enum: Unidade,
   })
-  undEstoque: Unidade;
+  undidade: Unidade;
 
   @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida)
   @JoinColumn({ name: "armazem_origem_id" })
@@ -43,10 +44,10 @@ export class MovimentoEstoque {
   @JoinColumn({ name: "armazem_destino_id" })
   armazemDestino: Armazem;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "documento_origem", type: "varchar", length: 255 })
   documentoOrigem: string;
 
-  @Column({ type: "varchar", length: 50 })
+  @Column({ name: "tipo_documento", type: "varchar", length: 50 })
   tipoDocumento: string;
 
   @Column({ type: "boolean", default: false })
@@ -55,16 +56,16 @@ export class MovimentoEstoque {
   @Column({ type: "text", nullable: true })
   observacao?: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
   userId: string;
 
   @ManyToOne(() => Insumo, (insumo) => insumo.movimentos)

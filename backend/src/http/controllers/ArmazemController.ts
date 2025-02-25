@@ -70,8 +70,9 @@ export class ArmazemController {
 
   delete: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    await this.armazemService.delete(parseInt(id));
+    await this.armazemService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };
