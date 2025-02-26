@@ -72,12 +72,16 @@ export class RequisitanteServiceImpl implements RequisitanteService {
 
     return requisitante;
   }
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userId: string): Promise<void> {
     const requisitanteExists = await requisitanteRepository.findOneBy({ id });
 
     if (!requisitanteExists) {
       throw new NotFoundError("Requisitante not found");
     }
+
+    requisitanteExists.userId = userId;
+
+    await requisitanteRepository.save(requisitanteExists);
 
     await requisitanteRepository.softDelete(id);
 

@@ -72,12 +72,16 @@ export class EquipamentoServiceImpl implements EquipamentoService {
 
     return equipamento;
   }
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userId: string): Promise<void> {
     const equipamentoExists = await equipamentoRepository.findOneBy({ id });
 
     if (!equipamentoExists) {
       throw new NotFoundError("Equipamento not found");
     }
+
+    equipamentoExists.userId = userId;
+
+    await equipamentoRepository.save(equipamentoExists);
 
     await equipamentoRepository.softDelete(id);
 

@@ -64,6 +64,8 @@ const Insumos = () => {
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        setSelectedInsumo(undefined);
+        setConfirmModalOpen(false);
         showAlert("Insumo deletado com sucesso", "success");
       },
       onError: (error) => {

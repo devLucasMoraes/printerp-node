@@ -63,6 +63,8 @@ const Equipamentos = () => {
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        setSelectedEquipamento(undefined);
+        setConfirmModalOpen(false);
         showAlert("Equipamento deletado com sucesso", "success");
       },
       onError: (error) => {

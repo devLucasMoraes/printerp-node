@@ -64,6 +64,8 @@ const Armazens = () => {
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        setSelectedArmazem(undefined);
+        setConfirmModalOpen(false);
         showAlert("Armazém deletado com sucesso", "success");
       },
       onError: (error) => {

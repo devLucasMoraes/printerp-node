@@ -162,6 +162,7 @@ export class UpdateRequisicaoEstoqueUseCase {
       requisitante: dto.requisitante,
       equipamento: dto.equipamento,
       armazem: dto.armazem,
+      userId: dto.userId,
       itens: dto.itens.map((itemDTO) => {
         return {
           id: itemDTO.id || undefined,

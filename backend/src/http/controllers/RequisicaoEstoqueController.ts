@@ -37,8 +37,12 @@ export class RequisicaoEstoqueController {
 
   create: RequestHandler = async (req, res) => {
     const dto: CreateRequisicaoEstoqueDTO = req.body;
+    const userId = req.user.id;
 
-    const result = await this.requisicaoEstoqueService.create(dto);
+    const result = await this.requisicaoEstoqueService.create({
+      ...dto,
+      userId,
+    });
 
     const mappedResult = this.toDTO(result);
 
@@ -58,11 +62,12 @@ export class RequisicaoEstoqueController {
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const dto: UpdateRequisicaoEstoqueDTO = req.body;
+    const userId = req.user.id;
 
-    const result = await this.requisicaoEstoqueService.update(
-      parseInt(id),
-      dto
-    );
+    const result = await this.requisicaoEstoqueService.update(parseInt(id), {
+      ...dto,
+      userId,
+    });
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);

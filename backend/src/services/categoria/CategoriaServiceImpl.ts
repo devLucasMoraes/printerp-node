@@ -69,12 +69,16 @@ export class CategoriaServiceImpl implements CategoriaService {
 
     return categoria;
   }
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userID: string): Promise<void> {
     const categoriaExists = await categoriaRepository.findOneBy({ id });
 
     if (!categoriaExists) {
       throw new NotFoundError("Categoria not found");
     }
+
+    categoriaExists.userId = userID;
+
+    await categoriaRepository.save(categoriaExists);
 
     await categoriaRepository.softDelete(id);
 

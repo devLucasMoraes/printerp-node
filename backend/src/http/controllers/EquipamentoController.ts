@@ -35,9 +35,11 @@ export class EquipamentoController {
 
   create: RequestHandler = async (req, res) => {
     const { nome }: EquipamentoCreateDto = req.body;
+    const userId = req.user.id;
 
     const equipamento = new Equipamento({
       nome,
+      userId,
     });
 
     const result = await this.equipamentoService.create(equipamento);
@@ -60,9 +62,11 @@ export class EquipamentoController {
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const { nome }: EquipamentoUpdateDto = req.body;
+    const userId = req.user.id;
 
     const equipamento = new Equipamento({
       nome,
+      userId,
     });
 
     const result = await this.equipamentoService.update(
@@ -76,8 +80,9 @@ export class EquipamentoController {
 
   delete: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    await this.equipamentoService.delete(parseInt(id));
+    await this.equipamentoService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };

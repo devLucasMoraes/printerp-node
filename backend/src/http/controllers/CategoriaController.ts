@@ -35,9 +35,11 @@ export class CategoriaController {
 
   create: RequestHandler = async (req, res) => {
     const { nome }: CategoriaCreateDto = req.body;
+    const userId = req.user.id;
 
     const categoria = new Categoria({
       nome,
+      userId,
     });
 
     const result = await this.categoriaService.create(categoria);
@@ -60,9 +62,11 @@ export class CategoriaController {
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const { nome }: CategoriaUpdateDto = req.body;
+    const userId = req.user.id;
 
     const categoria = new Categoria({
       nome,
+      userId,
     });
 
     const result = await this.categoriaService.update(parseInt(id), categoria);
@@ -73,8 +77,9 @@ export class CategoriaController {
 
   delete: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    await this.categoriaService.delete(parseInt(id));
+    await this.categoriaService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };

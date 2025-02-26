@@ -68,6 +68,8 @@ const RequisicoesEstoque = () => {
     deleteById(id, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["estoque"] });
+        setSelectedRequisicaoEstoque(undefined);
+        setConfirmModalOpen(false);
         showAlert("Requisição deletada com sucesso", "success");
       },
       onError: (error) => {

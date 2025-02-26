@@ -66,12 +66,16 @@ export class InsumoServiceImpl implements InsumoService {
 
     return insumo;
   }
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userId: string): Promise<void> {
     const insumoExists = await insumoRepository.findOneBy({ id });
 
     if (!insumoExists) {
       throw new NotFoundError("Insumo not found");
     }
+
+    insumoExists.userId = userId;
+
+    await insumoRepository.save(insumoExists);
 
     await insumoRepository.softDelete(id);
 

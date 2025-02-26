@@ -64,6 +64,8 @@ const Requisitantes = () => {
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
+        setSelectedRequisitante(undefined);
+        setConfirmModalOpen(false);
         showAlert("Requisitante deletado com sucesso", "success");
       },
       onError: (error) => {

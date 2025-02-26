@@ -35,10 +35,12 @@ export class RequisitanteController {
 
   create: RequestHandler = async (req, res) => {
     const { nome, fone }: RequisitanteCreateDto = req.body;
+    const userId = req.user.id;
 
     const requisitante = new Requisitante({
       nome,
       fone,
+      userId,
     });
 
     const result = await this.requisitanteService.create(requisitante);
@@ -61,10 +63,12 @@ export class RequisitanteController {
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const { nome, fone }: RequisitanteUpdateDto = req.body;
+    const userId = req.user.id;
 
     const requisitante = new Requisitante({
       nome,
       fone,
+      userId,
     });
 
     const result = await this.requisitanteService.update(
@@ -78,8 +82,9 @@ export class RequisitanteController {
 
   delete: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    await this.requisitanteService.delete(parseInt(id));
+    await this.requisitanteService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };

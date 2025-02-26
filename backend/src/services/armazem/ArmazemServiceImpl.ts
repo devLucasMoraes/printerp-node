@@ -42,8 +42,8 @@ export class ArmazemServiceImpl implements ArmazemService {
     return armazem;
   }
 
-  async delete(id: number): Promise<void> {
-    await this.deleteArmazemUseCase.execute(id);
+  async delete(id: number, userId: string): Promise<void> {
+    await this.deleteArmazemUseCase.execute(id, userId);
     SocketService.getInstance().emitEntityChange("armazem", "delete");
   }
 

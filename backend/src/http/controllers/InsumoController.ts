@@ -40,6 +40,7 @@ export class InsumoController {
       estoqueMinimo,
       categoria,
     }: InsumoCreateDto = req.body;
+    const userId = req.user.id;
 
     const insumo = new Insumo({
       descricao,
@@ -48,6 +49,7 @@ export class InsumoController {
       undEstoque,
       estoqueMinimo,
       categoria: new Categoria({ id: categoria.id }),
+      userId,
     });
 
     const result = await this.insumoService.create(insumo);
@@ -69,6 +71,7 @@ export class InsumoController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
     const {
       descricao,
@@ -86,6 +89,7 @@ export class InsumoController {
       undEstoque,
       estoqueMinimo,
       categoria: new Categoria({ id: categoria.id }),
+      userId,
     });
 
     const result = await this.insumoService.update(parseInt(id), insumo);
@@ -96,8 +100,9 @@ export class InsumoController {
 
   delete: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    await this.insumoService.delete(parseInt(id));
+    await this.insumoService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };

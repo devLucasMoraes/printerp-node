@@ -37,6 +37,7 @@ export const requisicaoEstoqueCreateSchema = z.object({
     id: z.number(),
   }),
   itens: z.array(requisicaoEstoqueItemCreateSchema),
+  userId: z.string().optional(),
 });
 
 export type CreateRequisicaoEstoqueDTO = z.infer<
@@ -58,6 +59,7 @@ export const requisicaoEstoqueUpdateSchema = z.object({
     id: z.number(),
   }),
   itens: z.array(requisicaoEstoqueItemUpdateSchema),
+  userId: z.string().optional(),
 });
 
 export type UpdateRequisicaoEstoqueDTO = z.infer<

@@ -83,6 +83,7 @@ export class CreateRequisicaoEstoqueUseCase {
       requisitante: dto.requisitante,
       equipamento: dto.equipamento,
       armazem: dto.armazem,
+      userId: dto.userId,
       itens: dto.itens.map((itemDTO) => {
         return {
           insumo: itemDTO.insumo,
