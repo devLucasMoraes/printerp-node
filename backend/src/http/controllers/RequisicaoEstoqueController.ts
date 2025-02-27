@@ -22,9 +22,14 @@ export class RequisicaoEstoqueController {
 
   listPaginated: RequestHandler = async (req, res) => {
     const { page, size, sort } = req.query;
+    const defaultSort = "dataRequisicao,desc";
     // arrumar isso aqui depois para fazer a verificação de tipo com o zod
     const result = await this.requisicaoEstoqueService.listPaginated(
-      pageable(page as string, size as string, sort as string | string[])
+      pageable(
+        page as string,
+        size as string,
+        (sort as string | string[]) ?? (defaultSort as string | string[])
+      )
     );
 
     const mappedResult = {
