@@ -57,6 +57,9 @@ export class Insumo {
   @JoinColumn({ name: "categoria_id" })
   categoria: Categoria;
 
+  @Column({ type: "boolean", default: true })
+  ativo: boolean;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

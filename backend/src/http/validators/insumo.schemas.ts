@@ -13,9 +13,10 @@ export const insumoCreateSchema = z.object({
   categoria: z.object({
     id: z.number(),
   }),
+  userId: z.string().optional(),
 });
 
-export type InsumoCreateDto = z.infer<typeof insumoCreateSchema>;
+export type CreateInsumoDTO = z.infer<typeof insumoCreateSchema>;
 
 export const insumoUpdateSchema = z.object({
   descricao: z

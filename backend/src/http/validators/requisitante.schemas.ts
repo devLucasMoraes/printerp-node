@@ -3,16 +3,19 @@ import { z } from "zod";
 export const requisitanteCreateSchema = z.object({
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
   fone: z.string().max(20, "Telefone muito longo"),
+  userId: z.string().optional(),
 });
 
-export type RequisitanteCreateDto = z.infer<typeof requisitanteCreateSchema>;
+export type CreateRequisitanteDTO = z.infer<typeof requisitanteCreateSchema>;
 
 export const requisitanteUpdateSchema = z.object({
+  id: z.number(),
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
   fone: z.string().max(20, "Telefone muito longo"),
+  userId: z.string().optional(),
 });
 
-export type RequisitanteUpdateDto = z.infer<typeof requisitanteUpdateSchema>;
+export type UpdateRequisitanteDTO = z.infer<typeof requisitanteUpdateSchema>;
 
 export const requisitanteParamsSchema = z.object({
   id: z.string().refine((value) => {

@@ -2,15 +2,18 @@ import { z } from "zod";
 
 export const categoriaCreateSchema = z.object({
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
+  userId: z.string().optional(),
 });
 
-export type CategoriaCreateDto = z.infer<typeof categoriaCreateSchema>;
+export type CreateCategoriaDTO = z.infer<typeof categoriaCreateSchema>;
 
 export const categoriaUpdateSchema = z.object({
+  id: z.number(),
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
+  userId: z.string().optional(),
 });
 
-export type CategoriaUpdateDto = z.infer<typeof categoriaUpdateSchema>;
+export type UpdateCategoriaDTO = z.infer<typeof categoriaUpdateSchema>;
 
 export const categoriaParamsSchema = z.object({
   id: z.string().refine((value) => {

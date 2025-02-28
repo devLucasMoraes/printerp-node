@@ -20,6 +20,9 @@ export class Requisitante {
   @Column({ type: "varchar", length: 255 })
   fone: string;
 
+  @Column({ type: "boolean", default: true })
+  ativo: boolean;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

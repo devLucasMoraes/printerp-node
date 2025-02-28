@@ -17,6 +17,9 @@ export class Categoria {
   @Column({ type: "varchar", length: 255, unique: true })
   nome: string;
 
+  @Column({ type: "boolean", default: true })
+  ativo: boolean;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

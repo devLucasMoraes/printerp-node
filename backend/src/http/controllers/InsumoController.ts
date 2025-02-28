@@ -3,7 +3,7 @@ import { Categoria } from "../../domain/entities/Categoria";
 import { Insumo } from "../../domain/entities/Insumo";
 import { InsumoService } from "../../domain/services/InsumoService";
 import { pageable } from "../../shared/utils/pageable";
-import { InsumoCreateDto } from "../validators/insumo.schemas";
+import { CreateInsumoDTO } from "../validators/insumo.schemas";
 
 export class InsumoController {
   constructor(private readonly insumoService: InsumoService) {}
@@ -39,7 +39,7 @@ export class InsumoController {
       undEstoque,
       estoqueMinimo,
       categoria,
-    }: InsumoCreateDto = req.body;
+    }: CreateInsumoDTO = req.body;
     const userId = req.user.id;
 
     const insumo = new Insumo({
@@ -80,7 +80,7 @@ export class InsumoController {
       undEstoque,
       estoqueMinimo,
       categoria,
-    }: InsumoCreateDto = req.body;
+    }: CreateInsumoDTO = req.body;
 
     const insumo = new Insumo({
       descricao,
