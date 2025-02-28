@@ -1,38 +1,38 @@
 import { Requisitante } from "../../domain/entities/Requisitante";
-import { requisitanteRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
-import { BadRequestError, NotFoundError } from "../../shared/errors";
+import { CreateRequisitanteUseCase } from "../../domain/useCases/requisitante/CreateRequisitanteUseCase";
+import { DeleteRequisitanteUseCase } from "../../domain/useCases/requisitante/DeleteRequisitanteUseCase";
+import { GetAllRequisitanteUseCase } from "../../domain/useCases/requisitante/GetAllRequisitanteUseCase";
+import { GetRequisitanteUseCase } from "../../domain/useCases/requisitante/GetRequisitanteUseCase";
+import { ListRequisitanteUseCase } from "../../domain/useCases/requisitante/ListEquipamentoUseCase";
+import { UpdateRequisitanteUseCase } from "../../domain/useCases/requisitante/UpdateEquipamentoUseCase";
+import {
+  CreateRequisitanteDTO,
+  UpdateRequisitanteDTO,
+} from "../../http/validators/requisitante.schemas";
 import { SocketService } from "../socket/SocketService";
 
 export class RequisitanteServiceImpl implements RequisitanteService {
+  constructor(
+    private readonly createRequisitanteUseCase: CreateRequisitanteUseCase,
+    private readonly updateRequisitanteUseCase: UpdateRequisitanteUseCase,
+    private readonly deleteRequisitanteUseCase: DeleteRequisitanteUseCase,
+    private readonly getRequisitanteUseCase: GetRequisitanteUseCase,
+    private readonly getAllRequisitanteUseCase: GetAllRequisitanteUseCase,
+    private readonly listRequisitanteUseCase: ListRequisitanteUseCase
+  ) {}
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Requisitante>> {
-    return await requisitanteRepository.findAllPaginated(pageRequest);
+    return await this.listRequisitanteUseCase.execute(pageRequest);
   }
   async list(): Promise<Requisitante[]> {
-    return await requisitanteRepository.find();
+    return await this.getAllRequisitanteUseCase.execute();
   }
   async show(id: number): Promise<Requisitante> {
-    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
-
-    if (!requisitanteExists) {
-      throw new NotFoundError("Requisitante not found");
-    }
-
-    return requisitanteExists;
+    return await this.getRequisitanteUseCase.execute(id);
   }
-  async create(entity: Requisitante): Promise<Requisitante> {
-    const { nome } = entity;
-
-    const requisitanteExists = await requisitanteRepository.findOneBy({ nome });
-
-    if (requisitanteExists) {
-      throw new BadRequestError("Requisitante already exists");
-    }
-
-    const newRequisitante = requisitanteRepository.create(entity);
-
-    const requisitante = await requisitanteRepository.save(newRequisitante);
+  async create(dto: CreateRequisitanteDTO): Promise<Requisitante> {
+    const requisitante = await this.createRequisitanteUseCase.execute(dto);
 
     SocketService.getInstance().emitEntityChange(
       "requisitante",
@@ -42,27 +42,8 @@ export class RequisitanteServiceImpl implements RequisitanteService {
 
     return requisitante;
   }
-  async update(id: number, entity: Requisitante): Promise<Requisitante> {
-    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
-
-    if (!requisitanteExists) {
-      throw new NotFoundError("Requisitante not found");
-    }
-
-    const { nome } = entity;
-
-    const nameExists = await requisitanteRepository.findOneBy({ nome });
-
-    if (nameExists && nameExists.id !== id) {
-      throw new BadRequestError("Requisitante already exists");
-    }
-
-    const updatedRequisitante = requisitanteRepository.merge(
-      requisitanteExists,
-      entity
-    );
-
-    const requisitante = await requisitanteRepository.save(updatedRequisitante);
+  async update(id: number, dto: UpdateRequisitanteDTO): Promise<Requisitante> {
+    const requisitante = await this.updateRequisitanteUseCase.execute(id, dto);
 
     SocketService.getInstance().emitEntityChange(
       "requisitante",
@@ -73,20 +54,8 @@ export class RequisitanteServiceImpl implements RequisitanteService {
     return requisitante;
   }
   async delete(id: number, userId: string): Promise<void> {
-    const requisitanteExists = await requisitanteRepository.findOneBy({ id });
-
-    if (!requisitanteExists) {
-      throw new NotFoundError("Requisitante not found");
-    }
-
-    requisitanteExists.userId = userId;
-
-    await requisitanteRepository.save(requisitanteExists);
-
-    await requisitanteRepository.softDelete(id);
+    await this.deleteRequisitanteUseCase.execute(id, userId);
 
     SocketService.getInstance().emitEntityChange("requisitante", "delete");
-
-    return Promise.resolve();
   }
 }

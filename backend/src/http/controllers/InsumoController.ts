@@ -1,9 +1,8 @@
 import { RequestHandler } from "express";
-import { Categoria } from "../../domain/entities/Categoria";
 import { Insumo } from "../../domain/entities/Insumo";
 import { InsumoService } from "../../domain/services/InsumoService";
 import { pageable } from "../../shared/utils/pageable";
-import { CreateInsumoDTO } from "../validators/insumo.schemas";
+import { CreateInsumoDTO, UpdateInsumoDTO } from "../validators/insumo.schemas";
 
 export class InsumoController {
   constructor(private readonly insumoService: InsumoService) {}
@@ -32,27 +31,10 @@ export class InsumoController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const {
-      descricao,
-      valorUntMed,
-      valorUntMedAuto,
-      undEstoque,
-      estoqueMinimo,
-      categoria,
-    }: CreateInsumoDTO = req.body;
+    const dto: CreateInsumoDTO = req.body;
     const userId = req.user.id;
 
-    const insumo = new Insumo({
-      descricao,
-      valorUntMed,
-      valorUntMedAuto,
-      undEstoque,
-      estoqueMinimo,
-      categoria: new Categoria({ id: categoria.id }),
-      userId,
-    });
-
-    const result = await this.insumoService.create(insumo);
+    const result = await this.insumoService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -73,26 +55,12 @@ export class InsumoController {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const {
-      descricao,
-      valorUntMed,
-      valorUntMedAuto,
-      undEstoque,
-      estoqueMinimo,
-      categoria,
-    }: CreateInsumoDTO = req.body;
+    const dto: UpdateInsumoDTO = req.body;
 
-    const insumo = new Insumo({
-      descricao,
-      valorUntMed,
-      valorUntMedAuto,
-      undEstoque,
-      estoqueMinimo,
-      categoria: new Categoria({ id: categoria.id }),
+    const result = await this.insumoService.update(parseInt(id), {
+      ...dto,
       userId,
     });
-
-    const result = await this.insumoService.update(parseInt(id), insumo);
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);

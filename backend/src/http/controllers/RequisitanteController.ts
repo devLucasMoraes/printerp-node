@@ -3,8 +3,8 @@ import { Requisitante } from "../../domain/entities/Requisitante";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
 import { pageable } from "../../shared/utils/pageable";
 import {
-  RequisitanteCreateDto,
-  RequisitanteUpdateDto,
+  CreateRequisitanteDTO,
+  UpdateRequisitanteDTO,
 } from "../validators/requisitante.schemas";
 
 export class RequisitanteController {
@@ -34,16 +34,10 @@ export class RequisitanteController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const { nome, fone }: RequisitanteCreateDto = req.body;
+    const dto: CreateRequisitanteDTO = req.body;
     const userId = req.user.id;
 
-    const requisitante = new Requisitante({
-      nome,
-      fone,
-      userId,
-    });
-
-    const result = await this.requisitanteService.create(requisitante);
+    const result = await this.requisitanteService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -62,19 +56,13 @@ export class RequisitanteController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const { nome, fone }: RequisitanteUpdateDto = req.body;
+    const dto: UpdateRequisitanteDTO = req.body;
     const userId = req.user.id;
 
-    const requisitante = new Requisitante({
-      nome,
-      fone,
+    const result = await this.requisitanteService.update(parseInt(id), {
+      ...dto,
       userId,
     });
-
-    const result = await this.requisitanteService.update(
-      parseInt(id),
-      requisitante
-    );
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);

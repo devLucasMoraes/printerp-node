@@ -19,6 +19,7 @@ export const insumoCreateSchema = z.object({
 export type CreateInsumoDTO = z.infer<typeof insumoCreateSchema>;
 
 export const insumoUpdateSchema = z.object({
+  id: z.number(),
   descricao: z
     .string()
     .min(3, "Nome é obrigatório")
@@ -30,9 +31,10 @@ export const insumoUpdateSchema = z.object({
   categoria: z.object({
     id: z.number(),
   }),
+  userId: z.string().optional(),
 });
 
-export type InsumoUpdateDto = z.infer<typeof insumoUpdateSchema>;
+export type UpdateInsumoDTO = z.infer<typeof insumoUpdateSchema>;
 
 export const insumoParamsSchema = z.object({
   id: z.string().refine((value) => {

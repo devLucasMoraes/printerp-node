@@ -3,8 +3,8 @@ import { Categoria } from "../../domain/entities/Categoria";
 import { CategoriaService } from "../../domain/services/CategoriaService";
 import { pageable } from "../../shared/utils/pageable";
 import {
-  CategoriaCreateDto,
-  CategoriaUpdateDto,
+  CreateCategoriaDTO,
+  UpdateCategoriaDTO,
 } from "../validators/categoria.schemas";
 
 export class CategoriaController {
@@ -34,15 +34,10 @@ export class CategoriaController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const { nome }: CategoriaCreateDto = req.body;
+    const dto: CreateCategoriaDTO = req.body;
     const userId = req.user.id;
 
-    const categoria = new Categoria({
-      nome,
-      userId,
-    });
-
-    const result = await this.categoriaService.create(categoria);
+    const result = await this.categoriaService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -61,15 +56,13 @@ export class CategoriaController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const { nome }: CategoriaUpdateDto = req.body;
+    const dto: UpdateCategoriaDTO = req.body;
     const userId = req.user.id;
 
-    const categoria = new Categoria({
-      nome,
+    const result = await this.categoriaService.update(parseInt(id), {
+      ...dto,
       userId,
     });
-
-    const result = await this.categoriaService.update(parseInt(id), categoria);
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);

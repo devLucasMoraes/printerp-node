@@ -1,38 +1,38 @@
 import { Equipamento } from "../../domain/entities/Equipamento";
-import { equipamentoRepository } from "../../domain/repositories";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { EquipamentoService } from "../../domain/services/EquipamentoService";
-import { BadRequestError, NotFoundError } from "../../shared/errors";
+import { CreateEquipamentoUseCase } from "../../domain/useCases/equipamento/CreateEquipamentoUseCase";
+import { DeleteEquipamentoUseCase } from "../../domain/useCases/equipamento/DeleteEquipamentoUseCase";
+import { GetAllEquipamentoUseCase } from "../../domain/useCases/equipamento/GetAllEquipamentoUseCase";
+import { GetEquipamentoUseCase } from "../../domain/useCases/equipamento/GetEquipamentoUseCase";
+import { ListEquipamentoUseCase } from "../../domain/useCases/equipamento/ListEquipamentoUseCase";
+import { UpdateEquipamentoUseCase } from "../../domain/useCases/equipamento/UpdateEquipamentoUseCase";
+import {
+  CreateEquipamentoDTO,
+  UpdateEquipamentoDTO,
+} from "../../http/validators/equipamento.schemas";
 import { SocketService } from "../socket/SocketService";
 
 export class EquipamentoServiceImpl implements EquipamentoService {
+  constructor(
+    private readonly createEquipamentoUseCase: CreateEquipamentoUseCase,
+    private readonly updateEquipamentoUseCase: UpdateEquipamentoUseCase,
+    private readonly deleteEquipamentoUseCase: DeleteEquipamentoUseCase,
+    private readonly getEquipamentoUseCase: GetEquipamentoUseCase,
+    private readonly getAllEquipamentoUseCase: GetAllEquipamentoUseCase,
+    private readonly listEquipamentoUseCase: ListEquipamentoUseCase
+  ) {}
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Equipamento>> {
-    return await equipamentoRepository.findAllPaginated(pageRequest);
+    return await this.listEquipamentoUseCase.execute(pageRequest);
   }
   async list(): Promise<Equipamento[]> {
-    return await equipamentoRepository.find();
+    return await this.getAllEquipamentoUseCase.execute();
   }
   async show(id: number): Promise<Equipamento> {
-    const equipamentoExists = await equipamentoRepository.findOneBy({ id });
-
-    if (!equipamentoExists) {
-      throw new NotFoundError("Equipamento not found");
-    }
-
-    return equipamentoExists;
+    return await this.getEquipamentoUseCase.execute(id);
   }
-  async create(entity: Equipamento): Promise<Equipamento> {
-    const { nome } = entity;
-
-    const equipamentoExists = await equipamentoRepository.findOneBy({ nome });
-
-    if (equipamentoExists) {
-      throw new BadRequestError("Equipamento already exists");
-    }
-
-    const newEquipamento = equipamentoRepository.create(entity);
-
-    const equipamento = await equipamentoRepository.save(newEquipamento);
+  async create(dto: CreateEquipamentoDTO): Promise<Equipamento> {
+    const equipamento = await this.createEquipamentoUseCase.execute(dto);
 
     SocketService.getInstance().emitEntityChange(
       "equipamento",
@@ -42,27 +42,8 @@ export class EquipamentoServiceImpl implements EquipamentoService {
 
     return equipamento;
   }
-  async update(id: number, entity: Equipamento): Promise<Equipamento> {
-    const equipamentoExists = await equipamentoRepository.findOneBy({ id });
-
-    if (!equipamentoExists) {
-      throw new NotFoundError("Equipamento not found");
-    }
-
-    const { nome } = entity;
-
-    const nameExists = await equipamentoRepository.findOneBy({ nome });
-
-    if (nameExists && nameExists.id !== id) {
-      throw new BadRequestError("Equipamento already exists");
-    }
-
-    const updatedEquipamento = equipamentoRepository.merge(
-      equipamentoExists,
-      entity
-    );
-
-    const equipamento = await equipamentoRepository.save(updatedEquipamento);
+  async update(id: number, dto: UpdateEquipamentoDTO): Promise<Equipamento> {
+    const equipamento = await this.updateEquipamentoUseCase.execute(id, dto);
 
     SocketService.getInstance().emitEntityChange(
       "equipamento",
@@ -73,20 +54,8 @@ export class EquipamentoServiceImpl implements EquipamentoService {
     return equipamento;
   }
   async delete(id: number, userId: string): Promise<void> {
-    const equipamentoExists = await equipamentoRepository.findOneBy({ id });
-
-    if (!equipamentoExists) {
-      throw new NotFoundError("Equipamento not found");
-    }
-
-    equipamentoExists.userId = userId;
-
-    await equipamentoRepository.save(equipamentoExists);
-
-    await equipamentoRepository.softDelete(id);
+    await this.deleteEquipamentoUseCase.execute(id, userId);
 
     SocketService.getInstance().emitEntityChange("equipamento", "delete");
-
-    return Promise.resolve();
   }
 }

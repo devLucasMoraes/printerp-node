@@ -3,8 +3,8 @@ import { Equipamento } from "../../domain/entities/Equipamento";
 import { EquipamentoService } from "../../domain/services/EquipamentoService";
 import { pageable } from "../../shared/utils/pageable";
 import {
-  EquipamentoCreateDto,
-  EquipamentoUpdateDto,
+  CreateEquipamentoDTO,
+  UpdateEquipamentoDTO,
 } from "../validators/equipamento.schemas";
 
 export class EquipamentoController {
@@ -34,15 +34,10 @@ export class EquipamentoController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const { nome }: EquipamentoCreateDto = req.body;
+    const dto: CreateEquipamentoDTO = req.body;
     const userId = req.user.id;
 
-    const equipamento = new Equipamento({
-      nome,
-      userId,
-    });
-
-    const result = await this.equipamentoService.create(equipamento);
+    const result = await this.equipamentoService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -61,18 +56,13 @@ export class EquipamentoController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const { nome }: EquipamentoUpdateDto = req.body;
+    const dto: UpdateEquipamentoDTO = req.body;
     const userId = req.user.id;
 
-    const equipamento = new Equipamento({
-      nome,
+    const result = await this.equipamentoService.update(parseInt(id), {
+      ...dto,
       userId,
     });
-
-    const result = await this.equipamentoService.update(
-      parseInt(id),
-      equipamento
-    );
     const mappedResult = this.toDTO(result);
 
     res.status(200).json(mappedResult);
