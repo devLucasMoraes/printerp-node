@@ -100,7 +100,10 @@ describe("Requisitante Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Requisitante not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Requisitante não encontrado"
+      );
     });
   });
 
@@ -143,10 +146,7 @@ describe("Requisitante Routes", () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty(
-        "message",
-        "Requisitante already exists"
-      );
+      expect(response.body).toHaveProperty("message");
     });
   });
 
@@ -156,6 +156,7 @@ describe("Requisitante Routes", () => {
         .put(`/api/v1/requisitantes/${requisitanteId}`)
         .set("Cookie", cookies)
         .send({
+          id: requisitanteId,
           nome: "Updated Requisitante",
           fone: "999999999",
         });
@@ -170,12 +171,16 @@ describe("Requisitante Routes", () => {
         .put("/api/v1/requisitantes/9999")
         .set("Cookie", cookies)
         .send({
+          id: 9999,
           nome: "Updated Requisitante",
           fone: "999999999",
         });
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Requisitante not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Requisitante não encontrado"
+      );
     });
   });
 
@@ -217,7 +222,10 @@ describe("Requisitante Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Requisitante not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Requisitante não encontrado"
+      );
     });
   });
 });

@@ -1,11 +1,9 @@
 import { Equipamento } from "../../entities/Equipamento";
+import { equipamentoRepository } from "../../repositories";
 import { Page, PageRequest } from "../../repositories/BaseRepository";
-import { EquipamentoRepository } from "../../repositories/EquipamentoRepository";
 
-export class ListEquipamentoUseCase {
-  constructor(private readonly equipamentoRepository: EquipamentoRepository) {}
-
+export const listEquipamentoUseCase = {
   async execute(pageRequest?: PageRequest): Promise<Page<Equipamento>> {
-    return await this.equipamentoRepository.findAllPaginated(pageRequest);
-  }
-}
+    return await equipamentoRepository.findAllPaginated(pageRequest);
+  },
+};

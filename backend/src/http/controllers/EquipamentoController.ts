@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Equipamento } from "../../domain/entities/Equipamento";
 import { EquipamentoService } from "../../domain/services/EquipamentoService";
+import { EquipamentoServiceImpl } from "../../services/equipamento/EquipamentoServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import {
   CreateEquipamentoDTO,
@@ -86,3 +87,7 @@ export class EquipamentoController {
     };
   }
 }
+
+export const equipamentoController = new EquipamentoController(
+  new EquipamentoServiceImpl()
+);

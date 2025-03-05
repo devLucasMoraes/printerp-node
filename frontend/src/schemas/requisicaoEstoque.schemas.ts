@@ -4,7 +4,7 @@ import { Unidade } from "../constants/Unidade";
 const requisicaoEstoqueItemCreateSchema = z.object({
   id: z.null(),
   quantidade: z.number().nonnegative(),
-  undEstoque: z.nativeEnum(Unidade),
+  unidade: z.nativeEnum(Unidade),
   valorUnitario: z.number().nonnegative(),
   insumo: z.object({
     id: z.number(),
@@ -14,7 +14,7 @@ const requisicaoEstoqueItemCreateSchema = z.object({
 const requisicaoEstoqueItemUpdateSchema = z.object({
   id: z.number().nullable(),
   quantidade: z.number().nonnegative(),
-  undEstoque: z.nativeEnum(Unidade),
+  unidade: z.nativeEnum(Unidade),
   valorUnitario: z.number().nonnegative(),
   insumo: z.object({
     id: z.number(),

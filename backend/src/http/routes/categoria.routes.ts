@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { CategoriaServiceImpl } from "../../services/categoria/CategoriaServiceImpl";
-import { CategoriaController } from "../controllers/CategoriaController";
+import { categoriaController } from "../controllers/CategoriaController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -9,9 +8,6 @@ import {
   categoriaQuerySchema,
   categoriaUpdateSchema,
 } from "../validators/categoria.schemas";
-
-const categoriaService = new CategoriaServiceImpl();
-const categoriaController = new CategoriaController(categoriaService);
 
 const categoriaRoutes = Router();
 

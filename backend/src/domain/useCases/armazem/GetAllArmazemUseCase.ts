@@ -1,10 +1,8 @@
 import { Armazem } from "../../entities/Armazem";
-import { ArmazemRepository } from "../../repositories/ArmazemRepository";
+import { armazemRepository } from "../../repositories";
 
-export class GetAllArmazemUseCase {
-  constructor(private readonly armazemRepository: ArmazemRepository) {}
-
+export const getAllArmazemUseCase = {
   async execute(): Promise<Armazem[]> {
-    return await this.armazemRepository.find();
-  }
-}
+    return await armazemRepository.find();
+  },
+};

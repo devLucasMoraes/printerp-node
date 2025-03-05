@@ -1,19 +1,15 @@
 import { NotFoundError } from "../../../shared/errors";
 import { Requisitante } from "../../entities/Requisitante";
-import { RequisitanteRepository } from "../../repositories/RequisitanteRepository";
+import { requisitanteRepository } from "../../repositories";
 
-export class GetRequisitanteUseCase {
-  constructor(
-    private readonly requisitanteRepository: RequisitanteRepository
-  ) {}
-
+export const getRequisitanteUseCase = {
   async execute(id: number): Promise<Requisitante> {
-    const requisitante = await this.requisitanteRepository.findOneBy({ id });
+    const requisitante = await requisitanteRepository.findOneBy({ id });
 
     if (!requisitante) {
       throw new NotFoundError("Requisitante não encontrado");
     }
 
     return requisitante;
-  }
-}
+  },
+};

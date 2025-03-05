@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Armazem } from "../../domain/entities/Armazem";
 import { ArmazemService } from "../../domain/services/ArmazemService";
+import { ArmazemServiceImpl } from "../../services/armazem/ArmazemServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import {
   CreateArmazemDTO,
@@ -85,3 +86,7 @@ export class ArmazemController {
     };
   }
 }
+
+export const armazemController = new ArmazemController(
+  new ArmazemServiceImpl()
+);

@@ -1,13 +1,9 @@
 import { Requisitante } from "../../entities/Requisitante";
+import { requisitanteRepository } from "../../repositories";
 import { Page, PageRequest } from "../../repositories/BaseRepository";
-import { RequisitanteRepository } from "../../repositories/RequisitanteRepository";
 
-export class ListRequisitanteUseCase {
-  constructor(
-    private readonly requisitanteRepository: RequisitanteRepository
-  ) {}
-
+export const listRequisitanteUseCase = {
   async execute(pageRequest?: PageRequest): Promise<Page<Requisitante>> {
-    return await this.requisitanteRepository.findAllPaginated(pageRequest);
-  }
-}
+    return await requisitanteRepository.findAllPaginated(pageRequest);
+  },
+};

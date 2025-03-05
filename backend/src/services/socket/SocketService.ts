@@ -90,11 +90,14 @@ export class SocketService {
     return this.instance;
   }
 
-  public static getInstance(): SocketService {
+  public static getInstance(): SocketService | null {
     if (!this.instance) {
+      console.error("SocketService is not initialized.");
+      /*
       throw new Error(
         "SocketService not initialized. Call initialize() first."
       );
+      */
     }
     return this.instance;
   }

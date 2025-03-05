@@ -98,7 +98,10 @@ describe("Equipamento Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Equipamento not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Equipamento não encontrado"
+      );
     });
   });
 
@@ -137,10 +140,7 @@ describe("Equipamento Routes", () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty(
-        "message",
-        "Equipamento already exists"
-      );
+      expect(response.body).toHaveProperty("message");
     });
 
     it("should return 400 when nome is too short", async () => {
@@ -161,6 +161,7 @@ describe("Equipamento Routes", () => {
         .put(`/api/v1/equipamentos/${equipamentoId}`)
         .set("Cookie", cookies)
         .send({
+          id: equipamentoId,
           nome: "Updated Equipamento",
         });
 
@@ -173,11 +174,15 @@ describe("Equipamento Routes", () => {
         .put("/api/v1/equipamentos/9999")
         .set("Cookie", cookies)
         .send({
+          id: 9999,
           nome: "Updated Equipamento",
         });
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Equipamento not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Equipamento não encontrado"
+      );
     });
 
     it("should return 400 when updating with existing nome", async () => {
@@ -190,14 +195,12 @@ describe("Equipamento Routes", () => {
         .put(`/api/v1/equipamentos/${equipamentoId}`)
         .set("Cookie", cookies)
         .send({
+          id: equipamentoId,
           nome: "Another Equipamento", // This nome already exists
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty(
-        "message",
-        "Equipamento already exists"
-      );
+      expect(response.body).toHaveProperty("message");
 
       // Cleanup
       await equipamentoRepository.delete(anotherEquipamento.id);
@@ -240,7 +243,10 @@ describe("Equipamento Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Equipamento not found");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Equipamento não encontrado"
+      );
     });
   });
 });

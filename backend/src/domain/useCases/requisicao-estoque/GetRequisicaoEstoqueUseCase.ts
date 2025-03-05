@@ -1,20 +1,17 @@
 import { NotFoundError } from "../../../shared/errors";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { RequisicaoEstoqueRepository } from "../../repositories/RequisicaoEstoqueRepository";
+import { requisicaoEstoqueRepository } from "../../repositories";
 
-export class GetRequisicaoEstoqueUseCase {
-  constructor(
-    private readonly requisicaoEstoqueRepository: RequisicaoEstoqueRepository
-  ) {}
-
+export const getRequisicaoEstoqueUseCase = {
   async execute(id: number): Promise<RequisicaoEstoque> {
-    const requisicao =
-      await this.requisicaoEstoqueRepository.findOneWithRelations(id);
+    const requisicao = await requisicaoEstoqueRepository.findOneWithRelations(
+      id
+    );
 
     if (!requisicao) {
       throw new NotFoundError("RequisicaoEstoque not found");
     }
 
     return requisicao;
-  }
-}
+  },
+};

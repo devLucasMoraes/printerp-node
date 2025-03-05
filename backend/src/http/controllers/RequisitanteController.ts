@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Requisitante } from "../../domain/entities/Requisitante";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
+import { RequisitanteServiceImpl } from "../../services/requisitante/RequisitanteServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import {
   CreateRequisitanteDTO,
@@ -87,3 +88,7 @@ export class RequisitanteController {
     };
   }
 }
+
+export const requisitanteController = new RequisitanteController(
+  new RequisitanteServiceImpl()
+);

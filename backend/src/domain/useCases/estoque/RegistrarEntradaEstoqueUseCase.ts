@@ -4,15 +4,10 @@ import { Estoque } from "../../entities/Estoque";
 import { Insumo } from "../../entities/Insumo";
 import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
 import { Unidade } from "../../entities/Unidade";
-import { MovimentoEstoqueRepository } from "../../repositories/MovimentoEstoqueRepository";
-import { InicializarEstoqueUseCase } from "./InicializarEstoqueUseCase";
+import { movimentoEstoqueRepository } from "../../repositories";
+import { inicializarEstoqueUseCase } from "./InicializarEstoqueUseCase";
 
-export class RegistrarEntradaEstoqueUseCase {
-  constructor(
-    private readonly movimentoEstoqueRepository: MovimentoEstoqueRepository,
-    private readonly inicializarEstoqueUseCase: InicializarEstoqueUseCase
-  ) {}
-
+export const registrarEntradaEstoqueUseCase = {
   async execute(
     params: {
       insumo: Insumo;
@@ -37,13 +32,13 @@ export class RegistrarEntradaEstoqueUseCase {
       observacao,
     } = params;
 
-    const estoque = await this.inicializarEstoqueUseCase.execute(
+    const estoque = await inicializarEstoqueUseCase.execute(
       insumo.id,
       armazem.id,
       manager
     );
 
-    const movimento = this.movimentoEstoqueRepository.create({
+    const movimento = movimentoEstoqueRepository.create({
       tipo: "ENTRADA",
       data: new Date(),
       insumo,
@@ -61,5 +56,5 @@ export class RegistrarEntradaEstoqueUseCase {
 
     estoque.quantidade = Number(estoque.quantidade) + Number(quantidade);
     await manager.save(Estoque, estoque);
-  }
-}
+  },
+};

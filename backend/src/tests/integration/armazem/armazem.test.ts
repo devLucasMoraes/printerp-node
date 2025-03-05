@@ -171,7 +171,7 @@ describe("Armazem Routes", () => {
           ativo: true,
         });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Armazém não encontrado");
     });
 
@@ -286,7 +286,7 @@ describe("Armazem Routes", () => {
         .delete("/api/v1/armazens/9999")
         .set("Cookie", cookies);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Armazém não encontrado");
     });
   });

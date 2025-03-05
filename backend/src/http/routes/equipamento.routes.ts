@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { EquipamentoServiceImpl } from "../../services/equipamento/EquipamentoServiceImpl";
-import { EquipamentoController } from "../controllers/EquipamentoController";
+import { equipamentoController } from "../controllers/EquipamentoController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -9,9 +8,6 @@ import {
   equipamentoQuerySchema,
   equipamentoUpdateSchema,
 } from "../validators/equipamento.schemas";
-
-const equipamentoService = new EquipamentoServiceImpl();
-const equipamentoController = new EquipamentoController(equipamentoService);
 
 const equipamentoRoutes = Router();
 

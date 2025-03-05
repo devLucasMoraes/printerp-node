@@ -1,13 +1,9 @@
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
+import { requisicaoEstoqueRepository } from "../../repositories";
 import { Page, PageRequest } from "../../repositories/BaseRepository";
-import { RequisicaoEstoqueRepository } from "../../repositories/RequisicaoEstoqueRepository";
 
-export class ListRequisicaoEstoqueUseCase {
-  constructor(
-    private readonly requisicaoEstoqueRepository: RequisicaoEstoqueRepository
-  ) {}
-
+export const listRequisicaoEstoqueUseCase = {
   async execute(pageRequest?: PageRequest): Promise<Page<RequisicaoEstoque>> {
-    return await this.requisicaoEstoqueRepository.findAllPaginated(pageRequest);
-  }
-}
+    return await requisicaoEstoqueRepository.findAllPaginated(pageRequest);
+  },
+};

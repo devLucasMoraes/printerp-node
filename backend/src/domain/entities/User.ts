@@ -23,6 +23,9 @@ export class User {
   @Column({ type: "varchar", length: 255 })
   password: string;
 
+  @Column({ type: "varchar", length: 255, default: "user" })
+  role: "user" | "admin";
+
   @Column({
     name: "token_version",
     type: "varchar",

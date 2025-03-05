@@ -1,12 +1,12 @@
 import { Requisitante } from "../../domain/entities/Requisitante";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { RequisitanteService } from "../../domain/services/RequisitanteService";
-import { CreateRequisitanteUseCase } from "../../domain/useCases/requisitante/CreateRequisitanteUseCase";
-import { DeleteRequisitanteUseCase } from "../../domain/useCases/requisitante/DeleteRequisitanteUseCase";
-import { GetAllRequisitanteUseCase } from "../../domain/useCases/requisitante/GetAllRequisitanteUseCase";
-import { GetRequisitanteUseCase } from "../../domain/useCases/requisitante/GetRequisitanteUseCase";
-import { ListRequisitanteUseCase } from "../../domain/useCases/requisitante/ListEquipamentoUseCase";
-import { UpdateRequisitanteUseCase } from "../../domain/useCases/requisitante/UpdateEquipamentoUseCase";
+import { createRequisitanteUseCase } from "../../domain/useCases/requisitante/CreateRequisitanteUseCase";
+import { deleteRequisitanteUseCase } from "../../domain/useCases/requisitante/DeleteRequisitanteUseCase";
+import { getAllRequisitanteUseCase } from "../../domain/useCases/requisitante/GetAllRequisitanteUseCase";
+import { getRequisitanteUseCase } from "../../domain/useCases/requisitante/GetRequisitanteUseCase";
+import { listRequisitanteUseCase } from "../../domain/useCases/requisitante/ListEquipamentoUseCase";
+import { updateRequisitanteUseCase } from "../../domain/useCases/requisitante/UpdateEquipamentoUseCase";
 import {
   CreateRequisitanteDTO,
   UpdateRequisitanteDTO,
@@ -14,48 +14,41 @@ import {
 import { SocketService } from "../socket/SocketService";
 
 export class RequisitanteServiceImpl implements RequisitanteService {
-  constructor(
-    private readonly createRequisitanteUseCase: CreateRequisitanteUseCase,
-    private readonly updateRequisitanteUseCase: UpdateRequisitanteUseCase,
-    private readonly deleteRequisitanteUseCase: DeleteRequisitanteUseCase,
-    private readonly getRequisitanteUseCase: GetRequisitanteUseCase,
-    private readonly getAllRequisitanteUseCase: GetAllRequisitanteUseCase,
-    private readonly listRequisitanteUseCase: ListRequisitanteUseCase
-  ) {}
   async listPaginated(pageRequest?: PageRequest): Promise<Page<Requisitante>> {
-    return await this.listRequisitanteUseCase.execute(pageRequest);
+    return await listRequisitanteUseCase.execute(pageRequest);
   }
   async list(): Promise<Requisitante[]> {
-    return await this.getAllRequisitanteUseCase.execute();
+    return await getAllRequisitanteUseCase.execute();
   }
   async show(id: number): Promise<Requisitante> {
-    return await this.getRequisitanteUseCase.execute(id);
+    return await getRequisitanteUseCase.execute(id);
   }
   async create(dto: CreateRequisitanteDTO): Promise<Requisitante> {
-    const requisitante = await this.createRequisitanteUseCase.execute(dto);
+    const requisitante = await createRequisitanteUseCase.execute(dto);
 
-    SocketService.getInstance().emitEntityChange(
-      "requisitante",
-      "create",
-      requisitante
-    );
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("requisitante", "create", requisitante);
+    }
 
     return requisitante;
   }
   async update(id: number, dto: UpdateRequisitanteDTO): Promise<Requisitante> {
-    const requisitante = await this.updateRequisitanteUseCase.execute(id, dto);
+    const requisitante = await updateRequisitanteUseCase.execute(id, dto);
 
-    SocketService.getInstance().emitEntityChange(
-      "requisitante",
-      "update",
-      requisitante
-    );
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("requisitante", "update", requisitante);
+    }
 
     return requisitante;
   }
   async delete(id: number, userId: string): Promise<void> {
-    await this.deleteRequisitanteUseCase.execute(id, userId);
+    await deleteRequisitanteUseCase.execute(id, userId);
 
-    SocketService.getInstance().emitEntityChange("requisitante", "delete");
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("requisitante", "delete");
+    }
   }
 }

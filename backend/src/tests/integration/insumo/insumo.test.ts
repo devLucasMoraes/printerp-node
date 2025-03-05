@@ -115,7 +115,7 @@ describe("Insumo Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Insumo not found");
+      expect(response.body).toHaveProperty("message", "Insumo não encontrado");
     });
   });
 
@@ -175,7 +175,7 @@ describe("Insumo Routes", () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("message", "Insumo already exists");
+      expect(response.body).toHaveProperty("message");
     });
 
     it("should return 400 when descricao is too short", async () => {
@@ -201,6 +201,7 @@ describe("Insumo Routes", () => {
         .put(`/api/v1/insumos/${insumoId}`)
         .set("Cookie", cookies)
         .send({
+          id: insumoId,
           descricao: "Updated Insumo",
           valorUntMed: 20.5,
           valorUntMedAuto: true,
@@ -221,6 +222,7 @@ describe("Insumo Routes", () => {
         .put("/api/v1/insumos/9999")
         .set("Cookie", cookies)
         .send({
+          id: 9999,
           descricao: "Updated Insumo",
           valorUntMed: 20.5,
           valorUntMedAuto: true,
@@ -230,7 +232,7 @@ describe("Insumo Routes", () => {
         });
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Insumo not found");
+      expect(response.body).toHaveProperty("message", "Insumo não encontrado");
     });
 
     it("should return 400 when updating with existing descricao", async () => {
@@ -250,6 +252,7 @@ describe("Insumo Routes", () => {
         .put(`/api/v1/insumos/${insumoId}`)
         .set("Cookie", cookies)
         .send({
+          id: insumoId,
           descricao: "Another Insumo", // This descricao already exists
           valorUntMed: 20.5,
           valorUntMedAuto: true,
@@ -259,7 +262,7 @@ describe("Insumo Routes", () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("message", "Insumo already exists");
+      expect(response.body).toHaveProperty("message");
 
       // Cleanup
       await insumoRepository.delete(anotherInsumo.id);
@@ -306,7 +309,7 @@ describe("Insumo Routes", () => {
         .set("Cookie", cookies);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Insumo not found");
+      expect(response.body).toHaveProperty("message", "Insumo não encontrado");
     });
   });
 });

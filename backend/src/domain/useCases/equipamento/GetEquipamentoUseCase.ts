@@ -1,17 +1,15 @@
 import { NotFoundError } from "../../../shared/errors";
 import { Equipamento } from "../../entities/Equipamento";
-import { EquipamentoRepository } from "../../repositories/EquipamentoRepository";
+import { equipamentoRepository } from "../../repositories";
 
-export class GetEquipamentoUseCase {
-  constructor(private readonly equipamentoRepository: EquipamentoRepository) {}
-
+export const getEquipamentoUseCase = {
   async execute(id: number): Promise<Equipamento> {
-    const equipamento = await this.equipamentoRepository.findOneBy({ id });
+    const equipamento = await equipamentoRepository.findOneBy({ id });
 
     if (!equipamento) {
       throw new NotFoundError("Equipamento não encontrado");
     }
 
     return equipamento;
-  }
-}
+  },
+};

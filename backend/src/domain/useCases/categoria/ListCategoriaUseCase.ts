@@ -1,11 +1,9 @@
 import { Categoria } from "../../entities/Categoria";
+import { categoriaRepository } from "../../repositories";
 import { Page, PageRequest } from "../../repositories/BaseRepository";
-import { CategoriaRepository } from "../../repositories/CategoriaRepository";
 
-export class ListCategoriaUseCase {
-  constructor(private readonly categoriaRepository: CategoriaRepository) {}
-
+export const listCategoriaUseCase = {
   async execute(pageRequest?: PageRequest): Promise<Page<Categoria>> {
-    return await this.categoriaRepository.findAllPaginated(pageRequest);
-  }
-}
+    return await categoriaRepository.findAllPaginated(pageRequest);
+  },
+};

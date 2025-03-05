@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { User } from "../../domain/entities/User";
 import { UserService } from "../../domain/services/UserService";
+import { UserServiceImpl } from "../../services/user/UserServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import { UserCreateSchema, UserUpdateSchema } from "../validators/user.schemas";
 
@@ -91,3 +92,5 @@ export class UserController {
     };
   }
 }
+
+export const userController = new UserController(new UserServiceImpl());

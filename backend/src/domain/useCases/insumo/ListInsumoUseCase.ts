@@ -1,11 +1,9 @@
 import { Insumo } from "../../entities/Insumo";
+import { insumoRepository } from "../../repositories";
 import { Page, PageRequest } from "../../repositories/BaseRepository";
-import { InsumoRepository } from "../../repositories/InsumoRepository";
 
-export class ListInsumoUseCase {
-  constructor(private readonly insumoRepository: InsumoRepository) {}
-
+export const listInsumoUseCase = {
   async execute(pageRequest?: PageRequest): Promise<Page<Insumo>> {
-    return await this.insumoRepository.findAllPaginated(pageRequest);
-  }
-}
+    return await insumoRepository.findAllPaginated(pageRequest);
+  },
+};

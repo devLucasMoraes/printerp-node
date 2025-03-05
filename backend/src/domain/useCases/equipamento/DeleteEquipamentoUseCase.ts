@@ -1,45 +1,41 @@
 import { EntityManager } from "typeorm";
-import { BadRequestError } from "../../../shared/errors";
+import { NotFoundError } from "../../../shared/errors";
 import { Equipamento } from "../../entities/Equipamento";
-import { EquipamentoRepository } from "../../repositories/EquipamentoRepository";
+import { equipamentoRepository } from "../../repositories";
 
-export class DeleteEquipamentoUseCase {
-  constructor(private readonly equipamentoRepository: EquipamentoRepository) {}
-
+export const deleteEquipamentoUseCase = {
   async execute(id: number, userId: string): Promise<void> {
-    return await this.equipamentoRepository.manager.transaction(
-      async (manager) => {
-        const equipamento = await this.findEquipamento(id, manager);
-        await this.disable(equipamento, manager, userId);
-      }
-    );
+    return await equipamentoRepository.manager.transaction(async (manager) => {
+      const equipamento = await findEquipamento(id, manager);
+      await disable(equipamento, manager, userId);
+    });
+  },
+};
+
+async function findEquipamento(
+  id: number,
+  manager: EntityManager
+): Promise<Equipamento> {
+  const equipamento = await manager
+    .getRepository(Equipamento)
+    .findOneBy({ id });
+
+  if (!equipamento) {
+    throw new NotFoundError("Equipamento não encontrado");
   }
 
-  private async findEquipamento(
-    id: number,
-    manager: EntityManager
-  ): Promise<Equipamento> {
-    const equipamento = await manager
-      .getRepository(Equipamento)
-      .findOneBy({ id });
+  return equipamento;
+}
 
-    if (!equipamento) {
-      throw new BadRequestError("Equipamento não encontrado");
-    }
+async function disable(
+  equipamento: Equipamento,
+  manager: EntityManager,
+  userId: string
+): Promise<void> {
+  equipamento.ativo = false;
+  equipamento.userId = userId;
 
-    return equipamento;
-  }
+  await manager.save(Equipamento, equipamento);
 
-  private async disable(
-    equipamento: Equipamento,
-    manager: EntityManager,
-    userId: string
-  ): Promise<void> {
-    equipamento.ativo = false;
-    equipamento.userId = userId;
-
-    await manager.save(Equipamento, equipamento);
-
-    await manager.softDelete(Equipamento, equipamento.id);
-  }
+  await manager.softDelete(Equipamento, equipamento.id);
 }

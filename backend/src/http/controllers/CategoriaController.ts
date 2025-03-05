@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Categoria } from "../../domain/entities/Categoria";
 import { CategoriaService } from "../../domain/services/CategoriaService";
+import { CategoriaServiceImpl } from "../../services/categoria/CategoriaServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import {
   CreateCategoriaDTO,
@@ -86,3 +87,7 @@ export class CategoriaController {
     };
   }
 }
+
+export const categoriaController = new CategoriaController(
+  new CategoriaServiceImpl()
+);

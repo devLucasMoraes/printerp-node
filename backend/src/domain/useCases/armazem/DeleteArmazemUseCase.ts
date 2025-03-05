@@ -1,41 +1,39 @@
 import { EntityManager } from "typeorm";
-import { BadRequestError } from "../../../shared/errors";
+import { NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
-import { ArmazemRepository } from "../../repositories/ArmazemRepository";
+import { armazemRepository } from "../../repositories";
 
-export class DeleteArmazemUseCase {
-  constructor(private readonly armazemRepository: ArmazemRepository) {}
-
+export const deleteArmazemUseCase = {
   async execute(id: number, userId: string): Promise<void> {
-    return await this.armazemRepository.manager.transaction(async (manager) => {
-      const armazem = await this.findArmazem(id, manager);
-      await this.disable(armazem, manager, userId);
+    return await armazemRepository.manager.transaction(async (manager) => {
+      const armazem = await findArmazem(id, manager);
+      await disable(armazem, manager, userId);
     });
+  },
+};
+
+async function findArmazem(
+  id: number,
+  manager: EntityManager
+): Promise<Armazem> {
+  const armazem = await manager.getRepository(Armazem).findOneBy({ id });
+
+  if (!armazem) {
+    throw new NotFoundError("Armazém não encontrado");
   }
 
-  private async findArmazem(
-    id: number,
-    manager: EntityManager
-  ): Promise<Armazem> {
-    const armazem = await manager.getRepository(Armazem).findOneBy({ id });
+  return armazem;
+}
 
-    if (!armazem) {
-      throw new BadRequestError("Armazém não encontrado");
-    }
+async function disable(
+  armazem: Armazem,
+  manager: EntityManager,
+  userId: string
+): Promise<void> {
+  armazem.ativo = false;
+  armazem.userId = userId;
 
-    return armazem;
-  }
+  await manager.save(Armazem, armazem);
 
-  private async disable(
-    armazem: Armazem,
-    manager: EntityManager,
-    userId: string
-  ): Promise<void> {
-    armazem.ativo = false;
-    armazem.userId = userId;
-
-    await manager.save(Armazem, armazem);
-
-    await manager.softDelete(Armazem, armazem.id);
-  }
+  await manager.softDelete(Armazem, armazem.id);
 }

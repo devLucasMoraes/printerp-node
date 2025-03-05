@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { InsumoServiceImpl } from "../../services/insumo/InsumoServiceImpl";
-import { InsumoController } from "../controllers/InsumoController";
+import { insumoController } from "../controllers/InsumoController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -9,9 +8,6 @@ import {
   insumoQuerySchema,
   insumoUpdateSchema,
 } from "../validators/insumo.schemas";
-
-const insumoService = new InsumoServiceImpl();
-const insumoController = new InsumoController(insumoService);
 
 const insumoRoutes = Router();
 

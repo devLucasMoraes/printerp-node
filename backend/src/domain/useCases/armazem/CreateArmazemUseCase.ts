@@ -2,48 +2,45 @@ import { EntityManager } from "typeorm";
 import { CreateArmazemDTO } from "../../../http/validators/armazem.schema";
 import { BadRequestError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
-import { ArmazemRepository } from "../../repositories/ArmazemRepository";
+import { armazemRepository } from "../../repositories";
 
-export class CreateArmazemUseCase {
-  constructor(private readonly armazemRepository: ArmazemRepository) {}
-
+export const createArmazemUseCase = {
   async execute(dto: CreateArmazemDTO): Promise<Armazem> {
-    return await this.armazemRepository.manager.transaction(async (manager) => {
-      await this.validate(dto, manager);
-      const armazem = await this.createArmazem(dto, manager);
+    return await armazemRepository.manager.transaction(async (manager) => {
+      await validate(dto, manager);
+      const armazem = await createArmazem(dto, manager);
       return armazem;
     });
+  },
+};
+async function validate(
+  dto: CreateArmazemDTO,
+  manager: EntityManager
+): Promise<void> {
+  const armazem = await manager.getRepository(Armazem).findOne({
+    where: { nome: dto.nome },
+    withDeleted: true,
+  });
+
+  if (armazem && armazem.ativo === true) {
+    throw new BadRequestError(`Armazém "${armazem.nome}" já cadastrado`);
   }
 
-  private async validate(
-    dto: CreateArmazemDTO,
-    manager: EntityManager
-  ): Promise<void> {
-    const armazem = await manager.getRepository(Armazem).findOne({
-      where: { nome: dto.nome },
-      withDeleted: true,
-    });
-
-    if (armazem && armazem.ativo === true) {
-      throw new BadRequestError(`Armazém "${armazem.nome}" já cadastrado`);
-    }
-
-    if (armazem && armazem.ativo === false) {
-      throw new BadRequestError(
-        `Armazém "${armazem.nome}" já cadastrado e desativado`
-      );
-    }
+  if (armazem && armazem.ativo === false) {
+    throw new BadRequestError(
+      `Armazém "${armazem.nome}" já cadastrado e desativado`
+    );
   }
+}
 
-  private async createArmazem(
-    dto: CreateArmazemDTO,
-    manager: EntityManager
-  ): Promise<Armazem> {
-    const armazemToCreate = this.armazemRepository.create({
-      nome: dto.nome,
-      userId: dto.userId,
-    });
+async function createArmazem(
+  dto: CreateArmazemDTO,
+  manager: EntityManager
+): Promise<Armazem> {
+  const armazemToCreate = armazemRepository.create({
+    nome: dto.nome,
+    userId: dto.userId,
+  });
 
-    return await manager.save(Armazem, armazemToCreate);
-  }
+  return await manager.save(Armazem, armazemToCreate);
 }

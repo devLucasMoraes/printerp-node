@@ -1,10 +1,8 @@
 import { Categoria } from "../../entities/Categoria";
-import { CategoriaRepository } from "../../repositories/CategoriaRepository";
+import { categoriaRepository } from "../../repositories";
 
-export class GetAllCategoriaUseCase {
-  constructor(private readonly categoriaRepository: CategoriaRepository) {}
-
+export const getAllCategoriaUseCase = {
   async execute(): Promise<Categoria[]> {
-    return await this.categoriaRepository.find();
-  }
-}
+    return await categoriaRepository.find();
+  },
+};

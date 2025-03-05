@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Insumo } from "../../domain/entities/Insumo";
 import { InsumoService } from "../../domain/services/InsumoService";
+import { InsumoServiceImpl } from "../../services/insumo/InsumoServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import { CreateInsumoDTO, UpdateInsumoDTO } from "../validators/insumo.schemas";
 
@@ -89,3 +90,5 @@ export class InsumoController {
     };
   }
 }
+
+export const insumoController = new InsumoController(new InsumoServiceImpl());

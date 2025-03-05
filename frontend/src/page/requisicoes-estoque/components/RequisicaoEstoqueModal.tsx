@@ -122,7 +122,7 @@ export const RequisicaoEstoqueModal = ({
           insumo: item.insumo,
           quantidade: Number(item.quantidade),
           valorUnitario: Number(item.valorUnitario),
-          undEstoque: item.undEstoque,
+          unidade: item.unidade,
         })),
       });
     } else if (requisicaoEstoque?.data && requisicaoEstoque.type === "COPY") {
@@ -140,7 +140,7 @@ export const RequisicaoEstoqueModal = ({
           insumo: item.insumo,
           quantidade: Number(item.quantidade),
           valorUnitario: Number(item.valorUnitario),
-          undEstoque: item.undEstoque,
+          unidade: item.unidade,
         })),
       });
     } else {
@@ -199,7 +199,7 @@ export const RequisicaoEstoqueModal = ({
   const handleInsumoChange = useCallback(
     (index: number, insumo?: InsumoDto | null) => {
       if (insumo) {
-        setValue(`itens.${index}.undEstoque`, insumo.undEstoque);
+        setValue(`itens.${index}.unidade`, insumo.undEstoque);
         setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed));
       }
     },
@@ -210,7 +210,7 @@ export const RequisicaoEstoqueModal = ({
     prepend({
       id: null as any,
       quantidade: 0,
-      undEstoque: null as any,
+      unidade: null as any,
       valorUnitario: 0,
       insumo: null as any,
     });
@@ -468,15 +468,15 @@ export const RequisicaoEstoqueModal = ({
 
                           <Grid2 size={3}>
                             <Controller
-                              name={`itens.${index}.undEstoque`}
+                              name={`itens.${index}.unidade`}
                               control={control}
                               render={({ field }) => (
                                 <TextField
                                   {...field}
-                                  label="Und. Estoque"
-                                  error={!!errors.itens?.[index]?.undEstoque}
+                                  label="Unidade"
+                                  error={!!errors.itens?.[index]?.unidade}
                                   helperText={
-                                    errors.itens?.[index]?.undEstoque?.message
+                                    errors.itens?.[index]?.unidade?.message
                                   }
                                   value={field.value || ""}
                                   fullWidth

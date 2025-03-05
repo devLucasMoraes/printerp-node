@@ -159,6 +159,7 @@ describe("CategoriaController", () => {
         .put(`/api/v1/categorias/${testCategoria.id}`)
         .set("Cookie", authCookies)
         .send({
+          id: testCategoria.id,
           nome: "Updated Test Category",
         });
 
@@ -171,6 +172,7 @@ describe("CategoriaController", () => {
         .put("/api/v1/categorias/99999")
         .set("Cookie", authCookies)
         .send({
+          id: 99999,
           nome: "Updated Category",
         });
 

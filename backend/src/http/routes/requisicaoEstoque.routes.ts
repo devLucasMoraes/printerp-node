@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { RequisicaoEstoqueControllerFactory } from "../factories/RequisicaoEstoqueControllerFactory";
+import { requisicaoEstoqueController } from "../controllers/RequisicaoEstoqueController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -8,8 +8,6 @@ import {
   requisicaoEstoqueQuerySchema,
   requisicaoEstoqueUpdateSchema,
 } from "../validators/requisicaoEstoque.schemas";
-
-const requisicaoEstoqueController = RequisicaoEstoqueControllerFactory.create();
 
 const requisicaoEstoqueRoutes = Router();
 

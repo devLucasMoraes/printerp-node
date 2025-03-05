@@ -1,47 +1,41 @@
 import { EntityManager } from "typeorm";
-import { BadRequestError } from "../../../shared/errors";
+import { NotFoundError } from "../../../shared/errors";
 import { Requisitante } from "../../entities/Requisitante";
-import { RequisitanteRepository } from "../../repositories/RequisitanteRepository";
+import { requisitanteRepository } from "../../repositories";
 
-export class DeleteRequisitanteUseCase {
-  constructor(
-    private readonly requisitanteRepository: RequisitanteRepository
-  ) {}
-
+export const deleteRequisitanteUseCase = {
   async execute(id: number, userId: string): Promise<void> {
-    return await this.requisitanteRepository.manager.transaction(
-      async (manager) => {
-        const requisitante = await this.findRequisitante(id, manager);
-        await this.disable(requisitante, manager, userId);
-      }
-    );
+    return await requisitanteRepository.manager.transaction(async (manager) => {
+      const requisitante = await findRequisitante(id, manager);
+      await disable(requisitante, manager, userId);
+    });
+  },
+};
+
+async function findRequisitante(
+  id: number,
+  manager: EntityManager
+): Promise<Requisitante> {
+  const requisitante = await manager
+    .getRepository(Requisitante)
+    .findOneBy({ id });
+
+  if (!requisitante) {
+    throw new NotFoundError("Requisitante não encontrado");
   }
 
-  private async findRequisitante(
-    id: number,
-    manager: EntityManager
-  ): Promise<Requisitante> {
-    const requisitante = await manager
-      .getRepository(Requisitante)
-      .findOneBy({ id });
+  return requisitante;
+}
 
-    if (!requisitante) {
-      throw new BadRequestError("Requisitante não encontrado");
-    }
+async function disable(
+  requisitante: Requisitante,
+  manager: EntityManager,
+  userId: string
+): Promise<void> {
+  requisitante.ativo = false;
+  requisitante.userId = userId;
 
-    return requisitante;
-  }
+  await manager.save(Requisitante, requisitante);
 
-  private async disable(
-    requisitante: Requisitante,
-    manager: EntityManager,
-    userId: string
-  ): Promise<void> {
-    requisitante.ativo = false;
-    requisitante.userId = userId;
-
-    await manager.save(Requisitante, requisitante);
-
-    await manager.softDelete(Requisitante, requisitante.id);
-  }
+  await manager.softDelete(Requisitante, requisitante.id);
 }

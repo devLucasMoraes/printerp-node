@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { RequisitanteServiceImpl } from "../../services/requisitante/RequisitanteServiceImpl";
-import { RequisitanteController } from "../controllers/RequisitanteController";
+import { requisitanteController } from "../controllers/RequisitanteController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -9,9 +8,6 @@ import {
   requisitanteQuerySchema,
   requisitanteUpdateSchema,
 } from "../validators/requisitante.schemas";
-
-const requisitanteService = new RequisitanteServiceImpl();
-const requisitanteController = new RequisitanteController(requisitanteService);
 
 const requisitanteRoutes = Router();
 

@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { UserServiceImpl } from "../../services/user/UserServiceImpl";
-import { UserController } from "../controllers/UserController";
+import { userController } from "../controllers/UserController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -9,9 +8,6 @@ import {
   userQuerySchema,
   userUpdateSchema,
 } from "../validators/user.schemas";
-
-const userService = new UserServiceImpl();
-const userController = new UserController(userService);
 
 const userRoutes = Router();
 

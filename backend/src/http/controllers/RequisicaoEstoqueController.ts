@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { RequisicaoEstoque } from "../../domain/entities/RequisicaoEstoque";
 import { RequisicaoEstoqueService } from "../../domain/services/RequisicaoEstoqueService";
+import { RequisicaoEstoqueServiceImpl } from "../../services/requisicao-estoque/RequisicaoEstoqueServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
 import {
   CreateRequisicaoEstoqueDTO,
@@ -100,7 +101,7 @@ export class RequisicaoEstoqueController {
         return {
           id: item.id,
           quantidade: item.quantidade,
-          undEstoque: item.unidade,
+          unidade: item.unidade,
           valorUnitario: item.valorUnitario,
           insumo: {
             id: item.insumo.id,
@@ -113,3 +114,7 @@ export class RequisicaoEstoqueController {
     };
   }
 }
+
+export const requisicaoEstoqueController = new RequisicaoEstoqueController(
+  new RequisicaoEstoqueServiceImpl()
+);

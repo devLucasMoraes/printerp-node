@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { EstoqueControllerFactory } from "../factories/EstoqueControllerFactory";
+import { estoqueController } from "../controllers/EstoqueController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -7,8 +7,6 @@ import {
   estoqueParamsSchema,
   estoqueQuerySchema,
 } from "../validators/estoque.schema";
-
-const estoqueController = EstoqueControllerFactory.create();
 
 const estoqueRoutes = Router();
 

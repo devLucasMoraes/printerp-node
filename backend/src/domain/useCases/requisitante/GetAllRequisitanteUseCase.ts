@@ -1,12 +1,8 @@
 import { Requisitante } from "../../entities/Requisitante";
-import { RequisitanteRepository } from "../../repositories/RequisitanteRepository";
+import { requisitanteRepository } from "../../repositories";
 
-export class GetAllRequisitanteUseCase {
-  constructor(
-    private readonly requisitanteRepository: RequisitanteRepository
-  ) {}
-
+export const getAllRequisitanteUseCase = {
   async execute(): Promise<Requisitante[]> {
-    return await this.requisitanteRepository.find();
-  }
-}
+    return await requisitanteRepository.find();
+  },
+};

@@ -1,10 +1,8 @@
 import { Equipamento } from "../../entities/Equipamento";
-import { EquipamentoRepository } from "../../repositories/EquipamentoRepository";
+import { equipamentoRepository } from "../../repositories";
 
-export class GetAllEquipamentoUseCase {
-  constructor(private readonly equipamentoRepository: EquipamentoRepository) {}
-
+export const getAllEquipamentoUseCase = {
   async execute(): Promise<Equipamento[]> {
-    return await this.equipamentoRepository.find();
-  }
-}
+    return await equipamentoRepository.find();
+  },
+};

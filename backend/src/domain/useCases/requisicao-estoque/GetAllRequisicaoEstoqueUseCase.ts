@@ -1,12 +1,17 @@
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { RequisicaoEstoqueRepository } from "../../repositories/RequisicaoEstoqueRepository";
+import { requisicaoEstoqueRepository } from "../../repositories";
 
-export class GetAllRequisicaoEstoqueUseCase {
-  constructor(
-    private readonly requisicaoEstoqueRepository: RequisicaoEstoqueRepository
-  ) {}
-
+export const getAllRequisicaoEstoqueUseCase = {
   async execute(): Promise<RequisicaoEstoque[]> {
-    return await this.requisicaoEstoqueRepository.find();
-  }
-}
+    return await requisicaoEstoqueRepository.find({
+      relations: {
+        itens: {
+          insumo: true,
+        },
+        requisitante: true,
+        equipamento: true,
+        armazem: true,
+      },
+    });
+  },
+};

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ArmazemControllerFactory } from "../factories/ArmazemControllerFactory";
+import { armazemController } from "../controllers/ArmazemController";
 import { isAuth } from "../middlewares/isAuth";
 import { validate } from "../middlewares/validate";
 import {
@@ -8,8 +8,6 @@ import {
   armazemQuerySchema,
   armazemUpdateSchema,
 } from "../validators/armazem.schema";
-
-const armazemController = ArmazemControllerFactory.create();
 
 const armazemRoutes = Router();
 

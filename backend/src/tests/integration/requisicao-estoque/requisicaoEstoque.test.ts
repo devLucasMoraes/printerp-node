@@ -173,7 +173,7 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: null,
               quantidade: 3,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.25,
               insumo: { id: testInsumo.id },
             },
@@ -199,7 +199,7 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: testRequisicaoEstoqueItem.id, // Tentando usar ID existente
               quantidade: 3,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.25,
               insumo: { id: testInsumo.id },
             },
@@ -226,7 +226,7 @@ describe("RequisicaoEstoque Routes", () => {
           {
             id: null,
             quantidade: 3,
-            undEstoque: Unidade.KG,
+            unidade: Unidade.KG,
             valorUnitario: 50.25,
             insumo: { id: testInsumo.id },
           },
@@ -322,7 +322,7 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: testRequisicaoEstoqueItem.id,
               quantidade: 4,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.0,
               insumo: { id: testInsumo.id },
             },
@@ -345,7 +345,7 @@ describe("RequisicaoEstoque Routes", () => {
           {
             id: testRequisicaoEstoqueItem.id,
             quantidade: 4,
-            undEstoque: Unidade.KG,
+            unidade: Unidade.KG,
             valorUnitario: 50.0,
             insumo: { id: testInsumo.id },
           },
@@ -378,14 +378,14 @@ describe("RequisicaoEstoque Routes", () => {
           {
             id: testRequisicaoEstoqueItem.id,
             quantidade: 4,
-            undEstoque: Unidade.KG,
+            unidade: Unidade.KG,
             valorUnitario: 50.0,
             insumo: { id: testInsumo.id },
           },
           {
             id: null,
             quantidade: 2,
-            undEstoque: Unidade.KG,
+            unidade: Unidade.KG,
             valorUnitario: 25.0,
             insumo: { id: testInsumo.id },
           },
@@ -422,14 +422,14 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: null,
               quantidade: 3,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.0,
               insumo: { id: testInsumo.id },
             },
             {
               id: null,
               quantidade: 2,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 75.0,
               insumo: { id: testInsumo.id },
             },
@@ -457,7 +457,7 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: firstItemId,
               quantidade: 3,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 50.0,
               insumo: { id: testInsumo.id },
             },
@@ -485,7 +485,7 @@ describe("RequisicaoEstoque Routes", () => {
           {
             id: auxRequisicao.itens[0].id, // Item de outra requisição
             quantidade: 2,
-            undEstoque: Unidade.KG,
+            unidade: Unidade.KG,
             valorUnitario: 100.0,
             insumo: { id: testInsumo.id },
           },
@@ -521,6 +521,7 @@ describe("RequisicaoEstoque Routes", () => {
         .put("/api/v1/requisicoes-estoque/9999999")
         .set("Cookie", cookies)
         .send({
+          id: 9999999,
           dataRequisicao: new Date().toISOString(),
           ordemProducao: "OP_NOT_FOUND",
           valorTotal: 200.0,
@@ -532,7 +533,7 @@ describe("RequisicaoEstoque Routes", () => {
             {
               id: null,
               quantidade: 2,
-              undEstoque: Unidade.KG,
+              unidade: Unidade.KG,
               valorUnitario: 100.0,
               insumo: { id: testInsumo.id },
             },
@@ -704,7 +705,7 @@ describe("RequisicaoEstoque Routes", () => {
       const item = response.body.itens[0];
       expect(item).toHaveProperty("id");
       expect(item).toHaveProperty("quantidade");
-      expect(item).toHaveProperty("undEstoque");
+      expect(item).toHaveProperty("unidade");
       expect(item).toHaveProperty("valorUnitario");
       expect(item.insumo).toHaveProperty("id", testInsumo.id);
     });

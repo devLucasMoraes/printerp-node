@@ -1,10 +1,8 @@
 import { Insumo } from "../../entities/Insumo";
-import { InsumoRepository } from "../../repositories/InsumoRepository";
+import { insumoRepository } from "../../repositories";
 
-export class GetAllInsumoUseCase {
-  constructor(private readonly insumoRepository: InsumoRepository) {}
-
+export const getAllInsumoUseCase = {
   async execute(): Promise<Insumo[]> {
-    return await this.insumoRepository.find();
-  }
-}
+    return await insumoRepository.find();
+  },
+};

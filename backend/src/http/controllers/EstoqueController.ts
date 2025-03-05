@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Estoque } from "../../domain/entities/Estoque";
 import { EstoqueService } from "../../domain/services/EstoqueService";
+import { EstoqueServiceImpl } from "../../services/estoque/EstoqueService";
 import { pageable } from "../../shared/utils/pageable";
 import { AdjustEstoqueDTO } from "../validators/estoque.schema";
 
@@ -44,3 +45,7 @@ export class EstoqueController {
     };
   }
 }
+
+export const estoqueController = new EstoqueController(
+  new EstoqueServiceImpl()
+);

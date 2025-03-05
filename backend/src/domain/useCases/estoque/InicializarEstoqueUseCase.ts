@@ -1,10 +1,8 @@
 import { EntityManager } from "typeorm";
 import { Estoque } from "../../entities/Estoque";
-import { EstoqueRepository } from "../../repositories/EstoqueRepository";
+import { estoqueRepository } from "../../repositories";
 
-export class InicializarEstoqueUseCase {
-  constructor(private readonly estoqueRepository: EstoqueRepository) {}
-
+export const inicializarEstoqueUseCase = {
   async execute(
     insumoId: number,
     armazemId: number,
@@ -18,7 +16,7 @@ export class InicializarEstoqueUseCase {
     });
 
     if (!estoque) {
-      const newEstoque = this.estoqueRepository.create({
+      const newEstoque = estoqueRepository.create({
         insumo: { id: insumoId },
         armazem: { id: armazemId },
         quantidade: 0,
@@ -27,5 +25,5 @@ export class InicializarEstoqueUseCase {
     }
 
     return estoque;
-  }
-}
+  },
+};
