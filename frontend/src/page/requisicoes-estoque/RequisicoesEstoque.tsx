@@ -118,16 +118,16 @@ const RequisicoesEstoque = () => {
       },
     },
     {
-      field: "equipamento",
-      headerName: "Equipamento",
+      field: "setor",
+      headerName: "Setor",
       minWidth: 200,
       flex: 0.3,
       display: "flex",
       valueGetter: (_, row) => {
-        if (!row.equipamento?.nome) {
+        if (!row.setor?.nome) {
           return "";
         }
-        return row.equipamento.nome;
+        return row.setor.nome;
       },
     },
     {

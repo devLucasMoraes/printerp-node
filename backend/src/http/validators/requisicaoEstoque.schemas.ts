@@ -30,7 +30,7 @@ export const requisicaoEstoqueCreateSchema = z.object({
   requisitante: z.object({
     id: z.number(),
   }),
-  equipamento: z.object({
+  setor: z.object({
     id: z.number(),
   }),
   armazem: z.object({
@@ -52,7 +52,7 @@ export const requisicaoEstoqueUpdateSchema = z.object({
   requisitante: z.object({
     id: z.number(),
   }),
-  equipamento: z.object({
+  setor: z.object({
     id: z.number(),
   }),
   armazem: z.object({

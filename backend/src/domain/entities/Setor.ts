@@ -9,8 +9,8 @@ import {
 } from "typeorm";
 import { RequisicaoEstoque } from "./RequisicaoEstoque";
 
-@Entity("equipamentos")
-export class Equipamento {
+@Entity("setores")
+export class Setor {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -37,10 +37,4 @@ export class Equipamento {
     (requisicaoEstoque) => requisicaoEstoque.requisitante
   )
   requisicoes: RequisicaoEstoque[];
-
-  constructor(data?: Partial<Equipamento>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
 }

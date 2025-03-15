@@ -2,10 +2,10 @@ import { EntityManager } from "typeorm";
 import { UpdateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
 import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
-import { Equipamento } from "../../entities/Equipamento";
 import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
 import { Requisitante } from "../../entities/Requisitante";
+import { Setor } from "../../entities/Setor";
 import { requisicaoEstoqueRepository } from "../../repositories";
 import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
 import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
@@ -41,7 +41,7 @@ async function findRequisicaoToUpdate(
     where: { id },
     relations: {
       requisitante: true,
-      equipamento: true,
+      setor: true,
       armazem: true,
       itens: {
         insumo: true,
@@ -66,15 +66,15 @@ async function validate(
   });
 
   if (!requisitante) {
-    throw new BadRequestError("Requisitante nao encontrado");
+    throw new BadRequestError("Requisitante não encontrado");
   }
 
-  const equipamento = await manager.findOne(Equipamento, {
-    where: { id: requisicaoDTO.equipamento.id },
+  const setor = await manager.findOne(Setor, {
+    where: { id: requisicaoDTO.setor.id },
   });
 
-  if (!equipamento) {
-    throw new BadRequestError("Equipamento nao encontrado");
+  if (!setor) {
+    throw new BadRequestError("Setor não encontrado");
   }
 
   const armazem = await manager.findOne(Armazem, {
@@ -148,7 +148,7 @@ async function updateRequisicao(
     valorTotal: dto.valorTotal,
     obs: dto.obs,
     requisitante: dto.requisitante,
-    equipamento: dto.equipamento,
+    setor: dto.setor,
     armazem: dto.armazem,
     userId: dto.userId,
     itens: dto.itens.map((itemDTO) => {
@@ -164,7 +164,7 @@ async function updateRequisicao(
 
   const {
     requisitante: _r,
-    equipamento: _e,
+    setor: _e,
     itens: _i,
     ...requisicaoEstoqueWithoutRelations
   } = requisicaoToUpdate;

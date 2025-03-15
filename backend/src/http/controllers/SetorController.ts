@@ -1,18 +1,15 @@
 import { RequestHandler } from "express";
-import { Equipamento } from "../../domain/entities/Equipamento";
-import { EquipamentoService } from "../../domain/services/EquipamentoService";
-import { EquipamentoServiceImpl } from "../../services/equipamento/EquipamentoServiceImpl";
+import { Setor } from "../../domain/entities/Setor";
+import { SetorService } from "../../domain/services/SetorService";
+import { SetorServiceImpl } from "../../services/setor/SetorServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
-import {
-  CreateEquipamentoDTO,
-  UpdateEquipamentoDTO,
-} from "../validators/equipamento.schemas";
+import { CreateSetorDTO, UpdateSetorDTO } from "../validators/setor.schemas";
 
-export class EquipamentoController {
-  constructor(private readonly equipamentoService: EquipamentoService) {}
+export class SetorController {
+  constructor(private readonly setorService: SetorService) {}
 
   list: RequestHandler = async (req, res) => {
-    const result = await this.equipamentoService.list();
+    const result = await this.setorService.list();
 
     const mappedResult = result.map(this.toDTO);
 
@@ -22,7 +19,7 @@ export class EquipamentoController {
   listPaginated: RequestHandler = async (req, res) => {
     const { page, size, sort } = req.query;
     // arrumar isso aqui depois para fazer a verificação de tipo com o zod
-    const result = await this.equipamentoService.listPaginated(
+    const result = await this.setorService.listPaginated(
       pageable(page as string, size as string, sort as string | string[])
     );
 
@@ -35,10 +32,10 @@ export class EquipamentoController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const dto: CreateEquipamentoDTO = req.body;
+    const dto: CreateSetorDTO = req.body;
     const userId = req.user.id;
 
-    const result = await this.equipamentoService.create({ ...dto, userId });
+    const result = await this.setorService.create({ ...dto, userId });
 
     const mappedResult = this.toDTO(result);
 
@@ -48,7 +45,7 @@ export class EquipamentoController {
   show: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
-    const result = await this.equipamentoService.show(parseInt(id));
+    const result = await this.setorService.show(parseInt(id));
 
     const mappedResult = this.toDTO(result);
 
@@ -57,10 +54,10 @@ export class EquipamentoController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const dto: UpdateEquipamentoDTO = req.body;
+    const dto: UpdateSetorDTO = req.body;
     const userId = req.user.id;
 
-    const result = await this.equipamentoService.update(parseInt(id), {
+    const result = await this.setorService.update(parseInt(id), {
       ...dto,
       userId,
     });
@@ -73,12 +70,12 @@ export class EquipamentoController {
     const { id } = req.params;
     const userId = req.user.id;
 
-    await this.equipamentoService.delete(parseInt(id), userId);
+    await this.setorService.delete(parseInt(id), userId);
 
     res.status(204).send();
   };
 
-  private toDTO(entity: Equipamento) {
+  private toDTO(entity: Setor) {
     return {
       id: entity.id,
       nome: entity.nome,
@@ -88,6 +85,4 @@ export class EquipamentoController {
   }
 }
 
-export const equipamentoController = new EquipamentoController(
-  new EquipamentoServiceImpl()
-);
+export const setorController = new SetorController(new SetorServiceImpl());

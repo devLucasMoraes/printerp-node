@@ -17,7 +17,7 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
       {
         armazem: true,
         requisitante: true,
-        equipamento: true,
+        setor: true,
         itens: {
           insumo: true,
         },
@@ -31,7 +31,7 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
       relations: {
         armazem: true,
         requisitante: true,
-        equipamento: true,
+        setor: true,
         itens: {
           insumo: true,
         },

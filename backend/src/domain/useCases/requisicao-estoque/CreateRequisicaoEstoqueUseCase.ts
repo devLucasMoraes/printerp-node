@@ -1,10 +1,10 @@
 import { EntityManager } from "typeorm";
 import { CreateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
 import { BadRequestError } from "../../../shared/errors";
-import { Equipamento } from "../../entities/Equipamento";
 import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
 import { Requisitante } from "../../entities/Requisitante";
+import { Setor } from "../../entities/Setor";
 import { requisicaoEstoqueRepository } from "../../repositories";
 import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
 
@@ -33,16 +33,16 @@ async function validate(
     throw new BadRequestError("Requisitante nao encontrado");
   }
 
-  const equipamento = await manager.findOne(Equipamento, {
-    where: { id: dto.equipamento.id },
+  const setor = await manager.findOne(Setor, {
+    where: { id: dto.setor.id },
   });
 
-  if (!equipamento) {
-    throw new BadRequestError("Equipamento nao encontrado");
+  if (!setor) {
+    throw new BadRequestError("Setor não encontrado");
   }
 
   if (dto.itens.length === 0) {
-    throw new BadRequestError("Requisicao Estoque deve ter pelo menos um item");
+    throw new BadRequestError("Requisição Estoque deve ter pelo menos um item");
   }
 
   for (const item of dto.itens) {
@@ -73,7 +73,7 @@ async function createRequisicao(
     valorTotal: dto.valorTotal,
     obs: dto.obs,
     requisitante: dto.requisitante,
-    equipamento: dto.equipamento,
+    setor: dto.setor,
     armazem: dto.armazem,
     userId: dto.userId,
     itens: dto.itens.map((itemDTO) => {
