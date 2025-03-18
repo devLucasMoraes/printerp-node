@@ -27,7 +27,7 @@ export type RequisitanteDto = {
   updatedAt: Date;
 };
 
-export type EquipamentoDto = {
+export type SetorDto = {
   id: number;
   nome: string;
   createdAt: Date;
@@ -53,7 +53,7 @@ export type RequisicaoEstoqueDto = {
   obs: string | null;
   valorTotal: number;
   requisitante: RequisitanteDto;
-  equipamento: EquipamentoDto;
+  setor: SetorDto;
   armazem: ArmazemDto;
   itens: {
     id: number;

@@ -11,44 +11,40 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useEquipamentoQueries } from "../../../hooks/queries/useEquipamentoQueries";
+import { useSetorQueries } from "../../../hooks/queries/useSetorQueries";
 import {
-  equipamentoCreateSchema,
-  equipamentoUpdateSchema,
-} from "../../../schemas/equipamento.schemas";
+  setorCreateSchema,
+  setorUpdateSchema,
+} from "../../../schemas/setor.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
-import { EquipamentoDto } from "../../../types";
+import { SetorDto } from "../../../types";
 
-interface EquipamentoModalProps {
+interface SetorModalProps {
   open: boolean;
   onClose: () => void;
-  equipamento?: {
-    data: EquipamentoDto;
+  setor?: {
+    data: SetorDto;
     type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   };
 }
 
-export const EquipamentoModal = ({
-  open,
-  onClose,
-  equipamento,
-}: EquipamentoModalProps) => {
+export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
   const { showAlert } = useAlertStore((state) => state);
 
   const schema =
-    equipamento?.data && equipamento.type === "UPDATE"
-      ? equipamentoUpdateSchema
-      : equipamentoCreateSchema;
+    setor?.data && setor.type === "UPDATE"
+      ? setorUpdateSchema
+      : setorCreateSchema;
 
-  const { useCreate: useCreateEquipamento, useUpdate: useUpdateEquipamento } =
-    useEquipamentoQueries();
+  const { useCreate: useCreateSetor, useUpdate: useUpdateSetor } =
+    useSetorQueries();
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<EquipamentoDto>({
+  } = useForm<SetorDto>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: "",
@@ -56,15 +52,15 @@ export const EquipamentoModal = ({
   });
 
   useEffect(() => {
-    if (equipamento?.data && equipamento.type === "UPDATE") {
+    if (setor?.data && setor.type === "UPDATE") {
       reset({
-        id: equipamento.data.id,
-        nome: equipamento.data.nome,
+        id: setor.data.id,
+        nome: setor.data.nome,
       });
-    } else if (equipamento?.data && equipamento.type === "COPY") {
+    } else if (setor?.data && setor.type === "COPY") {
       reset({
         id: null as any,
-        nome: equipamento.data.nome,
+        nome: setor.data.nome,
       });
     } else {
       reset({
@@ -72,21 +68,21 @@ export const EquipamentoModal = ({
         nome: "",
       });
     }
-  }, [equipamento, reset]);
+  }, [setor, reset]);
 
-  const { mutate: createEquipamento } = useCreateEquipamento();
+  const { mutate: createSetor } = useCreateSetor();
 
-  const { mutate: updateEquipamento } = useUpdateEquipamento();
+  const { mutate: updateSetor } = useUpdateSetor();
 
-  const onSubmit = (data: EquipamentoDto) => {
-    if (equipamento?.data && equipamento.type === "UPDATE") {
-      updateEquipamento(
-        { id: equipamento.data.id, data },
+  const onSubmit = (data: SetorDto) => {
+    if (setor?.data && setor.type === "UPDATE") {
+      updateSetor(
+        { id: setor.data.id, data },
         {
           onSuccess: () => {
             onClose();
             reset();
-            showAlert("Equipamento atualizado com sucesso", "success");
+            showAlert("Setor atualizado com sucesso", "success");
           },
           onError: (error) => {
             console.error(error);
@@ -95,11 +91,11 @@ export const EquipamentoModal = ({
         }
       );
     } else {
-      createEquipamento(data, {
+      createSetor(data, {
         onSuccess: () => {
           onClose();
           reset();
-          showAlert("Equipamento criado com sucesso", "success");
+          showAlert("Setor criado com sucesso", "success");
         },
         onError: (error) => {
           console.error(error);
@@ -120,14 +116,12 @@ export const EquipamentoModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>
-        {equipamento?.type === "UPDATE" ? "Editar" : "Novo"}
-      </DialogTitle>
+      <DialogTitle>{setor?.type === "UPDATE" ? "Editar" : "Novo"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {equipamento?.type === "UPDATE"
-            ? "Preencha os campos abaixo para editar o equipamento"
-            : "Preencha os campos abaixo para criar um novo equipamento"}
+          {setor?.type === "UPDATE"
+            ? "Preencha os campos abaixo para editar o setor"
+            : "Preencha os campos abaixo para criar um novo setor"}
         </DialogContentText>
         <Grid2 container spacing={2} sx={{ mt: 2 }}>
           <Grid2 size={12}>

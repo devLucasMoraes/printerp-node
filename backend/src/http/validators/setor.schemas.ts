@@ -1,19 +1,19 @@
 import { z } from "zod";
 
-export const equipamentoCreateSchema = z.object({
+export const setorCreateSchema = z.object({
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
   userId: z.string().optional(),
 });
 
-export type CreateEquipamentoDTO = z.infer<typeof equipamentoCreateSchema>;
+export type CreateSetorDTO = z.infer<typeof setorCreateSchema>;
 
-export const equipamentoUpdateSchema = z.object({
+export const setorUpdateSchema = z.object({
   id: z.number(),
   nome: z.string().min(3, "Nome é obrigatório").max(255, "Nome muito longo"),
   userId: z.string().optional(),
 });
 
-export type UpdateEquipamentoDTO = z.infer<typeof equipamentoUpdateSchema>;
+export type UpdateSetorDTO = z.infer<typeof setorUpdateSchema>;
 
 export const equipamentoParamsSchema = z.object({
   id: z.string().refine((value) => {
@@ -21,9 +21,9 @@ export const equipamentoParamsSchema = z.object({
   }, "Id must be a number"),
 });
 
-export type EquipamentoParamsSchema = z.infer<typeof equipamentoParamsSchema>;
+export type SetorParamsSchema = z.infer<typeof equipamentoParamsSchema>;
 
-export const equipamentoQuerySchema = z.object({
+export const setorQuerySchema = z.object({
   page: z
     .string()
     .optional()
@@ -50,4 +50,4 @@ export const equipamentoQuerySchema = z.object({
     .optional(),
 });
 
-export type EquipamentoQuerySchema = z.infer<typeof equipamentoQuerySchema>;
+export type SetorQuerySchema = z.infer<typeof setorQuerySchema>;

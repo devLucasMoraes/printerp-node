@@ -9,7 +9,7 @@ export const getAllRequisicaoEstoqueUseCase = {
           insumo: true,
         },
         requisitante: true,
-        equipamento: true,
+        setor: true,
         armazem: true,
       },
     });

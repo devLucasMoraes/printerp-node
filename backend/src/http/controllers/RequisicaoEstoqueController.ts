@@ -95,7 +95,7 @@ export class RequisicaoEstoqueController {
       obs: entity.obs,
       valorTotal: entity.valorTotal,
       requisitante: entity.requisitante,
-      equipamento: entity.equipamento,
+      equipamento: entity.setor,
       armazem: entity.armazem,
       itens: entity.itens.map((item) => {
         return {

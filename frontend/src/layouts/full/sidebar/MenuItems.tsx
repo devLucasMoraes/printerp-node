@@ -50,9 +50,9 @@ const Menuitems = [
   },
   {
     id: uuidv4(),
-    title: "Equipamentos",
+    title: "Setores",
     icon: IconPrinter,
-    href: "/equipamentos",
+    href: "/setores",
   },
   {
     id: uuidv4(),

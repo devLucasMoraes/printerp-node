@@ -1,16 +1,16 @@
 import { ArmazemRepository } from "./ArmazemRepository";
 import { CategoriaRepository } from "./CategoriaRepository";
-import { EquipamentoRepository } from "./EquipamentoRepository";
 import { EstoqueRepository } from "./EstoqueRepository";
 import { InsumoRepository } from "./InsumoRepository";
 import { MovimentoEstoqueRepository } from "./MovimentoEstoqueRepository";
 import { RequisicaoEstoqueRepository } from "./RequisicaoEstoqueRepository";
 import { RequisitanteRepository } from "./RequisitanteRepository";
+import { SetorRepository } from "./SetorRepository";
 import { UserRepository } from "./UserRepository";
 
 export const userRepository = new UserRepository();
 export const categoriaRepository = new CategoriaRepository();
-export const equipamentoRepository = new EquipamentoRepository();
+export const setorRepository = new SetorRepository();
 export const requisicaoEstoqueRepository = new RequisicaoEstoqueRepository();
 export const requisitanteRepository = new RequisitanteRepository();
 export const insumoRepository = new InsumoRepository();

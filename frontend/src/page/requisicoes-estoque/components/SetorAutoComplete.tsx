@@ -1,11 +1,11 @@
 import { Autocomplete, CircularProgress, TextField } from "@mui/material";
-import { useEquipamentoQueries } from "../../../hooks/queries/useEquipamentoQueries";
-import { EquipamentoDto } from "../../../types";
+import { useSetorQueries } from "../../../hooks/queries/useSetorQueries";
+import { SetorDto } from "../../../types";
 
 type FieldProps = {
   field: {
-    value: EquipamentoDto | null;
-    onChange: (value: EquipamentoDto | null) => void;
+    value: SetorDto | null;
+    onChange: (value: SetorDto | null) => void;
     onBlur: () => void;
     name: string;
   };
@@ -14,9 +14,9 @@ type FieldProps = {
   };
 };
 
-export const EquipamentoAutoComplete = ({ field, error }: FieldProps) => {
-  const { useGetAll: useGetAllEquipamentos } = useEquipamentoQueries();
-  const { data: equipamentos = [], isLoading } = useGetAllEquipamentos();
+export const SetorAutoComplete = ({ field, error }: FieldProps) => {
+  const { useGetAll: useGetAllSetores } = useSetorQueries();
+  const { data: equipamentos = [], isLoading } = useGetAllSetores();
 
   const options = [...equipamentos];
 
@@ -33,7 +33,7 @@ export const EquipamentoAutoComplete = ({ field, error }: FieldProps) => {
           {...params}
           error={!!error}
           helperText={error?.message}
-          label="Equipamento"
+          label="Setor"
           slotProps={{
             input: {
               ...params.InputProps,

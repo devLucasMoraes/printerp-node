@@ -31,9 +31,9 @@ import {
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto, RequisicaoEstoqueDto } from "../../../types";
 import { ArmazemAutoComplete } from "./ArmazemAutoComplete";
-import { EquipamentoAutoComplete } from "./EquipamentoAutoComplete";
 import { InsumoAutoComplete } from "./InsumoAutoComplete";
 import { RequisitanteAutoComplete } from "./RequisitanteAutoComplete";
+import { SetorAutoComplete } from "./SetorAutoComplete";
 
 interface RequisicaoEstoqueModalProps {
   open: boolean;
@@ -76,7 +76,7 @@ export const RequisicaoEstoqueModal = ({
       dataRequisicao: null as any,
       ordemProducao: "",
       obs: "",
-      equipamento: null as any,
+      setor: null as any,
       requisitante: null as any,
       armazem: null as any,
       valorTotal: 0,
@@ -113,7 +113,7 @@ export const RequisicaoEstoqueModal = ({
         dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
         ordemProducao: requisicaoEstoque.data.ordemProducao,
         obs: requisicaoEstoque.data.obs,
-        equipamento: requisicaoEstoque.data.equipamento,
+        setor: requisicaoEstoque.data.setor,
         requisitante: requisicaoEstoque.data.requisitante,
         armazem: requisicaoEstoque.data.armazem,
         valorTotal: Number(requisicaoEstoque.data.valorTotal),
@@ -131,7 +131,7 @@ export const RequisicaoEstoqueModal = ({
         dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
         ordemProducao: requisicaoEstoque.data.ordemProducao,
         obs: requisicaoEstoque.data.obs,
-        equipamento: requisicaoEstoque.data.equipamento,
+        setor: requisicaoEstoque.data.setor,
         requisitante: requisicaoEstoque.data.requisitante,
         armazem: requisicaoEstoque.data.armazem,
         valorTotal: Number(requisicaoEstoque.data.valorTotal),
@@ -149,7 +149,7 @@ export const RequisicaoEstoqueModal = ({
         dataRequisicao: null as any,
         ordemProducao: "",
         obs: "",
-        equipamento: null as any,
+        setor: null as any,
         requisitante: null as any,
         armazem: null as any,
         valorTotal: 0,
@@ -332,13 +332,10 @@ export const RequisicaoEstoqueModal = ({
 
           <Grid2 size={4}>
             <Controller
-              name="equipamento"
+              name="setor"
               control={control}
               render={({ field }) => (
-                <EquipamentoAutoComplete
-                  field={field}
-                  error={errors.equipamento}
-                />
+                <SetorAutoComplete field={field} error={errors.setor} />
               )}
             />
           </Grid2>

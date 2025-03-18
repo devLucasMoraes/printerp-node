@@ -2,20 +2,20 @@ import request from "supertest";
 import app from "../../../app";
 import { Armazem } from "../../../domain/entities/Armazem";
 import { Categoria } from "../../../domain/entities/Categoria";
-import { Equipamento } from "../../../domain/entities/Equipamento";
 import { Insumo } from "../../../domain/entities/Insumo";
 import { RequisicaoEstoque } from "../../../domain/entities/RequisicaoEstoque";
 import { RequisicaoEstoqueItem } from "../../../domain/entities/RequisicaoEstoqueItem";
 import { Requisitante } from "../../../domain/entities/Requisitante";
+import { Setor } from "../../../domain/entities/Setor";
 import { Unidade } from "../../../domain/entities/Unidade";
 import { User } from "../../../domain/entities/User";
 import {
   armazemRepository,
   categoriaRepository,
-  equipamentoRepository,
   insumoRepository,
   requisicaoEstoqueRepository,
   requisitanteRepository,
+  setorRepository,
   userRepository,
 } from "../../../domain/repositories";
 
@@ -23,7 +23,7 @@ describe("RequisicaoEstoque Routes", () => {
   let cookies: string[] = [];
   let testUser: User;
   let testRequisitante: Requisitante;
-  let testEquipamento: Equipamento;
+  let testEquipamento: Setor;
   let testInsumo: Insumo;
   let testCategoria: Categoria;
   let testRequisicaoEstoque: RequisicaoEstoque;
@@ -71,10 +71,10 @@ describe("RequisicaoEstoque Routes", () => {
     expect(testRequisitante.id).toBeDefined();
 
     // 5. Criar equipamento
-    testEquipamento = equipamentoRepository.create({
+    testEquipamento = setorRepository.create({
       nome: "Test Equipamento",
     });
-    await equipamentoRepository.save(testEquipamento);
+    await setorRepository.save(testEquipamento);
     expect(testEquipamento.id).toBeDefined();
 
     // 6. Criar armazem
@@ -101,7 +101,7 @@ describe("RequisicaoEstoque Routes", () => {
       valorTotal: 100.5,
       obs: "Test observation",
       requisitante: testRequisitante,
-      equipamento: testEquipamento,
+      setor: testEquipamento,
       armazem: testArmazem,
       itens: [
         {
@@ -145,7 +145,7 @@ describe("RequisicaoEstoque Routes", () => {
     }
 
     if (testEquipamento?.id) {
-      await equipamentoRepository.softDelete(testEquipamento.id);
+      await setorRepository.softDelete(testEquipamento.id);
     }
 
     if (testArmazem?.id) {
@@ -285,7 +285,7 @@ describe("RequisicaoEstoque Routes", () => {
           valorTotal: 100.0,
           obs: "Aux requisicao",
           requisitante: testRequisitante,
-          equipamento: testEquipamento,
+          setor: testEquipamento,
           armazem: { id: testArmazem.id },
           itens: [
             {
@@ -561,7 +561,7 @@ describe("RequisicaoEstoque Routes", () => {
             valorTotal: 100.0 * i,
             obs: `Requisicao page ${i}`,
             requisitante: testRequisitante,
-            equipamento: testEquipamento,
+            setor: testEquipamento,
             armazem: { id: testArmazem.id },
             itens: [
               {
@@ -731,7 +731,7 @@ describe("RequisicaoEstoque Routes", () => {
           valorTotal: 100.0,
           obs: "To be deleted",
           requisitante: testRequisitante,
-          equipamento: testEquipamento,
+          setor: testEquipamento,
           armazem: { id: testArmazem.id },
           itens: [
             {
@@ -775,7 +775,7 @@ describe("RequisicaoEstoque Routes", () => {
           valorTotal: 150.0,
           obs: "To be deleted",
           requisitante: testRequisitante,
-          equipamento: testEquipamento,
+          setor: testEquipamento,
           armazem: { id: testArmazem.id },
           itens: [
             {
@@ -927,7 +927,7 @@ describe("RequisicaoEstoque Routes", () => {
       expect(requisitante).toBeDefined();
 
       // Verificar se o equipamento ainda existe
-      const equipamento = await equipamentoRepository.findOne({
+      const equipamento = await setorRepository.findOne({
         where: { id: testEquipamento.id },
       });
       expect(equipamento).toBeDefined();

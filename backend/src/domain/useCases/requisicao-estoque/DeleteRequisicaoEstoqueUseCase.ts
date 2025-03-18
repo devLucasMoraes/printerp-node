@@ -25,7 +25,7 @@ async function findRequisicaoToDelete(
     where: { id },
     relations: {
       requisitante: true,
-      equipamento: true,
+      setor: true,
       armazem: true,
       itens: {
         insumo: true,

@@ -10,9 +10,9 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Armazem } from "./Armazem";
-import { Equipamento } from "./Equipamento";
 import { RequisicaoEstoqueItem } from "./RequisicaoEstoqueItem";
 import { Requisitante } from "./Requisitante";
+import { Setor } from "./Setor";
 
 @Entity("requisicoes_estoque")
 export class RequisicaoEstoque {
@@ -52,9 +52,9 @@ export class RequisicaoEstoque {
   @JoinColumn({ name: "requisitante_id" })
   requisitante: Requisitante;
 
-  @ManyToOne(() => Equipamento, (equipamento) => equipamento.requisicoes)
-  @JoinColumn({ name: "equipamentos_id" })
-  equipamento: Equipamento;
+  @ManyToOne(() => Setor, (setor) => setor.requisicoes)
+  @JoinColumn({ name: "setor_id" })
+  setor: Setor;
 
   @ManyToOne(() => Armazem)
   @JoinColumn({ name: "armazem_id" })

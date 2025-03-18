@@ -20,9 +20,7 @@ const Categorias = Loadable(
 const Requisitantes = Loadable(
   lazy(() => import("../page/requisitantes/Requisitantes"))
 );
-const Equipamentos = Loadable(
-  lazy(() => import("../page/equipamentos/Equipamentos"))
-);
+const Setores = Loadable(lazy(() => import("../page/setores/Setores")));
 const Insumos = Loadable(lazy(() => import("../page/insumos/Insumos")));
 const RequisicoesEstoque = Loadable(
   lazy(() => import("../page/requisicoes-estoque/RequisicoesEstoque"))
@@ -53,7 +51,7 @@ const Router = [
           { path: "/users", exact: true, element: <Users /> },
           { path: "/categorias", exact: true, element: <Categorias /> },
           { path: "/requisitantes", exact: true, element: <Requisitantes /> },
-          { path: "/equipamentos", exact: true, element: <Equipamentos /> },
+          { path: "/setores", exact: true, element: <Setores /> },
           { path: "/insumos", exact: true, element: <Insumos /> },
           {
             path: "/requisicoes-estoque",

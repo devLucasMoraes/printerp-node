@@ -6,18 +6,18 @@ import DashboardCard from "../../components/cards/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { ConfirmationModal } from "../../components/shared/ConfirmationModal";
 import { ServerDataTable } from "../../components/shared/ServerDataTable";
-import { useEquipamentoQueries } from "../../hooks/queries/useEquipamentoQueries";
+import { useSetorQueries } from "../../hooks/queries/useSetorQueries";
 import { useEntityChangeSocket } from "../../hooks/useEntityChangeSocket";
 import { useAlertStore } from "../../stores/useAlertStore";
-import { EquipamentoDto } from "../../types";
-import { EquipamentoModal } from "./components/EquipamentoModal";
+import { SetorDto } from "../../types";
+import { SetorModal } from "./components/SetorModal";
 
-const Equipamentos = () => {
+const Setores = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
-  const [selectedEquipamento, setSelectedEquipamento] = useState<{
-    data: EquipamentoDto;
+  const [selectedSetor, setSelectedSetor] = useState<{
+    data: SetorDto;
     type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
@@ -26,13 +26,13 @@ const Equipamentos = () => {
   });
 
   const isSocketConnected = useEntityChangeSocket(
-    "equipamento",
+    "setor",
     {
       invalidate: ["requisicaoEstoque"],
     },
     {
       showNotifications: true,
-      entityLabel: "Equipamento",
+      entityLabel: "setor",
       suppressSocketAlert: formOpen || confirmModalOpen,
     }
   );
@@ -40,11 +40,11 @@ const Equipamentos = () => {
   const { showAlert } = useAlertStore((state) => state);
 
   const {
-    useGetAllPaginated: useGetEquipamentosPaginated,
-    useDelete: useDeleteEquipamento,
-  } = useEquipamentoQueries();
+    useGetAllPaginated: useGetSetoresPaginated,
+    useDelete: useDeleteSetor,
+  } = useSetorQueries();
 
-  const { data, isLoading } = useGetEquipamentosPaginated(
+  const { data, isLoading } = useGetSetoresPaginated(
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -53,19 +53,19 @@ const Equipamentos = () => {
       staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
     }
   );
-  const { mutate: deleteById } = useDeleteEquipamento();
+  const { mutate: deleteById } = useDeleteSetor();
 
-  const handleConfirmDelete = (equipamento: EquipamentoDto) => {
-    setSelectedEquipamento({ data: equipamento, type: "DELETE" });
+  const handleConfirmDelete = (setor: SetorDto) => {
+    setSelectedSetor({ data: setor, type: "DELETE" });
     setConfirmModalOpen(true);
   };
 
   const handleDelete = (id: number) => {
     deleteById(id, {
       onSuccess: () => {
-        setSelectedEquipamento(undefined);
+        setSelectedSetor(undefined);
         setConfirmModalOpen(false);
-        showAlert("Equipamento deletado com sucesso", "success");
+        showAlert("Setor deletado com sucesso", "success");
       },
       onError: (error) => {
         console.error(error);
@@ -74,17 +74,17 @@ const Equipamentos = () => {
     });
   };
 
-  const handleEdit = (equipamento: EquipamentoDto) => {
-    setSelectedEquipamento({ data: equipamento, type: "UPDATE" });
+  const handleEdit = (setor: SetorDto) => {
+    setSelectedSetor({ data: setor, type: "UPDATE" });
     setFormOpen(true);
   };
 
-  const handleCopy = (equipamento: EquipamentoDto): void => {
-    setSelectedEquipamento({ data: equipamento, type: "COPY" });
+  const handleCopy = (setor: SetorDto): void => {
+    setSelectedSetor({ data: setor, type: "COPY" });
     setFormOpen(true);
   };
 
-  const columns: GridColDef<EquipamentoDto>[] = [
+  const columns: GridColDef<SetorDto>[] = [
     { field: "nome", headerName: "Nome", minWidth: 120, flex: 1 },
     {
       field: "actions",
@@ -123,43 +123,43 @@ const Equipamentos = () => {
 
   const renderModals = () => (
     <>
-      <EquipamentoModal
+      <SetorModal
         open={formOpen}
         onClose={() => {
           setFormOpen(false);
-          setSelectedEquipamento(undefined);
+          setSelectedSetor(undefined);
         }}
-        equipamento={selectedEquipamento}
+        setor={selectedSetor}
       />
       <ConfirmationModal
         open={confirmModalOpen}
         onClose={() => {
           setConfirmModalOpen(false);
-          setSelectedEquipamento(undefined);
+          setSelectedSetor(undefined);
         }}
         onConfirm={() => {
-          if (!selectedEquipamento) return;
-          handleDelete(selectedEquipamento.data.id);
+          if (!selectedSetor) return;
+          handleDelete(selectedSetor.data.id);
         }}
-        title="Deletar equipamento"
+        title="Deletar setor"
       >
-        Tem certeza que deseja deletar esse equipamento?
+        Tem certeza que deseja deletar esse setor?
       </ConfirmationModal>
     </>
   );
 
   return (
-    <PageContainer title="Equipamentos" description="">
+    <PageContainer title="Setores" description="">
       {renderModals()}
       <DashboardCard
-        title="Equipamentos"
+        title="Setores"
         action={
           <Button
             variant="contained"
             color="primary"
             onClick={() => setFormOpen(true)}
           >
-            adicionar equipamento
+            adicionar setor
           </Button>
         }
       >
@@ -175,4 +175,4 @@ const Equipamentos = () => {
   );
 };
 
-export default Equipamentos;
+export default Setores;
