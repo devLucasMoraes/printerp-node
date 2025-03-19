@@ -65,7 +65,7 @@ export class MovimentoEstoque {
   @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
 
   @ManyToOne(() => Insumo, (insumo) => insumo.movimentos)

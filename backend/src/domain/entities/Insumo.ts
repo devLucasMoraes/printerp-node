@@ -69,7 +69,7 @@ export class Insumo {
   @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
 
   @OneToMany(() => Estoque, (estoque) => estoque.insumo)
@@ -77,12 +77,6 @@ export class Insumo {
 
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.insumo)
   movimentos: MovimentoEstoque[];
-
-  constructor(data?: Partial<Insumo>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
 
   getSaldoTotal(): number {
     return this.estoques.reduce(

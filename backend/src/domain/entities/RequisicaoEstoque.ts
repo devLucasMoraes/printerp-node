@@ -45,7 +45,7 @@ export class RequisicaoEstoque {
   @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
 
   @ManyToOne(() => Requisitante, (requisitante) => requisitante.requisicoes)
@@ -66,10 +66,4 @@ export class RequisicaoEstoque {
     { cascade: true }
   )
   itens: RequisicaoEstoqueItem[];
-
-  constructor(data?: Partial<RequisicaoEstoque>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
 }

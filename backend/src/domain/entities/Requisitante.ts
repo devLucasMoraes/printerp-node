@@ -32,7 +32,7 @@ export class Requisitante {
   @DeleteDateColumn({ name: "deleted_at" })
   deletedAt?: Date;
 
-  @Column({ name: "user_id", type: "varchar", length: 255, nullable: true })
+  @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
 
   @OneToMany(
@@ -40,10 +40,4 @@ export class Requisitante {
     (requisicaoEstoque) => requisicaoEstoque.requisitante
   )
   requisicoes: RequisicaoEstoque[];
-
-  constructor(data?: Partial<Requisitante>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
 }

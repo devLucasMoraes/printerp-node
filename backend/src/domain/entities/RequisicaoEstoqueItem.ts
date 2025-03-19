@@ -51,12 +51,6 @@ export class RequisicaoEstoqueItem {
   @JoinColumn({ name: "requisicoes_estoque_id" })
   requisicaoEstoque: RequisicaoEstoque;
 
-  constructor(data?: Partial<RequisicaoEstoqueItem>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-
   public getValorTotal() {
     return this.quantidade * this.valorUnitario;
   }
