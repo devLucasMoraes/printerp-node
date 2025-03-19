@@ -1,11 +1,11 @@
 import {
+  IconAffiliate,
   IconBox,
   IconBuildingWarehouse,
   IconCategoryPlus,
   IconChecklist,
   IconLayoutDashboard,
   IconPackages,
-  IconPrinter,
   IconSettings,
   IconUsers,
   IconUserUp,
@@ -51,7 +51,7 @@ const Menuitems = [
   {
     id: uuidv4(),
     title: "Setores",
-    icon: IconPrinter,
+    icon: IconAffiliate,
     href: "/setores",
   },
   {
