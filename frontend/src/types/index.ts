@@ -27,6 +27,14 @@ export type RequisitanteDto = {
   updatedAt: Date;
 };
 
+export type ParceiroDto = {
+  id: number;
+  nome: string;
+  fone: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type SetorDto = {
   id: number;
   nome: string;
@@ -61,6 +69,34 @@ export type RequisicaoEstoqueDto = {
     unidade: Unidade;
     valorUnitario: number;
     insumo: InsumoDto;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type EmprestimoDto = {
+  id: number;
+  dataEmprestimo: Date;
+  previsaoDevolucao: Date | null;
+  custoEstimado: number;
+  tipo: "ENTRADA" | "SAIDA";
+  status: "EM ABERTO" | "BAIXADO";
+  parceiro: ParceiroDto;
+  armazem: ArmazemDto;
+  itens: {
+    id: number;
+    quantidade: number;
+    unidade: Unidade;
+    valorUnitario: number;
+    insumo: InsumoDto;
+    devolucaoItens: {
+      id: number;
+      quantidade: number;
+      unidade: Unidade;
+      valorUnitario: number;
+      insumo: InsumoDto;
+      dataDevolucao: Date;
+    }[];
   }[];
   createdAt: Date;
   updatedAt: Date;

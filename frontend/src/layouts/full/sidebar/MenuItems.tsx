@@ -6,6 +6,7 @@ import {
   IconChecklist,
   IconLayoutDashboard,
   IconPackages,
+  IconReplaceUser,
   IconSettings,
   IconUsers,
   IconUserUp,
@@ -23,6 +24,12 @@ const Menuitems = [
     title: "Dashboard",
     icon: IconLayoutDashboard,
     href: "/dashboard",
+  },
+  {
+    id: uuidv4(),
+    title: "Emprestimos",
+    icon: IconReplaceUser,
+    href: "/emprestimos",
   },
   {
     id: uuidv4(),
