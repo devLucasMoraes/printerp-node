@@ -5,8 +5,8 @@ import { createRequisitanteUseCase } from "../../domain/useCases/requisitante/Cr
 import { deleteRequisitanteUseCase } from "../../domain/useCases/requisitante/DeleteRequisitanteUseCase";
 import { getAllRequisitanteUseCase } from "../../domain/useCases/requisitante/GetAllRequisitanteUseCase";
 import { getRequisitanteUseCase } from "../../domain/useCases/requisitante/GetRequisitanteUseCase";
-import { listRequisitanteUseCase } from "../../domain/useCases/requisitante/ListEquipamentoUseCase";
-import { updateRequisitanteUseCase } from "../../domain/useCases/requisitante/UpdateEquipamentoUseCase";
+import { listRequisitanteUseCase } from "../../domain/useCases/requisitante/ListRequisitanteUseCase";
+import { updateRequisitanteUseCase } from "../../domain/useCases/requisitante/UpdateRequisitanteUseCase";
 import {
   CreateRequisitanteDTO,
   UpdateRequisitanteDTO,
