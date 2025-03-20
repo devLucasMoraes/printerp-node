@@ -1,5 +1,6 @@
 import { ArmazemRepository } from "./ArmazemRepository";
 import { CategoriaRepository } from "./CategoriaRepository";
+import { EmprestimoRepository } from "./EmprestimoRepository";
 import { EstoqueRepository } from "./EstoqueRepository";
 import { InsumoRepository } from "./InsumoRepository";
 import { MovimentoEstoqueRepository } from "./MovimentoEstoqueRepository";
@@ -17,3 +18,4 @@ export const insumoRepository = new InsumoRepository();
 export const armazemRepository = new ArmazemRepository();
 export const estoqueRepository = new EstoqueRepository();
 export const movimentoEstoqueRepository = new MovimentoEstoqueRepository();
+export const emprestimoRepository = new EmprestimoRepository();

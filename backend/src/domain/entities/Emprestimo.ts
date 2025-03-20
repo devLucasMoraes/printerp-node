@@ -1,10 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Armazem } from "./Armazem";
 import { EmprestimoItem } from "./EmprestimoItem";
@@ -38,6 +41,15 @@ export class Emprestimo {
 
   @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
+
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: "deleted_at" })
+  deletedAt?: Date;
 
   @ManyToOne(() => Armazem)
   @JoinColumn({ name: "armazem_id" })
