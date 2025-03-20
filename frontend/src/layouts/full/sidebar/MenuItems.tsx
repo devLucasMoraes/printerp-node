@@ -4,6 +4,7 @@ import {
   IconBuildingWarehouse,
   IconCategoryPlus,
   IconChecklist,
+  IconHeartHandshake,
   IconLayoutDashboard,
   IconPackages,
   IconReplaceUser,
@@ -30,6 +31,12 @@ const Menuitems = [
     title: "Emprestimos",
     icon: IconReplaceUser,
     href: "/emprestimos",
+  },
+  {
+    id: uuidv4(),
+    title: "Parceiros",
+    icon: IconHeartHandshake,
+    href: "/parceiros",
   },
   {
     id: uuidv4(),

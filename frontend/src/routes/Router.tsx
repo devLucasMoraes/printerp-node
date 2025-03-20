@@ -30,6 +30,7 @@ const Estoques = Loadable(lazy(() => import("../page/estoques/Estoques")));
 const Emprestimos = Loadable(
   lazy(() => import("../page/emprestimos/Emprestimos"))
 );
+const Parceiros = Loadable(lazy(() => import("../page/parceiros/Parceiros")));
 
 /* ****Public Pages***** */
 const Register = Loadable(
@@ -64,6 +65,7 @@ const Router = [
           { path: "/armazens", exact: true, element: <Armazens /> },
           { path: "/estoques", exact: true, element: <Estoques /> },
           { path: "/emprestimos", exact: true, element: <Emprestimos /> },
+          { path: "/parceiros", exact: true, element: <Parceiros /> },
         ],
       },
     ],
