@@ -32,7 +32,7 @@ const RequisicoesEstoque = () => {
     "requisicaoEstoque",
     {
       invalidate: ["estoque"],
-      dependsOn: ["requisitante", "equipamento", "insumo", "armazem"],
+      dependsOn: ["requisitante", "setor", "insumo", "armazem"],
     },
     {
       showNotifications: true,
