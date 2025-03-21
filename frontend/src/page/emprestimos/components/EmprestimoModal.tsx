@@ -7,10 +7,14 @@ import {
   DialogContentText,
   DialogTitle,
   Grid2,
+  InputAdornment,
+  MenuItem,
+  TextField,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useEmprestimoQueries } from "../../../hooks/queries/useEmprestimosQueries";
 import {
   emprestimoCreateSchema,
@@ -18,6 +22,7 @@ import {
 } from "../../../schemas/emprestimo.schema";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { EmprestimoDto, InsumoDto } from "../../../types";
+import { ArmazemAutoComplete } from "../../requisicoes-estoque/components/ArmazemAutoComplete";
 
 export const EmprestimoModal = ({
   open,
@@ -58,8 +63,8 @@ export const EmprestimoModal = ({
       custoEstimado: 0,
       tipo: null as any,
       status: null as any,
-      parceiro: { id: null as any },
-      armazem: { id: null as any },
+      parceiro: null as any,
+      armazem: null as any,
       itens: [],
     },
   });
@@ -151,8 +156,8 @@ export const EmprestimoModal = ({
         custoEstimado: 0,
         tipo: null as any,
         status: null as any,
-        parceiro: { id: null as any },
-        armazem: { id: null as any },
+        parceiro: null as any,
+        armazem: null as any,
         itens: [],
       });
     }
@@ -243,7 +248,124 @@ export const EmprestimoModal = ({
             ? "Atualize os dados do emprestimo"
             : "Crie um novo emprestimo"}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}></Grid2>
+        <Grid2 container spacing={2} sx={{ mt: 2 }}>
+          <Grid2 size={3}>
+            <Controller
+              name="tipo"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Tipo"
+                  error={!!errors.tipo}
+                  helperText={errors.tipo?.message}
+                  fullWidth
+                  select
+                >
+                  <MenuItem value="ENTRADA">Entrada</MenuItem>
+                  <MenuItem value="SAIDA">Saida</MenuItem>
+                </TextField>
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={3}>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Status"
+                  error={!!errors.status}
+                  helperText={errors.status?.message}
+                  fullWidth
+                  select
+                >
+                  <MenuItem value="EM ABERTO">Em aberto</MenuItem>
+                  <MenuItem value="BAIXADO">Baixado</MenuItem>
+                </TextField>
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={3}>
+            <Controller
+              name="previsaoDevolucao"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="Previsão de devolução"
+                  slotProps={{
+                    textField: {
+                      error: !!errors.previsaoDevolucao,
+                      helperText: errors.previsaoDevolucao?.message,
+                    },
+                  }}
+                />
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={3}>
+            <Controller
+              name="dataEmprestimo"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="Emprestado em"
+                  slotProps={{
+                    textField: {
+                      error: !!errors.dataEmprestimo,
+                      helperText: errors.dataEmprestimo?.message,
+                    },
+                  }}
+                />
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={4}>
+            <Controller
+              name="custoEstimado"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  type="number"
+                  label="Custo estimado"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">R$</InputAdornment>
+                      ),
+                    },
+                  }}
+                  disabled
+                  error={!!errors.custoEstimado}
+                  helperText={errors.custoEstimado?.message}
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? null : Number(value));
+                  }}
+                />
+              )}
+            />
+          </Grid2>
+
+          <Grid2 size={4}>
+            <Controller
+              name="armazem"
+              control={control}
+              render={({ field }) => (
+                <ArmazemAutoComplete field={field} error={errors.armazem} />
+              )}
+            />
+          </Grid2>
+        </Grid2>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
