@@ -15,6 +15,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { ArmazemAutoComplete } from "../../../components/shared/autocompletes/ArmazemAutoComplete";
 import { useEmprestimoQueries } from "../../../hooks/queries/useEmprestimosQueries";
 import {
   emprestimoCreateSchema,
@@ -22,7 +23,6 @@ import {
 } from "../../../schemas/emprestimo.schema";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { EmprestimoDto, InsumoDto } from "../../../types";
-import { ArmazemAutoComplete } from "../../requisicoes-estoque/components/ArmazemAutoComplete";
 
 export const EmprestimoModal = ({
   open,

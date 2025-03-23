@@ -22,6 +22,10 @@ import { IconCircleMinus, IconPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { ArmazemAutoComplete } from "../../../components/shared/autocompletes/ArmazemAutoComplete";
+import { InsumoAutoComplete } from "../../../components/shared/autocompletes/InsumoAutoComplete";
+import { RequisitanteAutoComplete } from "../../../components/shared/autocompletes/RequisitanteAutoComplete";
+import { SetorAutoComplete } from "../../../components/shared/autocompletes/SetorAutoComplete";
 import { unidades } from "../../../constants";
 import { useRequisicaoEstoqueQueries } from "../../../hooks/queries/useRequisicaoEstoqueQueries";
 import {
@@ -30,10 +34,6 @@ import {
 } from "../../../schemas/requisicaoEstoque.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto, RequisicaoEstoqueDto } from "../../../types";
-import { ArmazemAutoComplete } from "./ArmazemAutoComplete";
-import { InsumoAutoComplete } from "./InsumoAutoComplete";
-import { RequisitanteAutoComplete } from "./RequisitanteAutoComplete";
-import { SetorAutoComplete } from "./SetorAutoComplete";
 
 interface RequisicaoEstoqueModalProps {
   open: boolean;

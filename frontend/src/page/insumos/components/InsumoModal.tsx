@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { CategoriaAutoComplete } from "../../../components/shared/autocompletes/CategoriaAutoComplete";
 import { unidades } from "../../../constants";
 import { useInsumoQueries } from "../../../hooks/queries/useInsumoQueries";
 import {
@@ -24,7 +25,6 @@ import {
 } from "../../../schemas/insumo.schemas";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto } from "../../../types";
-import { CategoriaAutoComplete } from "./CategoriaAutoComplete";
 
 interface InsumoModalProps {
   open: boolean;
