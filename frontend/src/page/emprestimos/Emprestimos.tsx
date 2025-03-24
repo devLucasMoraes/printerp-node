@@ -18,7 +18,7 @@ const Emprestimos = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const [selectedEmprestimo, setSelectedEmprestimo] = useState<{
-    data: EmprestimoDto;
+    data?: EmprestimoDto;
     type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
@@ -80,6 +80,13 @@ const Emprestimos = () => {
 
   const handleEdit = (emprestimo: EmprestimoDto) => {
     setSelectedEmprestimo({ data: emprestimo, type: "UPDATE" });
+    setFormOpen(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedEmprestimo({
+      type: "CREATE",
+    });
     setFormOpen(true);
   };
 
@@ -166,8 +173,8 @@ const Emprestimos = () => {
           setSelectedEmprestimo(undefined);
         }}
         onConfirm={() => {
-          if (!selectedEmprestimo) return;
-          handleDelete(selectedEmprestimo.data.id);
+          if (!selectedEmprestimo?.data) return;
+          handleDelete(selectedEmprestimo.data?.id);
         }}
         title="Deletar Empréstimo"
       >
@@ -182,11 +189,7 @@ const Emprestimos = () => {
       <DashboardCard
         title="Empréstimos"
         action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
-          >
+          <Button variant="contained" color="primary" onClick={handleCreate}>
             Novo empréstimo
           </Button>
         }

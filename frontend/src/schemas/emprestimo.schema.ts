@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Unidade } from "../constants/Unidade";
 
 // Helpers reutilizáveis
-const dateStringSchema = z.string().transform((str) => new Date(str));
+const dateStringSchema = z.date();
 const positiveNumberSchema = z.number().nonnegative();
 const entityIdSchema = z.object({ id: z.number() });
 

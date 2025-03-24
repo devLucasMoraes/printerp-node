@@ -1,21 +1,36 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Badge,
+  Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   Grid2,
+  IconButton,
   InputAdornment,
   MenuItem,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
+import {
+  IconCircleArrowDownFilled,
+  IconCircleMinus,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { ArmazemAutoComplete } from "../../../components/shared/autocompletes/ArmazemAutoComplete";
+import { InsumoAutoComplete } from "../../../components/shared/autocompletes/InsumoAutoComplete";
+import { ParceiroAutoComplete } from "../../../components/shared/autocompletes/ParceiroAutoComplete";
+import { unidades } from "../../../constants";
 import { useEmprestimoQueries } from "../../../hooks/queries/useEmprestimosQueries";
 import {
   emprestimoCreateSchema,
@@ -23,6 +38,7 @@ import {
 } from "../../../schemas/emprestimo.schema";
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { EmprestimoDto, InsumoDto } from "../../../types";
+import { DevolucaoModal } from "./DevolucaoModal";
 
 export const EmprestimoModal = ({
   open,
@@ -32,10 +48,13 @@ export const EmprestimoModal = ({
   open: boolean;
   onClose: () => void;
   emprestimo?: {
-    data: EmprestimoDto;
+    data?: EmprestimoDto;
     type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   };
 }) => {
+  const [devolucaoModalOpen, setDevolucaoModalOpen] = useState(false);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
+
   const { showAlert } = useAlertStore((state) => state);
 
   const queryClient = useQueryClient();
@@ -54,6 +73,7 @@ export const EmprestimoModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    watch,
   } = useForm<EmprestimoDto>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -62,7 +82,7 @@ export const EmprestimoModal = ({
       previsaoDevolucao: null as any,
       custoEstimado: 0,
       tipo: null as any,
-      status: null as any,
+      status: "EM ABERTO",
       parceiro: null as any,
       armazem: null as any,
       itens: [],
@@ -129,7 +149,7 @@ export const EmprestimoModal = ({
           : null,
         custoEstimado: Number(emprestimo.data.custoEstimado),
         tipo: emprestimo.data.tipo,
-        status: emprestimo.data.status,
+        status: "EM ABERTO",
         parceiro: emprestimo.data.parceiro,
         armazem: emprestimo.data.armazem,
         itens: emprestimo.data.itens.map((item) => ({
@@ -155,7 +175,7 @@ export const EmprestimoModal = ({
         previsaoDevolucao: null as any,
         custoEstimado: 0,
         tipo: null as any,
-        status: null as any,
+        status: "EM ABERTO",
         parceiro: null as any,
         armazem: null as any,
         itens: [],
@@ -230,6 +250,27 @@ export const EmprestimoModal = ({
     onClose();
   };
 
+  const handleOpenDevolucaoModal = (index: number) => {
+    setSelectedItemIndex(index);
+    setDevolucaoModalOpen(true);
+  };
+
+  const renderModals = () => (
+    <>
+      {selectedItemIndex >= 0 && (
+        <DevolucaoModal
+          open={devolucaoModalOpen}
+          onClose={() => {
+            setDevolucaoModalOpen(false);
+            setSelectedItemIndex(-1);
+          }}
+          itemIndex={selectedItemIndex}
+          control={control}
+        />
+      )}
+    </>
+  );
+
   return (
     <Dialog
       open={open}
@@ -243,6 +284,7 @@ export const EmprestimoModal = ({
         {emprestimo?.type === "UPDATE" ? "Editar" : "Novo"}
       </DialogTitle>
       <DialogContent>
+        {renderModals()}
         <DialogContentText>
           {emprestimo?.type === "UPDATE"
             ? "Atualize os dados do emprestimo"
@@ -280,11 +322,8 @@ export const EmprestimoModal = ({
                   error={!!errors.status}
                   helperText={errors.status?.message}
                   fullWidth
-                  select
-                >
-                  <MenuItem value="EM ABERTO">Em aberto</MenuItem>
-                  <MenuItem value="BAIXADO">Baixado</MenuItem>
-                </TextField>
+                  disabled
+                />
               )}
             />
           </Grid2>
@@ -364,6 +403,228 @@ export const EmprestimoModal = ({
                 <ArmazemAutoComplete field={field} error={errors.armazem} />
               )}
             />
+          </Grid2>
+
+          <Grid2 size={4}>
+            <Controller
+              name="parceiro"
+              control={control}
+              render={({ field }) => (
+                <ParceiroAutoComplete field={field} error={errors.parceiro} />
+              )}
+            />
+          </Grid2>
+
+          {/* Items Section */}
+          <Grid2 size={12}>
+            <Box sx={{ mt: 2 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 2 }}
+                gap={1}
+              >
+                <Divider textAlign="left" sx={{ flexGrow: 1 }}>
+                  <Chip label="Itens da Requisição" />
+                </Divider>
+                <Button
+                  startIcon={<IconPlus size={18} />}
+                  onClick={handleAddItem}
+                  variant="outlined"
+                  size="small"
+                >
+                  adicionar item
+                </Button>
+              </Stack>
+
+              {fields.length === 0 ? (
+                <Box
+                  sx={{
+                    p: 3,
+                    textAlign: "center",
+                    bgcolor: (theme) =>
+                      theme.palette.mode === "dark"
+                        ? "rgba(255, 255, 255, 0.02)"
+                        : "rgba(0, 0, 0, 0.02)",
+                  }}
+                >
+                  <Typography color="text.secondary" sx={{ mb: 1 }}>
+                    Nenhum item adicionado
+                  </Typography>
+                  <Button
+                    startIcon={<IconPlus size={18} />}
+                    onClick={handleAddItem}
+                    variant="outlined"
+                    size="small"
+                  >
+                    Adicionar Primeiro Item
+                  </Button>
+                </Box>
+              ) : (
+                <Box>
+                  {fields.map((field, index) => {
+                    return (
+                      <Box
+                        key={field.id}
+                        sx={{
+                          px: 2,
+                          py: 2,
+                          mb: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          "&:hover": {
+                            bgcolor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "rgba(255, 255, 255, 0.03)"
+                                : "rgba(0, 0, 0, 0.02)",
+                          },
+                        }}
+                      >
+                        <Grid2 container spacing={2}>
+                          <Grid2 size={4}>
+                            <Controller
+                              name={`itens.${index}.insumo`}
+                              control={control}
+                              render={({ field }) => (
+                                <InsumoAutoComplete
+                                  size="small"
+                                  field={{
+                                    ...field,
+                                    onChange: (value) => {
+                                      field.onChange(value);
+                                      handleInsumoChange(index, value);
+                                    },
+                                  }}
+                                  error={errors.itens?.[index]?.insumo}
+                                />
+                              )}
+                            />
+                          </Grid2>
+
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${index}.quantidade`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  type="number"
+                                  label="Quantidade"
+                                  error={!!errors.itens?.[index]?.quantidade}
+                                  helperText={
+                                    errors.itens?.[index]?.quantidade?.message
+                                  }
+                                  fullWidth
+                                  size="small"
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              )}
+                            />
+                          </Grid2>
+
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${index}.unidade`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  label="Unidade"
+                                  error={!!errors.itens?.[index]?.unidade}
+                                  helperText={
+                                    errors.itens?.[index]?.unidade?.message
+                                  }
+                                  value={field.value || ""}
+                                  fullWidth
+                                  select
+                                  size="small"
+                                >
+                                  {unidades.map((option) => (
+                                    <MenuItem
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </MenuItem>
+                                  ))}
+                                </TextField>
+                              )}
+                            />
+                          </Grid2>
+
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${index}.valorUnitario`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  type="number"
+                                  label="Valor Unitário"
+                                  error={!!errors.itens?.[index]?.valorUnitario}
+                                  helperText={
+                                    errors.itens?.[index]?.valorUnitario
+                                      ?.message
+                                  }
+                                  disabled
+                                  fullWidth
+                                  size="small"
+                                  slotProps={{
+                                    input: {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          R$
+                                        </InputAdornment>
+                                      ),
+                                    },
+                                  }}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                />
+                              )}
+                            />
+                          </Grid2>
+
+                          <Grid2
+                            size={2}
+                            container
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="flex-end"
+                          >
+                            <Badge
+                              badgeContent={
+                                watch(`itens.${index}.devolucaoItens`)
+                                  ?.length || 0
+                              }
+                              color="primary"
+                            >
+                              <IconButton
+                                onClick={() => handleOpenDevolucaoModal(index)}
+                                size="small"
+                              >
+                                <IconCircleArrowDownFilled />
+                              </IconButton>
+                            </Badge>
+                            <IconButton
+                              onClick={() => remove(index)}
+                              color="error"
+                              size="small"
+                            >
+                              <IconCircleMinus />
+                            </IconButton>
+                          </Grid2>
+                        </Grid2>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </Box>
           </Grid2>
         </Grid2>
       </DialogContent>
