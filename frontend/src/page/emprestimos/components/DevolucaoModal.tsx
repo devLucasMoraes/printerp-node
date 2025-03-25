@@ -15,23 +15,23 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { IconCircleMinus, IconPlus } from "@tabler/icons-react";
-import { Control, Controller, useFieldArray } from "react-hook-form";
+import { useCallback } from "react";
+import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { InsumoAutoComplete } from "../../../components/shared/autocompletes/InsumoAutoComplete";
 import { unidades } from "../../../constants";
-import { EmprestimoDto } from "../../../types";
+import { EmprestimoDto, InsumoDto } from "../../../types";
 
 export const DevolucaoModal = ({
   open,
   onClose,
   itemIndex,
-  control,
 }: {
   open: boolean;
   onClose: () => void;
   itemIndex: number;
-
-  control: Control<EmprestimoDto, any>;
 }) => {
+  const { control, setValue } = useFormContext<EmprestimoDto>();
+
   const { fields, prepend, remove } = useFieldArray({
     control,
     name: `itens.${itemIndex}.devolucaoItens`,
@@ -47,6 +47,23 @@ export const DevolucaoModal = ({
       dataDevolucao: null as any,
     });
   };
+
+  const handleInsumoChange = useCallback(
+    (index: number, insumo?: InsumoDto | null) => {
+      if (insumo) {
+        setValue(
+          `itens.${itemIndex}.devolucaoItens.${index}.valorUnitario`,
+          insumo.valorUntMed
+        );
+        setValue(
+          `itens.${itemIndex}.devolucaoItens.${index}.unidade`,
+          insumo.undEstoque
+        );
+      }
+    },
+    [itemIndex]
+  );
+
   return (
     <Dialog open={open} onClose={() => onClose()} fullWidth maxWidth="xl">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -150,7 +167,7 @@ export const DevolucaoModal = ({
                                     ...field,
                                     onChange: (value) => {
                                       field.onChange(value);
-                                      //handleInsumoChange(index, value);
+                                      handleInsumoChange(index, value);
                                     },
                                   }}
                                   error={
