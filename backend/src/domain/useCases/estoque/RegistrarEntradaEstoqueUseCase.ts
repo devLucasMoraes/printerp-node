@@ -17,7 +17,7 @@ export const registrarEntradaEstoqueUseCase = {
       undEstoque: Unidade;
       tipoDocumento: string;
       documentoOrigem: string;
-      observacao: string;
+      observacao?: string;
     },
     manager: EntityManager
   ): Promise<void> {

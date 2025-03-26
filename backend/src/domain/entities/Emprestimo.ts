@@ -37,7 +37,7 @@ export class Emprestimo {
   tipo: "ENTRADA" | "SAIDA";
 
   @Column({ type: "varchar", length: 255, default: "EM ABERTO" })
-  status: "EM ABERTO" | "BAIXADO";
+  status: "EM_ABERTO" | "FECHADO";
 
   @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
