@@ -14,6 +14,7 @@ export class EmprestimoRepository extends BaseRepository<Emprestimo> {
       {},
       {
         armazem: true,
+        parceiro: true,
         itens: {
           insumo: true,
           devolucaoItens: {
@@ -29,6 +30,7 @@ export class EmprestimoRepository extends BaseRepository<Emprestimo> {
       where: { id },
       relations: {
         armazem: true,
+        parceiro: true,
         itens: {
           insumo: true,
           devolucaoItens: {

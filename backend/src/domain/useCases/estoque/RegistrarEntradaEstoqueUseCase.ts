@@ -17,6 +17,7 @@ export const registrarEntradaEstoqueUseCase = {
       undEstoque: Unidade;
       tipoDocumento: string;
       documentoOrigem: string;
+      userId: string;
       observacao?: string;
     },
     manager: EntityManager
@@ -30,6 +31,7 @@ export const registrarEntradaEstoqueUseCase = {
       tipoDocumento,
       documentoOrigem,
       observacao,
+      userId,
     } = params;
 
     const estoque = await inicializarEstoqueUseCase.execute(
@@ -50,6 +52,7 @@ export const registrarEntradaEstoqueUseCase = {
       tipoDocumento,
       regularizado: true,
       observacao,
+      userId,
     });
 
     await manager.save(MovimentoEstoque, movimento);

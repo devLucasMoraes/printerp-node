@@ -110,21 +110,23 @@ export class EmprestimoController {
             valorUntMed: item.insumo.valorUntMed,
             undEstoque: item.insumo.undEstoque,
           },
-          devolucaoItens: item.devolucaoItens.map((devolucaoItem) => {
-            return {
-              id: devolucaoItem.id,
-              dataDevolucao: devolucaoItem.dataDevolucao,
-              quantidade: devolucaoItem.quantidade,
-              unidade: devolucaoItem.unidade,
-              valorUnitario: devolucaoItem.valorUnitario,
-              insumo: {
-                id: devolucaoItem.insumo.id,
-                descricao: devolucaoItem.insumo.descricao,
-                valorUntMed: devolucaoItem.insumo.valorUntMed,
-                undEstoque: devolucaoItem.insumo.undEstoque,
-              },
-            };
-          }),
+          devolucaoItens: item.devolucaoItens
+            ? item.devolucaoItens.map((devolucaoItem) => {
+                return {
+                  id: devolucaoItem.id,
+                  dataDevolucao: devolucaoItem.dataDevolucao,
+                  quantidade: devolucaoItem.quantidade,
+                  unidade: devolucaoItem.unidade,
+                  valorUnitario: devolucaoItem.valorUnitario,
+                  insumo: {
+                    id: devolucaoItem.insumo.id,
+                    descricao: devolucaoItem.insumo.descricao,
+                    valorUntMed: devolucaoItem.insumo.valorUntMed,
+                    undEstoque: devolucaoItem.insumo.undEstoque,
+                  },
+                };
+              })
+            : [],
         };
       }),
     };

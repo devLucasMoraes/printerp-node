@@ -1,73 +1,37 @@
 import { Emprestimo } from "../../domain/entities/Emprestimo";
-import { Unidade } from "../../domain/entities/Unidade";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { EmprestimoService } from "../../domain/services/EmprestimoService";
+import { createEmprestimoUseCase } from "../../domain/useCases/emprestimo/CreateEmprestimoUseCase";
+import { getAllEmprestimoUseCase } from "../../domain/useCases/emprestimo/GetAllEmprestimoUseCase";
+import { getEmprestimoUseCase } from "../../domain/useCases/emprestimo/GetEmprestimoUseCase";
+import { listEmprestimoUseCase } from "../../domain/useCases/emprestimo/ListEmprestimoUseCase";
+import {
+  CreateEmprestimoDTO,
+  UpdateEmprestimoDTO,
+} from "../../http/validators/emprestimo.schema";
+import { SocketService } from "../socket/SocketService";
 
 export class EmprestimoServiceImpl implements EmprestimoService {
-  listPaginated(pageRequest?: PageRequest): Promise<Page<Emprestimo>> {
-    throw new Error("Method not implemented.");
+  async listPaginated(pageRequest?: PageRequest): Promise<Page<Emprestimo>> {
+    return await listEmprestimoUseCase.execute(pageRequest);
   }
-  list(): Promise<Emprestimo[]> {
-    throw new Error("Method not implemented.");
+  async list(): Promise<Emprestimo[]> {
+    return await getAllEmprestimoUseCase.execute();
   }
-  show(id: number): Promise<Emprestimo> {
-    throw new Error("Method not implemented.");
+  async show(id: number): Promise<Emprestimo> {
+    return await getEmprestimoUseCase.execute(id);
   }
-  create(dto: {
-    dataEmprestimo: Date;
-    previsaoDevolucao: Date | null;
-    custoEstimado: number;
-    tipo: string;
-    status: string;
-    parceiro: { id: number };
-    armazem: { id: number };
-    itens: {
-      id: null;
-      quantidade: number;
-      unidade: Unidade;
-      valorUnitario: number;
-      insumo: { id: number };
-      devolucaoItens: {
-        id: null;
-        quantidade: number;
-        unidade: Unidade;
-        valorUnitario: number;
-        insumo: { id: number };
-        dataDevolucao: Date;
-      }[];
-    }[];
-    userId?: string | undefined;
-  }): Promise<Emprestimo> {
-    throw new Error("Method not implemented.");
-  }
-  update(
-    id: number,
-    dto: {
-      dataEmprestimo: Date;
-      previsaoDevolucao: Date | null;
-      custoEstimado: number;
-      tipo: string;
-      status: string;
-      parceiro: { id: number };
-      armazem: { id: number };
-      itens: {
-        id: number | null;
-        quantidade: number;
-        unidade: Unidade;
-        valorUnitario: number;
-        insumo: { id: number };
-        devolucaoItens: {
-          id: number | null;
-          quantidade: number;
-          unidade: Unidade;
-          valorUnitario: number;
-          insumo: { id: number };
-          dataDevolucao: Date;
-        }[];
-      }[];
-      userId?: string | undefined;
+  async create(dto: CreateEmprestimoDTO): Promise<Emprestimo> {
+    const emprestimo = await createEmprestimoUseCase.execute(dto);
+
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("emprestimo", "create", emprestimo);
     }
-  ): Promise<Emprestimo> {
+
+    return emprestimo;
+  }
+  update(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
     throw new Error("Method not implemented.");
   }
   delete(id: number, userID?: string): Promise<void> {

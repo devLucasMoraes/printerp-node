@@ -80,7 +80,7 @@ export type EmprestimoDto = {
   previsaoDevolucao: Date | null;
   custoEstimado: number;
   tipo: "ENTRADA" | "SAIDA";
-  status: "EM ABERTO" | "BAIXADO";
+  status: "EM_ABERTO" | "FECHADO";
   parceiro: ParceiroDto;
   armazem: ArmazemDto;
   itens: {

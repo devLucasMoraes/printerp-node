@@ -55,7 +55,7 @@ export class Emprestimo {
   @JoinColumn({ name: "armazem_id" })
   armazem: Armazem;
 
-  @ManyToOne(() => Armazem)
+  @ManyToOne(() => Parceiro)
   @JoinColumn({ name: "parceiro_id" })
   parceiro: Parceiro;
 

@@ -104,7 +104,6 @@ const Emprestimos = () => {
       headerName: "Tipo",
       minWidth: 155,
       flex: 0.3,
-      type: "date",
       valueGetter: (value) => (value ? value : ""),
     },
     {
@@ -112,7 +111,6 @@ const Emprestimos = () => {
       headerName: "Status",
       minWidth: 155,
       flex: 0.3,
-      type: "date",
       valueGetter: (value) => (value ? value : ""),
     },
     {
