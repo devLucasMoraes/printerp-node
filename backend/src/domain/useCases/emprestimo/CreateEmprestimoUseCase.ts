@@ -118,6 +118,7 @@ async function processarMovimentacoes(
           undEstoque: item.unidade,
           documentoOrigem: emprestimo.id.toString(),
           tipoDocumento: "EMPRESTIMO",
+          userId: emprestimo.userId,
         },
         manager
       );

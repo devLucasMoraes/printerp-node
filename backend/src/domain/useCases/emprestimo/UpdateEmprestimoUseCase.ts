@@ -1,103 +1,91 @@
 import { EntityManager } from "typeorm";
-import { UpdateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
+import { UpdateEmprestimoDTO } from "../../../http/validators/emprestimo.schema";
 import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
+import { Emprestimo } from "../../entities/Emprestimo";
 import { Insumo } from "../../entities/Insumo";
-import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { Requisitante } from "../../entities/Requisitante";
-import { Setor } from "../../entities/Setor";
-import { requisicaoEstoqueRepository } from "../../repositories";
+import { Parceiro } from "../../entities/Parceiro";
+import { emprestimoRepository } from "../../repositories";
 import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
 import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
 
-export const updateRequisicaoEstoqueUseCase = {
-  async execute(
-    id: number,
-    dto: UpdateRequisicaoEstoqueDTO
-  ): Promise<RequisicaoEstoque> {
-    return await requisicaoEstoqueRepository.manager.transaction(
-      async (manager) => {
-        const requisicaoToUpdate = await findRequisicaoToUpdate(id, manager);
-        await validate(requisicaoToUpdate, dto, manager);
-        await reverterMovimentacoes(requisicaoToUpdate, manager);
-        const requisicaoAtualizada = await updateRequisicao(
-          requisicaoToUpdate,
-          dto,
-          manager
-        );
-        await processarNovasMovimentacoes(requisicaoAtualizada, manager);
+export const updateEmprestimoUseCase = {
+  async execute(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
+    return await emprestimoRepository.manager.transaction(async (manager) => {
+      const emprestimoToUpdate = await findEmprestimoToUpdate(id, manager);
+      await validate(emprestimoToUpdate, dto, manager);
+      await reverterMovimentacoes(emprestimoToUpdate, manager);
+      const emprestimoAtualizada = await updateEmprestimo(
+        emprestimoToUpdate,
+        dto,
+        manager
+      );
+      await processarNovasMovimentacoes(emprestimoAtualizada, manager);
 
-        return requisicaoAtualizada;
-      }
-    );
+      return emprestimoAtualizada;
+    });
   },
 };
 
-async function findRequisicaoToUpdate(
+async function findEmprestimoToUpdate(
   id: number,
   manager: EntityManager
-): Promise<RequisicaoEstoque> {
-  const requisicao = await manager.findOne(RequisicaoEstoque, {
+): Promise<Emprestimo> {
+  const emprestimo = await manager.findOne(Emprestimo, {
     where: { id },
     relations: {
-      requisitante: true,
-      setor: true,
+      parceiro: true,
       armazem: true,
       itens: {
         insumo: true,
+        devolucaoItens: {
+          insumo: true,
+        },
       },
     },
   });
 
-  if (!requisicao) {
-    throw new NotFoundError("RequisicaoEstoque not found");
+  if (!emprestimo) {
+    throw new NotFoundError("Emprestimo not found");
   }
 
-  return requisicao;
+  return emprestimo;
 }
 
 async function validate(
-  requisicaoToUpdate: RequisicaoEstoque,
-  requisicaoDTO: UpdateRequisicaoEstoqueDTO,
+  emprestimoToUpdate: Emprestimo,
+  emprestimoDTO: UpdateEmprestimoDTO,
   manager: EntityManager
 ): Promise<void> {
-  const requisitante = await manager.findOne(Requisitante, {
-    where: { id: requisicaoDTO.requisitante.id },
+  const parceiro = await manager.findOne(Parceiro, {
+    where: { id: emprestimoDTO.parceiro.id },
   });
 
-  if (!requisitante) {
-    throw new BadRequestError("Requisitante não encontrado");
-  }
-
-  const setor = await manager.findOne(Setor, {
-    where: { id: requisicaoDTO.setor.id },
-  });
-
-  if (!setor) {
-    throw new BadRequestError("Setor não encontrado");
+  if (!parceiro) {
+    throw new BadRequestError("Parceiro não encontrado");
   }
 
   const armazem = await manager.findOne(Armazem, {
-    where: { id: requisicaoDTO.armazem.id },
+    where: { id: emprestimoDTO.armazem.id },
   });
 
   if (!armazem) {
-    throw new BadRequestError("Armazem nao encontrado");
+    throw new BadRequestError("Armazém não encontrado");
   }
 
-  if (requisicaoDTO.itens.length === 0) {
-    throw new BadRequestError("Requisicao Estoque deve ter pelo menos um item");
+  if (emprestimoDTO.itens.length === 0) {
+    throw new BadRequestError("Empréstimo deve ter pelo menos um item");
   }
 
-  for (const itemDTO of requisicaoDTO.itens) {
+  for (const itemDTO of emprestimoDTO.itens) {
     if (itemDTO.id !== null) {
-      const itemPertence = requisicaoToUpdate.itens.some(
+      const itemPertence = emprestimoToUpdate.itens.some(
         (itemExistente) => itemExistente.id === itemDTO.id
       );
 
       if (!itemPertence) {
         throw new BadRequestError(
-          `Não é possível atualizar o item de outra requisição`
+          `Não é possível atualizar o item de outro empréstimo`
         );
       }
     }
@@ -105,7 +93,7 @@ async function validate(
       where: { id: itemDTO.insumo.id },
     });
     if (!insumo) {
-      throw new BadRequestError("Insumo nao encontrado");
+      throw new BadRequestError("Insumo não encontrado");
     }
     if (itemDTO.quantidade <= 0) {
       throw new BadRequestError("Quantidade deve ser maior que zero");
@@ -117,43 +105,43 @@ async function validate(
 }
 
 async function reverterMovimentacoes(
-  requisicaoToUpdate: RequisicaoEstoque,
+  emprestimoToUpdate: Emprestimo,
   manager: EntityManager
 ): Promise<void> {
-  for (const item of requisicaoToUpdate.itens) {
+  for (const item of emprestimoToUpdate.itens) {
     await registrarEntradaEstoqueUseCase.execute(
       {
         insumo: item.insumo,
-        armazem: requisicaoToUpdate.armazem,
+        armazem: emprestimoToUpdate.armazem,
         quantidade: item.quantidade,
         valorUnitario: item.valorUnitario,
         undEstoque: item.unidade,
-        documentoOrigem: requisicaoToUpdate.id.toString(),
+        documentoOrigem: emprestimoToUpdate.id.toString(),
         tipoDocumento: "ESTORNO_REQUISICAO",
-        observacao: `Estorno da movimentação ${requisicaoToUpdate.id} - Atualização de requisição`,
+        observacao: `Estorno da movimentação ${emprestimoToUpdate.id} - Atualização de requisição`,
+        userId: emprestimoToUpdate.userId,
       },
       manager
     );
   }
 }
 
-async function updateRequisicao(
-  requisicaoToUpdate: RequisicaoEstoque,
-  dto: UpdateRequisicaoEstoqueDTO,
+async function updateEmprestimo(
+  emprestimoToUpdate: Emprestimo,
+  dto: UpdateEmprestimoDTO,
   manager: EntityManager
-): Promise<RequisicaoEstoque> {
-  const requisicaoDto = requisicaoEstoqueRepository.create({
-    dataRequisicao: dto.dataRequisicao,
-    ordemProducao: dto.ordemProducao,
-    valorTotal: dto.valorTotal,
-    obs: dto.obs,
-    requisitante: dto.requisitante,
-    setor: dto.setor,
+): Promise<Emprestimo> {
+  const emprestimoDto = emprestimoRepository.create({
+    tipo: dto.tipo,
+    status: dto.status,
+    dataEmprestimo: dto.dataEmprestimo,
+    previsaoDevolucao: dto.previsaoDevolucao,
+    custoEstimado: dto.custoEstimado,
+    parceiro: dto.parceiro,
     armazem: dto.armazem,
     userId: dto.userId,
     itens: dto.itens.map((itemDTO) => {
       return {
-        id: itemDTO.id || undefined,
         insumo: itemDTO.insumo,
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
@@ -163,36 +151,37 @@ async function updateRequisicao(
   });
 
   const {
-    requisitante: _r,
-    setor: _e,
+    parceiro: _p,
+    armazem: _a,
     itens: _i,
-    ...requisicaoEstoqueWithoutRelations
-  } = requisicaoToUpdate;
+    ...emprestimoWithoutRelations
+  } = emprestimoToUpdate;
 
-  const updatedRequisicaoEstoque = requisicaoEstoqueRepository.merge(
-    requisicaoEstoqueWithoutRelations as RequisicaoEstoque,
-    requisicaoDto
+  const updatedEmprestimo = emprestimoRepository.merge(
+    emprestimoWithoutRelations as Emprestimo,
+    emprestimoDto
   );
 
-  return await manager.save(RequisicaoEstoque, updatedRequisicaoEstoque);
+  return await manager.save(Emprestimo, updatedEmprestimo);
 }
 
 async function processarNovasMovimentacoes(
-  requisicao: RequisicaoEstoque,
+  emprestimo: Emprestimo,
   manager: EntityManager
 ): Promise<void> {
   // Criar novas movimentações para cada item
-  for (const item of requisicao.itens) {
+  for (const item of emprestimo.itens) {
     await registrarSaidaEstoqueUseCase.execute(
       {
         insumo: item.insumo,
-        armazem: requisicao.armazem,
+        armazem: emprestimo.armazem,
         quantidade: item.quantidade,
         valorUnitario: item.valorUnitario,
         undEstoque: item.unidade,
-        documentoOrigem: requisicao.id.toString(),
+        documentoOrigem: emprestimo.id.toString(),
         tipoDocumento: "REQUISICAO",
         observacao: "Movimentação gerada por atualização de requisição",
+        userId: emprestimo.userId,
       },
       manager
     );

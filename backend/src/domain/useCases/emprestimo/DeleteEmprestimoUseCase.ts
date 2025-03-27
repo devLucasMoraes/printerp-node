@@ -1,60 +1,61 @@
 import { EntityManager } from "typeorm";
 import { NotFoundError } from "../../../shared/errors";
-import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { requisicaoEstoqueRepository } from "../../repositories";
+import { Emprestimo } from "../../entities/Emprestimo";
+import { emprestimoRepository } from "../../repositories";
 import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
 
-export const deleteRequisicaoEstoqueUseCase = {
+export const deleteEmprestimoUseCase = {
   async execute(id: number): Promise<void> {
-    return await requisicaoEstoqueRepository.manager.transaction(
-      async (manager) => {
-        const requisicaoToDelete = await findRequisicaoToDelete(id, manager);
+    return await emprestimoRepository.manager.transaction(async (manager) => {
+      const emprestimoToDelete = await findEmprestimoToDelete(id, manager);
 
-        await reverterMovimentacoes(requisicaoToDelete, manager);
-        await manager.softDelete(RequisicaoEstoque, id);
-      }
-    );
+      await reverterMovimentacoes(emprestimoToDelete, manager);
+      await manager.softDelete(Emprestimo, id);
+    });
   },
 };
 
-async function findRequisicaoToDelete(
+async function findEmprestimoToDelete(
   id: number,
   manager: EntityManager
-): Promise<RequisicaoEstoque> {
-  const requisicao = await manager.findOne(RequisicaoEstoque, {
+): Promise<Emprestimo> {
+  const emprestimo = await manager.findOne(Emprestimo, {
     where: { id },
     relations: {
-      requisitante: true,
-      setor: true,
+      parceiro: true,
       armazem: true,
       itens: {
         insumo: true,
+        devolucaoItens: {
+          insumo: true,
+        },
       },
     },
   });
 
-  if (!requisicao) {
-    throw new NotFoundError("RequisicaoEstoque not found");
+  if (!emprestimo) {
+    throw new NotFoundError("Emprestimo not found");
   }
 
-  return requisicao;
+  return emprestimo;
 }
 
 async function reverterMovimentacoes(
-  requisicaoToDelete: RequisicaoEstoque,
+  emprestimoToDelete: Emprestimo,
   manager: EntityManager
 ): Promise<void> {
-  for (const item of requisicaoToDelete.itens) {
+  for (const item of emprestimoToDelete.itens) {
     await registrarEntradaEstoqueUseCase.execute(
       {
         insumo: item.insumo,
-        armazem: requisicaoToDelete.armazem,
+        armazem: emprestimoToDelete.armazem,
         quantidade: item.quantidade,
         valorUnitario: item.valorUnitario,
         undEstoque: item.unidade,
-        documentoOrigem: requisicaoToDelete.id.toString(),
-        tipoDocumento: "ESTORNO_REQUISICAO",
-        observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,
+        documentoOrigem: emprestimoToDelete.id.toString(),
+        tipoDocumento: "ESTORNO_EMPRESTIMO",
+        observacao: `Estorno da movimentação ${emprestimoToDelete.id} - emprestimo deletado`,
+        userId: emprestimoToDelete.userId,
       },
       manager
     );

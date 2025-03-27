@@ -2,9 +2,11 @@ import { Emprestimo } from "../../domain/entities/Emprestimo";
 import { Page, PageRequest } from "../../domain/repositories/BaseRepository";
 import { EmprestimoService } from "../../domain/services/EmprestimoService";
 import { createEmprestimoUseCase } from "../../domain/useCases/emprestimo/CreateEmprestimoUseCase";
+import { deleteEmprestimoUseCase } from "../../domain/useCases/emprestimo/DeleteEmprestimoUseCase";
 import { getAllEmprestimoUseCase } from "../../domain/useCases/emprestimo/GetAllEmprestimoUseCase";
 import { getEmprestimoUseCase } from "../../domain/useCases/emprestimo/GetEmprestimoUseCase";
 import { listEmprestimoUseCase } from "../../domain/useCases/emprestimo/ListEmprestimoUseCase";
+import { updateEmprestimoUseCase } from "../../domain/useCases/emprestimo/UpdateEmprestimoUseCase";
 import {
   CreateEmprestimoDTO,
   UpdateEmprestimoDTO,
@@ -31,10 +33,21 @@ export class EmprestimoServiceImpl implements EmprestimoService {
 
     return emprestimo;
   }
-  update(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
-    throw new Error("Method not implemented.");
+  async update(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
+    const emprestimo = await updateEmprestimoUseCase.execute(id, dto);
+
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("emprestimo", "update", emprestimo);
+    }
+
+    return emprestimo;
   }
-  delete(id: number, userID?: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: number, userID?: string): Promise<void> {
+    await deleteEmprestimoUseCase.execute(id);
+    const socketService = SocketService.getInstance();
+    if (socketService) {
+      socketService.emitEntityChange("emprestimo", "delete");
+    }
   }
 }
