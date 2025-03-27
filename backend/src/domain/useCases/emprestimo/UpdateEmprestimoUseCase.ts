@@ -46,7 +46,7 @@ async function findEmprestimoToUpdate(
   });
 
   if (!emprestimo) {
-    throw new NotFoundError("Emprestimo not found");
+    throw new NotFoundError("Empréstimo not found");
   }
 
   return emprestimo;
@@ -100,6 +100,25 @@ async function validate(
     }
     if (itemDTO.unidade !== insumo.undEstoque) {
       throw new BadRequestError("Unidade deve ser igual a unidade do estoque");
+    }
+
+    if (itemDTO.devolucaoItens.length) {
+      for (const devolucaoItem of itemDTO.devolucaoItens) {
+        const insumo = await manager.findOne(Insumo, {
+          where: { id: devolucaoItem.insumo.id },
+        });
+        if (!insumo) {
+          throw new BadRequestError("Insumo não encontrado");
+        }
+        if (itemDTO.quantidade <= 0) {
+          throw new BadRequestError("Quantidade deve ser maior que zero");
+        }
+        if (itemDTO.unidade !== insumo.undEstoque) {
+          throw new BadRequestError(
+            "Unidade deve ser igual a unidade do estoque"
+          );
+        }
+      }
     }
   }
 }
