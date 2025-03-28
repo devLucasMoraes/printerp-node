@@ -14,7 +14,7 @@ export const updateEmprestimoUseCase = {
     return await emprestimoRepository.manager.transaction(async (manager) => {
       const emprestimoToUpdate = await findEmprestimoToUpdate(id, manager);
       await validate(emprestimoToUpdate, dto, manager);
-      await reverterMovimentacoes(emprestimoToUpdate, manager);
+      await reverterMovimentacoes(emprestimoToUpdate, dto, manager);
       const emprestimoAtualizada = await updateEmprestimo(
         emprestimoToUpdate,
         dto,
@@ -125,23 +125,43 @@ async function validate(
 
 async function reverterMovimentacoes(
   emprestimoToUpdate: Emprestimo,
+  emprestimoDTO: UpdateEmprestimoDTO,
   manager: EntityManager
 ): Promise<void> {
   for (const item of emprestimoToUpdate.itens) {
-    await registrarEntradaEstoqueUseCase.execute(
-      {
-        insumo: item.insumo,
-        armazem: emprestimoToUpdate.armazem,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.unidade,
-        documentoOrigem: emprestimoToUpdate.id.toString(),
-        tipoDocumento: "ESTORNO_REQUISICAO",
-        observacao: `Estorno da movimentação ${emprestimoToUpdate.id} - Atualização de requisição`,
-        userId: emprestimoToUpdate.userId,
-      },
-      manager
+    const itemCorrespondente = emprestimoDTO.itens.find(
+      (i) => i.id === item.id
     );
+
+    // Se o item nao foi alterado, nao precisa reverter a movimentação
+    if (itemCorrespondente && itemCorrespondente.quantidade - item.quantidade) {
+      return;
+    }
+
+    const params = {
+      insumo: item.insumo,
+      armazem: emprestimoToUpdate.armazem,
+      quantidade: item.quantidade,
+      valorUnitario: item.valorUnitario,
+      undEstoque: item.unidade,
+      documentoOrigem: emprestimoToUpdate.id.toString(),
+      observacao: "Movimentação gerada por atualização de emprestimo",
+      userId: emprestimoToUpdate.userId,
+    };
+
+    if (emprestimoToUpdate.tipo === "SAIDA") {
+      await registrarEntradaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_ENTRADA" },
+        manager
+      );
+    }
+
+    if (emprestimoToUpdate.tipo === "ENTRADA") {
+      await registrarSaidaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_SAIDA" },
+        manager
+      );
+    }
   }
 }
 
@@ -190,19 +210,29 @@ async function processarNovasMovimentacoes(
 ): Promise<void> {
   // Criar novas movimentações para cada item
   for (const item of emprestimo.itens) {
-    await registrarSaidaEstoqueUseCase.execute(
-      {
-        insumo: item.insumo,
-        armazem: emprestimo.armazem,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.unidade,
-        documentoOrigem: emprestimo.id.toString(),
-        tipoDocumento: "REQUISICAO",
-        observacao: "Movimentação gerada por atualização de requisição",
-        userId: emprestimo.userId,
-      },
-      manager
-    );
+    const params = {
+      insumo: item.insumo,
+      armazem: emprestimo.armazem,
+      quantidade: item.quantidade,
+      valorUnitario: item.valorUnitario,
+      undEstoque: item.unidade,
+      documentoOrigem: emprestimo.id.toString(),
+      observacao: "",
+      userId: emprestimo.userId,
+    };
+
+    if (emprestimo.tipo === "SAIDA") {
+      await registrarSaidaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "EMPRESTIMO_ENTRADA" },
+        manager
+      );
+    }
+
+    if (emprestimo.tipo === "ENTRADA") {
+      await registrarEntradaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "EMPRESTIMO_SAIDA" },
+        manager
+      );
+    }
   }
 }
