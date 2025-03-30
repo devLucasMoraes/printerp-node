@@ -182,8 +182,6 @@ async function reverterMovimentacoes(
       (i) => i.id === item.id
     );
 
-    console.log("itemCorrespondente", itemCorrespondente);
-
     // Se o item nao foi alterado, nao precisa reverter a movimentação
     if (
       itemCorrespondente &&
@@ -191,8 +189,6 @@ async function reverterMovimentacoes(
     ) {
       continue;
     }
-
-    console.log("passou pelo if");
 
     const params = {
       insumo: item.insumo,
