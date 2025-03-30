@@ -3,6 +3,7 @@ import { UpdateEmprestimoDTO } from "../../../http/validators/emprestimo.schema"
 import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
 import { Emprestimo } from "../../entities/Emprestimo";
+import { EmprestimoItem } from "../../entities/EmprestimoItem";
 import { Insumo } from "../../entities/Insumo";
 import { Parceiro } from "../../entities/Parceiro";
 import { emprestimoRepository } from "../../repositories";
@@ -13,6 +14,9 @@ export const updateEmprestimoUseCase = {
   async execute(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
     return await emprestimoRepository.manager.transaction(async (manager) => {
       const emprestimoToUpdate = await findEmprestimoToUpdate(id, manager);
+      const oldItems = new Map(
+        emprestimoToUpdate.itens.map((item) => [item.id, item])
+      );
       await validate(emprestimoToUpdate, dto, manager);
       await reverterMovimentacoes(emprestimoToUpdate, dto, manager);
       const emprestimoAtualizada = await updateEmprestimo(
@@ -20,7 +24,11 @@ export const updateEmprestimoUseCase = {
         dto,
         manager
       );
-      await processarNovasMovimentacoes(emprestimoAtualizada, manager);
+      await processarNovasMovimentacoes(
+        oldItems,
+        emprestimoAtualizada,
+        manager
+      );
 
       return emprestimoAtualizada;
     });
@@ -129,14 +137,62 @@ async function reverterMovimentacoes(
   manager: EntityManager
 ): Promise<void> {
   for (const item of emprestimoToUpdate.itens) {
+    for (const devolucaoItem of item.devolucaoItens) {
+      const devolucaoItemCorrespondente = emprestimoDTO.itens
+        .find((i) => i.id === item.id)
+        ?.devolucaoItens.find((d) => d.id === devolucaoItem.id);
+
+      // Se o item nao foi alterado, nao precisa reverter a movimentação
+      if (
+        devolucaoItemCorrespondente &&
+        !(
+          Number(devolucaoItemCorrespondente.quantidade) !==
+          Number(devolucaoItem.quantidade)
+        )
+      ) {
+        continue;
+      }
+
+      const params = {
+        insumo: devolucaoItem.insumo,
+        armazem: emprestimoToUpdate.armazem,
+        quantidade: devolucaoItem.quantidade,
+        valorUnitario: devolucaoItem.valorUnitario,
+        undEstoque: devolucaoItem.unidade,
+        documentoOrigem: emprestimoToUpdate.id.toString(),
+        observacao: "Movimentação gerada por atualização de emprestimo",
+        userId: emprestimoToUpdate.userId,
+      };
+
+      if (emprestimoToUpdate.tipo === "SAIDA") {
+        await registrarSaidaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_SAIDA" },
+          manager
+        );
+      }
+
+      if (emprestimoToUpdate.tipo === "ENTRADA") {
+        await registrarEntradaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_ENTRADA" },
+          manager
+        );
+      }
+    }
     const itemCorrespondente = emprestimoDTO.itens.find(
       (i) => i.id === item.id
     );
 
+    console.log("itemCorrespondente", itemCorrespondente);
+
     // Se o item nao foi alterado, nao precisa reverter a movimentação
-    if (itemCorrespondente && itemCorrespondente.quantidade - item.quantidade) {
-      return;
+    if (
+      itemCorrespondente &&
+      !(Number(itemCorrespondente.quantidade) !== Number(item.quantidade))
+    ) {
+      continue;
     }
+
+    console.log("passou pelo if");
 
     const params = {
       insumo: item.insumo,
@@ -180,12 +236,62 @@ async function updateEmprestimo(
     armazem: dto.armazem,
     userId: dto.userId,
     itens: dto.itens.map((itemDTO) => {
-      return {
-        insumo: itemDTO.insumo,
-        quantidade: itemDTO.quantidade,
-        unidade: itemDTO.unidade,
-        valorUnitario: itemDTO.valorUnitario,
-      };
+      if (itemDTO.id) {
+        return {
+          id: itemDTO.id,
+          insumo: itemDTO.insumo,
+          quantidade: itemDTO.quantidade,
+          unidade: itemDTO.unidade,
+          valorUnitario: itemDTO.valorUnitario,
+          devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
+            if (devolucaoItem.id) {
+              return {
+                id: devolucaoItem.id,
+                insumo: devolucaoItem.insumo,
+                quantidade: devolucaoItem.quantidade,
+                unidade: devolucaoItem.unidade,
+                valorUnitario: devolucaoItem.valorUnitario,
+                dataDevolucao: devolucaoItem.dataDevolucao,
+              };
+            } else {
+              return {
+                insumo: devolucaoItem.insumo,
+                quantidade: devolucaoItem.quantidade,
+                unidade: devolucaoItem.unidade,
+                valorUnitario: devolucaoItem.valorUnitario,
+                dataDevolucao: devolucaoItem.dataDevolucao,
+              };
+            }
+          }),
+        };
+      } else {
+        return {
+          insumo: itemDTO.insumo,
+          quantidade: itemDTO.quantidade,
+          unidade: itemDTO.unidade,
+          valorUnitario: itemDTO.valorUnitario,
+          devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
+            if (devolucaoItem.id) {
+              return {
+                id: devolucaoItem.id,
+                insumo: devolucaoItem.insumo,
+                quantidade: devolucaoItem.quantidade,
+                unidade: devolucaoItem.unidade,
+                valorUnitario: devolucaoItem.valorUnitario,
+                dataDevolucao: devolucaoItem.dataDevolucao,
+              };
+            } else {
+              return {
+                insumo: devolucaoItem.insumo,
+                quantidade: devolucaoItem.quantidade,
+                unidade: devolucaoItem.unidade,
+                valorUnitario: devolucaoItem.valorUnitario,
+                dataDevolucao: devolucaoItem.dataDevolucao,
+              };
+            }
+          }),
+        };
+      }
     }),
   });
 
@@ -205,11 +311,65 @@ async function updateEmprestimo(
 }
 
 async function processarNovasMovimentacoes(
+  oldItems: Map<number, EmprestimoItem>,
   emprestimo: Emprestimo,
   manager: EntityManager
 ): Promise<void> {
   // Criar novas movimentações para cada item
   for (const item of emprestimo.itens) {
+    for (const devolucaoItem of item.devolucaoItens) {
+      const oldDevolucaoItems = new Map(
+        oldItems.get(item.id)?.devolucaoItens.map((d) => [d.id, d]) ?? []
+      );
+      const devolucaoItemAntigo = devolucaoItem.id
+        ? oldDevolucaoItems.get(devolucaoItem.id)
+        : null;
+
+      // Se o item nao foi alterado, nao precisa criar movimentação
+      if (
+        devolucaoItemAntigo &&
+        Number(devolucaoItemAntigo.quantidade) ===
+          Number(devolucaoItem.quantidade)
+      ) {
+        continue;
+      }
+
+      const params = {
+        insumo: devolucaoItem.insumo,
+        armazem: emprestimo.armazem,
+        quantidade: devolucaoItem.quantidade,
+        valorUnitario: devolucaoItem.valorUnitario,
+        undEstoque: devolucaoItem.unidade,
+        documentoOrigem: emprestimo.id.toString(),
+        observacao: "",
+        userId: emprestimo.userId,
+      };
+
+      if (emprestimo.tipo === "SAIDA") {
+        await registrarEntradaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "DEVOLUCAO_EMPRESTIMO_SAIDA" },
+          manager
+        );
+      }
+
+      if (emprestimo.tipo === "ENTRADA") {
+        await registrarSaidaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "DEVOLUCAO_EMPRESTIMO_ENTRADA" },
+          manager
+        );
+      }
+    }
+
+    const itemAntigo = item.id ? oldItems.get(item.id) : null;
+
+    // Se o item nao foi alterado, nao precisa criar movimentação
+    if (
+      itemAntigo &&
+      Number(itemAntigo.quantidade) === Number(item.quantidade)
+    ) {
+      continue;
+    }
+
     const params = {
       insumo: item.insumo,
       armazem: emprestimo.armazem,

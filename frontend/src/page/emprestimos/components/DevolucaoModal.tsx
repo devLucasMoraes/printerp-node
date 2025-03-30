@@ -53,7 +53,7 @@ export const DevolucaoModal = ({
       if (insumo) {
         setValue(
           `itens.${itemIndex}.devolucaoItens.${index}.valorUnitario`,
-          insumo.valorUntMed
+          Number(insumo.valorUntMed)
         );
         setValue(
           `itens.${itemIndex}.devolucaoItens.${index}.unidade`,
