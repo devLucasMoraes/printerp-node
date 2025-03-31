@@ -4,6 +4,7 @@ import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
 import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
+import { RequisicaoEstoqueItem } from "../../entities/RequisicaoEstoqueItem";
 import { Requisitante } from "../../entities/Requisitante";
 import { Setor } from "../../entities/Setor";
 import { requisicaoEstoqueRepository } from "../../repositories";
@@ -18,14 +19,21 @@ export const updateRequisicaoEstoqueUseCase = {
     return await requisicaoEstoqueRepository.manager.transaction(
       async (manager) => {
         const requisicaoToUpdate = await findRequisicaoToUpdate(id, manager);
+        const oldItems = new Map(
+          requisicaoToUpdate.itens.map((item) => [item.id, item])
+        );
         await validate(requisicaoToUpdate, dto, manager);
-        await reverterMovimentacoes(requisicaoToUpdate, manager);
+        await reverterMovimentacoes(requisicaoToUpdate, dto, manager);
         const requisicaoAtualizada = await updateRequisicao(
           requisicaoToUpdate,
           dto,
           manager
         );
-        await processarNovasMovimentacoes(requisicaoAtualizada, manager);
+        await processarNovasMovimentacoes(
+          oldItems,
+          requisicaoAtualizada,
+          manager
+        );
 
         return requisicaoAtualizada;
       }
@@ -118,22 +126,34 @@ async function validate(
 
 async function reverterMovimentacoes(
   requisicaoToUpdate: RequisicaoEstoque,
+  requisicaoDTO: UpdateRequisicaoEstoqueDTO,
   manager: EntityManager
 ): Promise<void> {
   for (const item of requisicaoToUpdate.itens) {
-    await registrarEntradaEstoqueUseCase.execute(
-      {
-        insumo: item.insumo,
-        armazem: requisicaoToUpdate.armazem,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.unidade,
-        documentoOrigem: requisicaoToUpdate.id.toString(),
-        tipoDocumento: "ESTORNO_REQUISICAO",
-        observacao: `Estorno da movimentação ${requisicaoToUpdate.id} - Atualização de requisição`,
-      },
-      manager
+    const itemCorrespondente = requisicaoDTO.itens.find(
+      (i) => i.id === item.id
     );
+
+    if (
+      itemCorrespondente &&
+      !(Number(itemCorrespondente.quantidade) !== Number(item.quantidade))
+    ) {
+      continue;
+    }
+
+    const params = {
+      insumo: item.insumo,
+      armazem: requisicaoToUpdate.armazem,
+      quantidade: item.quantidade,
+      valorUnitario: item.valorUnitario,
+      undEstoque: item.unidade,
+      documentoOrigem: requisicaoToUpdate.id.toString(),
+      observacao: "Movimentação gerada por atualização de requisição",
+      tipoDocumento: "ESTORNO_REQUISICAO",
+      userId: requisicaoToUpdate.userId,
+    };
+
+    await registrarEntradaEstoqueUseCase.execute(params, manager);
   }
 }
 
@@ -178,23 +198,33 @@ async function updateRequisicao(
 }
 
 async function processarNovasMovimentacoes(
+  oldItems: Map<number, RequisicaoEstoqueItem>,
   requisicao: RequisicaoEstoque,
   manager: EntityManager
 ): Promise<void> {
   // Criar novas movimentações para cada item
   for (const item of requisicao.itens) {
-    await registrarSaidaEstoqueUseCase.execute(
-      {
-        insumo: item.insumo,
-        armazem: requisicao.armazem,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.unidade,
-        documentoOrigem: requisicao.id.toString(),
-        tipoDocumento: "REQUISICAO",
-        observacao: "Movimentação gerada por atualização de requisição",
-      },
-      manager
-    );
+    const itemAntigo = item.id ? oldItems.get(item.id) : null;
+
+    // Se o item nao foi alterado, nao precisa criar movimentação
+    if (
+      itemAntigo &&
+      Number(itemAntigo.quantidade) === Number(item.quantidade)
+    ) {
+      continue;
+    }
+    const params = {
+      insumo: item.insumo,
+      armazem: requisicao.armazem,
+      quantidade: item.quantidade,
+      valorUnitario: item.valorUnitario,
+      undEstoque: item.unidade,
+      documentoOrigem: requisicao.id.toString(),
+      observacao: "",
+      userId: requisicao.userId,
+      tipoDocumento: "REQUISICAO",
+    };
+
+    await registrarSaidaEstoqueUseCase.execute(params, manager);
   }
 }

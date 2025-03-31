@@ -24,7 +24,7 @@ const requisicaoEstoqueItemUpdateSchema = z.object({
 
 export const requisicaoEstoqueCreateSchema = z.object({
   dataRequisicao: z.string().transform((str) => new Date(str)),
-  ordemProducao: z.string().nonempty(),
+  ordemProducao: z.string().default(""),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),
   requisitante: z.object({
@@ -46,7 +46,7 @@ export type CreateRequisicaoEstoqueDTO = z.infer<
 
 export const requisicaoEstoqueUpdateSchema = z.object({
   dataRequisicao: z.string().transform((str) => new Date(str)),
-  ordemProducao: z.string().nonempty(),
+  ordemProducao: z.string().default(""),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),
   requisitante: z.object({

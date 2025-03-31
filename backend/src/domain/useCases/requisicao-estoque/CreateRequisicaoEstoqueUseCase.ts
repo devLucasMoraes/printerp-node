@@ -103,6 +103,7 @@ async function processarMovimentacoes(
         undEstoque: item.unidade,
         documentoOrigem: requisicao.id.toString(),
         tipoDocumento: "REQUISICAO",
+        userId: requisicao.userId,
       },
       manager
     );

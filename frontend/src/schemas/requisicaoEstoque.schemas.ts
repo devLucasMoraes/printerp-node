@@ -23,7 +23,7 @@ const requisicaoEstoqueItemUpdateSchema = z.object({
 
 export const requisicaoEstoqueCreateSchema = z.object({
   dataRequisicao: z.date(),
-  ordemProducao: z.string().nonempty(),
+  ordemProducao: z.string().default(""),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),
   requisitante: z.object({
@@ -32,7 +32,7 @@ export const requisicaoEstoqueCreateSchema = z.object({
   armazem: z.object({
     id: z.number(),
   }),
-  equipamento: z.object({
+  setor: z.object({
     id: z.number(),
   }),
   itens: z.array(requisicaoEstoqueItemCreateSchema),
@@ -44,13 +44,13 @@ export type RequisicaoEstoqueCreateDto = z.infer<
 
 export const requisicaoEstoqueUpdateSchema = z.object({
   dataRequisicao: z.date(),
-  ordemProducao: z.string().nonempty(),
+  ordemProducao: z.string().default(""),
   valorTotal: z.number().nonnegative(),
   obs: z.string().nullable(),
   requisitante: z.object({
     id: z.number(),
   }),
-  equipamento: z.object({
+  setor: z.object({
     id: z.number(),
   }),
   armazem: z.object({

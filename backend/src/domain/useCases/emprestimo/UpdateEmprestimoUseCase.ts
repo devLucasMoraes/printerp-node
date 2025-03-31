@@ -232,62 +232,23 @@ async function updateEmprestimo(
     armazem: dto.armazem,
     userId: dto.userId,
     itens: dto.itens.map((itemDTO) => {
-      if (itemDTO.id) {
-        return {
-          id: itemDTO.id,
-          insumo: itemDTO.insumo,
-          quantidade: itemDTO.quantidade,
-          unidade: itemDTO.unidade,
-          valorUnitario: itemDTO.valorUnitario,
-          devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
-            if (devolucaoItem.id) {
-              return {
-                id: devolucaoItem.id,
-                insumo: devolucaoItem.insumo,
-                quantidade: devolucaoItem.quantidade,
-                unidade: devolucaoItem.unidade,
-                valorUnitario: devolucaoItem.valorUnitario,
-                dataDevolucao: devolucaoItem.dataDevolucao,
-              };
-            } else {
-              return {
-                insumo: devolucaoItem.insumo,
-                quantidade: devolucaoItem.quantidade,
-                unidade: devolucaoItem.unidade,
-                valorUnitario: devolucaoItem.valorUnitario,
-                dataDevolucao: devolucaoItem.dataDevolucao,
-              };
-            }
-          }),
-        };
-      } else {
-        return {
-          insumo: itemDTO.insumo,
-          quantidade: itemDTO.quantidade,
-          unidade: itemDTO.unidade,
-          valorUnitario: itemDTO.valorUnitario,
-          devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
-            if (devolucaoItem.id) {
-              return {
-                id: devolucaoItem.id,
-                insumo: devolucaoItem.insumo,
-                quantidade: devolucaoItem.quantidade,
-                unidade: devolucaoItem.unidade,
-                valorUnitario: devolucaoItem.valorUnitario,
-                dataDevolucao: devolucaoItem.dataDevolucao,
-              };
-            } else {
-              return {
-                insumo: devolucaoItem.insumo,
-                quantidade: devolucaoItem.quantidade,
-                unidade: devolucaoItem.unidade,
-                valorUnitario: devolucaoItem.valorUnitario,
-                dataDevolucao: devolucaoItem.dataDevolucao,
-              };
-            }
-          }),
-        };
-      }
+      return {
+        id: itemDTO.id || undefined,
+        insumo: itemDTO.insumo,
+        quantidade: itemDTO.quantidade,
+        unidade: itemDTO.unidade,
+        valorUnitario: itemDTO.valorUnitario,
+        devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
+          return {
+            id: devolucaoItem.id || undefined,
+            insumo: devolucaoItem.insumo,
+            quantidade: devolucaoItem.quantidade,
+            unidade: devolucaoItem.unidade,
+            valorUnitario: devolucaoItem.valorUnitario,
+            dataDevolucao: devolucaoItem.dataDevolucao,
+          };
+        }),
+      };
     }),
   });
 

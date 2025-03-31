@@ -84,6 +84,8 @@ export const RequisicaoEstoqueModal = ({
     },
   });
 
+  console.log(errors);
+
   const { fields, prepend, remove } = useFieldArray({
     control,
     name: "itens",
