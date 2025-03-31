@@ -3,7 +3,6 @@ import { UpdateEmprestimoDTO } from "../../../http/validators/emprestimo.schema"
 import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
 import { Emprestimo } from "../../entities/Emprestimo";
-import { EmprestimoItem } from "../../entities/EmprestimoItem";
 import { Insumo } from "../../entities/Insumo";
 import { Parceiro } from "../../entities/Parceiro";
 import { emprestimoRepository } from "../../repositories";
@@ -14,9 +13,7 @@ export const updateEmprestimoUseCase = {
   async execute(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
     return await emprestimoRepository.manager.transaction(async (manager) => {
       const emprestimoToUpdate = await findEmprestimoToUpdate(id, manager);
-      const oldItems = new Map(
-        emprestimoToUpdate.itens.map((item) => [item.id, item])
-      );
+      const oldEmprestimo = { ...emprestimoToUpdate };
       await validate(emprestimoToUpdate, dto, manager);
       await reverterMovimentacoes(emprestimoToUpdate, dto, manager);
       const emprestimoAtualizada = await updateEmprestimo(
@@ -25,7 +22,7 @@ export const updateEmprestimoUseCase = {
         manager
       );
       await processarNovasMovimentacoes(
-        oldItems,
+        oldEmprestimo,
         emprestimoAtualizada,
         manager
       );
@@ -145,10 +142,9 @@ async function reverterMovimentacoes(
       // Se o item nao foi alterado, nao precisa reverter a movimentação
       if (
         devolucaoItemCorrespondente &&
-        !(
-          Number(devolucaoItemCorrespondente.quantidade) !==
-          Number(devolucaoItem.quantidade)
-        )
+        Number(devolucaoItemCorrespondente.quantidade) ===
+          Number(devolucaoItem.quantidade) &&
+        emprestimoToUpdate.tipo === emprestimoDTO.tipo
       ) {
         continue;
       }
@@ -166,14 +162,14 @@ async function reverterMovimentacoes(
 
       if (emprestimoToUpdate.tipo === "SAIDA") {
         await registrarSaidaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_SAIDA" },
+          { ...params, tipoDocumento: "ESTORNO_DEVOLUCAO_SAIDA" },
           manager
         );
       }
 
       if (emprestimoToUpdate.tipo === "ENTRADA") {
         await registrarEntradaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_ENTRADA" },
+          { ...params, tipoDocumento: "ESTORNO_DEVOLUCAO_ENTRADA" },
           manager
         );
       }
@@ -185,7 +181,8 @@ async function reverterMovimentacoes(
     // Se o item nao foi alterado, nao precisa reverter a movimentação
     if (
       itemCorrespondente &&
-      !(Number(itemCorrespondente.quantidade) !== Number(item.quantidade))
+      Number(itemCorrespondente.quantidade) === Number(item.quantidade) &&
+      emprestimoToUpdate.tipo === emprestimoDTO.tipo
     ) {
       continue;
     }
@@ -203,14 +200,14 @@ async function reverterMovimentacoes(
 
     if (emprestimoToUpdate.tipo === "SAIDA") {
       await registrarEntradaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_ENTRADA" },
+        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_SAIDA" },
         manager
       );
     }
 
     if (emprestimoToUpdate.tipo === "ENTRADA") {
       await registrarSaidaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_SAIDA" },
+        { ...params, tipoDocumento: "ESTORNO_EMPRESTIMO_ENTRADA" },
         manager
       );
     }
@@ -268,10 +265,11 @@ async function updateEmprestimo(
 }
 
 async function processarNovasMovimentacoes(
-  oldItems: Map<number, EmprestimoItem>,
+  oldEmprestimo: Emprestimo,
   emprestimo: Emprestimo,
   manager: EntityManager
 ): Promise<void> {
+  const oldItems = new Map(oldEmprestimo.itens.map((item) => [item.id, item]));
   // Criar novas movimentações para cada item
   for (const item of emprestimo.itens) {
     for (const devolucaoItem of item.devolucaoItens) {
@@ -286,7 +284,8 @@ async function processarNovasMovimentacoes(
       if (
         devolucaoItemAntigo &&
         Number(devolucaoItemAntigo.quantidade) ===
-          Number(devolucaoItem.quantidade)
+          Number(devolucaoItem.quantidade) &&
+        emprestimo.tipo === oldEmprestimo.tipo
       ) {
         continue;
       }
@@ -322,7 +321,8 @@ async function processarNovasMovimentacoes(
     // Se o item nao foi alterado, nao precisa criar movimentação
     if (
       itemAntigo &&
-      Number(itemAntigo.quantidade) === Number(item.quantidade)
+      Number(itemAntigo.quantidade) === Number(item.quantidade) &&
+      emprestimo.tipo === oldEmprestimo.tipo
     ) {
       continue;
     }
