@@ -57,6 +57,7 @@ export const CategoriaModal = ({
   });
 
   useEffect(() => {
+    console.log(categoria);
     if (categoria?.data && categoria.type === "UPDATE") {
       reset({
         id: categoria.data.id,

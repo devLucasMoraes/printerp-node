@@ -58,6 +58,7 @@ export const emprestimoCreateSchema = baseEmprestimoSchema.extend({
 });
 
 export const emprestimoUpdateSchema = baseEmprestimoSchema.extend({
+  id: z.number(),
   itens: z.array(emprestimoItemUpdateSchema),
 });
 

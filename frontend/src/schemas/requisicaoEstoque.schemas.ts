@@ -43,6 +43,7 @@ export type RequisicaoEstoqueCreateDto = z.infer<
 >;
 
 export const requisicaoEstoqueUpdateSchema = z.object({
+  id: z.number(),
   dataRequisicao: z.date(),
   ordemProducao: z.string().default(""),
   valorTotal: z.number().nonnegative(),

@@ -56,6 +56,7 @@ export const RequisitanteModal = ({
   });
 
   useEffect(() => {
+    console.log(requisitante);
     if (requisitante?.data && requisitante.type === "UPDATE") {
       reset({
         id: requisitante.data.id,
@@ -82,6 +83,7 @@ export const RequisitanteModal = ({
   const { mutate: updateRequisitante } = useUpdateRequisitante();
 
   const onSubmit = (data: RequisitanteDto) => {
+    console.log(data);
     if (requisitante?.data && requisitante.type === "UPDATE") {
       updateRequisitante(
         { id: requisitante.data.id, data },

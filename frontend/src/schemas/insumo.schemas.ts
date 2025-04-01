@@ -18,6 +18,7 @@ export const insumoCreateSchema = z.object({
 export type InsumoCreateDto = z.infer<typeof insumoCreateSchema>;
 
 export const insumoUpdateSchema = z.object({
+  id: z.number(),
   descricao: z
     .string()
     .min(3, "Nome é obrigatório")

@@ -69,6 +69,8 @@ const Emprestimos = () => {
     deleteById(id, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["emprestimo"] });
+        setSelectedEmprestimo(undefined);
+        setConfirmModalOpen(false);
         showAlert("Empréstimo excluído com sucesso!", "success");
       },
       onError: (error) => {
@@ -172,7 +174,7 @@ const Emprestimos = () => {
         }}
         onConfirm={() => {
           if (!selectedEmprestimo?.data) return;
-          handleDelete(selectedEmprestimo.data?.id);
+          handleDelete(selectedEmprestimo.data.id);
         }}
         title="Deletar Empréstimo"
       >
