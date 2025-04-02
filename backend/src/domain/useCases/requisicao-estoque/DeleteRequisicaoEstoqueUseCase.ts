@@ -55,6 +55,7 @@ async function reverterMovimentacoes(
         documentoOrigem: requisicaoToDelete.id.toString(),
         tipoDocumento: "ESTORNO_REQUISICAO",
         observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,
+        userId: requisicaoToDelete.userId,
       },
       manager
     );
