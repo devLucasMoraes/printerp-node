@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "start:prod": "NODE_ENV=production node dist/server.js",
-    "start:prod:win": "set NODE_ENV=production&& node dist/server.js",
+    "start:prod:win": "set NODE_ENV=production&& pnpm migration:run&& node dist/server.js",
     "test": "NODE_ENV=test pnpm docker:test && pnpm migration:run && jest --runInBand",
     "posttest": "pnpm docker:test:down",
     "test:watch": "jest --watchAll --runInBand --verbose",

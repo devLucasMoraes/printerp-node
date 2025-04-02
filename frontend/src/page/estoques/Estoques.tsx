@@ -115,6 +115,7 @@ const Estoques = () => {
           isLoading={isLoading}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          totalRowCount={data?.totalElements}
         />
       </DashboardCard>
     </PageContainer>
