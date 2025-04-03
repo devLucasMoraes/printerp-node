@@ -81,6 +81,7 @@ export type EmprestimoDto = {
   custoEstimado: number;
   tipo: "ENTRADA" | "SAIDA";
   status: "EM_ABERTO" | "FECHADO";
+  obs: string | null;
   parceiro: ParceiroDto;
   armazem: ArmazemDto;
   itens: {

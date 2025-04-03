@@ -39,6 +39,9 @@ export class Emprestimo {
   @Column({ type: "varchar", length: 255, default: "EM ABERTO" })
   status: "EM_ABERTO" | "FECHADO";
 
+  @Column({ type: "varchar", length: 255, nullable: true })
+  obs: string | null;
+
   @Column({ name: "user_id", type: "varchar", length: 255 })
   userId: string;
 

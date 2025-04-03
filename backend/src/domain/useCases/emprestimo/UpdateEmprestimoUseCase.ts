@@ -228,6 +228,7 @@ async function updateEmprestimo(
     parceiro: dto.parceiro,
     armazem: dto.armazem,
     userId: dto.userId,
+    obs: dto.obs,
     itens: dto.itens.map((itemDTO) => {
       return {
         id: itemDTO.id || undefined,

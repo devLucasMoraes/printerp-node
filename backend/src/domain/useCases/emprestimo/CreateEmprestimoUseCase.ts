@@ -75,6 +75,7 @@ async function createEmprestimo(
     parceiro: dto.parceiro,
     armazem: dto.armazem,
     userId: dto.userId,
+    obs: dto.obs,
     itens: dto.itens.map((itemDTO) => {
       return {
         insumo: itemDTO.insumo,

@@ -50,6 +50,7 @@ const baseEmprestimoSchema = z.object({
   status: z.string(),
   parceiro: entityIdSchema,
   armazem: entityIdSchema,
+  obs: z.string().nullable(),
   userId: z.string().optional(),
 });
 

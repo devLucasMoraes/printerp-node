@@ -84,6 +84,7 @@ export const EmprestimoModal = ({
       status: "EM_ABERTO",
       parceiro: null as any,
       armazem: null as any,
+      obs: null,
       itens: [],
     },
   });
@@ -132,6 +133,7 @@ export const EmprestimoModal = ({
         status: emprestimo.data.status,
         parceiro: emprestimo.data.parceiro,
         armazem: emprestimo.data.armazem,
+        obs: emprestimo.data.obs,
         itens: emprestimo.data.itens.map((item) => ({
           id: item.id,
           insumo: item.insumo,
@@ -160,6 +162,7 @@ export const EmprestimoModal = ({
         status: "EM_ABERTO",
         parceiro: emprestimo.data.parceiro,
         armazem: emprestimo.data.armazem,
+        obs: emprestimo.data.obs,
         itens: emprestimo.data.itens.map((item) => ({
           id: item.id,
           insumo: item.insumo,
@@ -186,6 +189,7 @@ export const EmprestimoModal = ({
         status: "EM_ABERTO",
         parceiro: null as any,
         armazem: null as any,
+        obs: null,
         itens: [],
       });
     }
@@ -419,6 +423,22 @@ export const EmprestimoModal = ({
                 control={control}
                 render={({ field }) => (
                   <ParceiroAutoComplete field={field} error={errors.parceiro} />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 size={12}>
+              <Controller
+                name="obs"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Observação"
+                    error={!!errors.obs}
+                    helperText={errors.obs?.message}
+                    fullWidth
+                  />
                 )}
               />
             </Grid2>

@@ -98,6 +98,7 @@ export class EmprestimoController {
       parceiro: entity.parceiro,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
+      obs: entity.obs,
       itens: entity.itens.map((item) => {
         return {
           id: item.id,
