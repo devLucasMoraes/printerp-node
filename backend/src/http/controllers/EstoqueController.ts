@@ -25,9 +25,13 @@ export class EstoqueController {
 
   adjust: RequestHandler = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
     const dto: AdjustEstoqueDTO = req.body;
 
-    const result = await this.estoqueService.adjust(parseInt(id), dto);
+    const result = await this.estoqueService.adjust(parseInt(id), {
+      ...dto,
+      userId,
+    });
 
     const mappedResult = this.toDTO(result);
 

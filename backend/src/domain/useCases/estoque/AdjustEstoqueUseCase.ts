@@ -96,6 +96,7 @@ async function processarMovimentacoes(
       tipoDocumento: "ESTOQUE",
       regularizado: true,
       observacao: "Ajuste de estoque",
+      userId: dto.userId,
     });
 
     await manager.save(MovimentoEstoque, movimentacaoEntrada);
@@ -114,6 +115,7 @@ async function processarMovimentacoes(
       tipoDocumento: "ESTOQUE",
       regularizado: true,
       observacao: "Ajuste de estoque",
+      userId: dto.userId,
     });
 
     await manager.save(MovimentoEstoque, movimentacaoSaida);
