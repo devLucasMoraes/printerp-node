@@ -291,6 +291,7 @@ export const EmprestimoModal = ({
         onSubmit={handleSubmit(onSubmit)}
         fullWidth
         maxWidth="xl"
+        disableRestoreFocus
       >
         <DialogTitle>
           {emprestimo?.type === "UPDATE" ? "Editar" : "Novo"}

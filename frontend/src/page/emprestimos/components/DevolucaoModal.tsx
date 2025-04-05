@@ -65,7 +65,13 @@ export const DevolucaoModal = ({
   );
 
   return (
-    <Dialog open={open} onClose={() => onClose()} fullWidth maxWidth="xl">
+    <Dialog
+      open={open}
+      onClose={() => onClose()}
+      fullWidth
+      maxWidth="xl"
+      disableRestoreFocus
+    >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <DialogTitle>Registros de Devoluções</DialogTitle>
 
@@ -129,33 +135,6 @@ export const DevolucaoModal = ({
                         }}
                       >
                         <Grid2 container spacing={2}>
-                          <Grid2 size={2}>
-                            <Controller
-                              name={`itens.${itemIndex}.devolucaoItens.${index}.dataDevolucao`}
-                              control={control}
-                              render={({ field, formState: { errors } }) => (
-                                <DatePicker
-                                  {...field}
-                                  label="Data"
-                                  slotProps={{
-                                    textField: {
-                                      size: "small",
-                                      fullWidth: true,
-                                      error:
-                                        !!errors.itens?.[itemIndex]
-                                          ?.devolucaoItens?.[index]
-                                          ?.dataDevolucao,
-                                      helperText:
-                                        errors.itens?.[itemIndex]
-                                          ?.devolucaoItens?.[index]
-                                          ?.dataDevolucao?.message,
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Grid2>
-
                           <Grid2 size={3}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.insumo`}
@@ -276,6 +255,33 @@ export const DevolucaoModal = ({
                                   onChange={(e) =>
                                     field.onChange(Number(e.target.value))
                                   }
+                                />
+                              )}
+                            />
+                          </Grid2>
+
+                          <Grid2 size={2}>
+                            <Controller
+                              name={`itens.${itemIndex}.devolucaoItens.${index}.dataDevolucao`}
+                              control={control}
+                              render={({ field, formState: { errors } }) => (
+                                <DatePicker
+                                  {...field}
+                                  label="Data"
+                                  slotProps={{
+                                    textField: {
+                                      size: "small",
+                                      fullWidth: true,
+                                      error:
+                                        !!errors.itens?.[itemIndex]
+                                          ?.devolucaoItens?.[index]
+                                          ?.dataDevolucao,
+                                      helperText:
+                                        errors.itens?.[itemIndex]
+                                          ?.devolucaoItens?.[index]
+                                          ?.dataDevolucao?.message,
+                                    },
+                                  }}
                                 />
                               )}
                             />

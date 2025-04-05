@@ -69,6 +69,7 @@ export const RequisicaoEstoqueModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    resetField,
   } = useForm<RequisicaoEstoqueDto>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -157,6 +158,7 @@ export const RequisicaoEstoqueModal = ({
         valorTotal: 0,
         itens: [],
       });
+      resetField("itens");
     }
   }, [requisicaoEstoque, reset]);
 
@@ -231,6 +233,7 @@ export const RequisicaoEstoqueModal = ({
       onSubmit={handleSubmit(onSubmit)}
       fullWidth
       maxWidth="xl"
+      disableRestoreFocus
     >
       <DialogTitle>
         {requisicaoEstoque?.type === "UPDATE" ? "Editar" : "Nova"}

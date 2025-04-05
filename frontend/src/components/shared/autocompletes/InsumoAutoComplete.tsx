@@ -40,6 +40,7 @@ export const InsumoAutoComplete = ({
           error={!!error}
           helperText={error?.message}
           label="Insumo"
+          autoFocus
           slotProps={{
             input: {
               ...params.InputProps,
