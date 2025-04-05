@@ -117,7 +117,7 @@ export const EmprestimoModal = ({
         return total + quantidade * valorUnitario;
       }, 0) || 0;
 
-    setValue("custoEstimado", total);
+    setValue("custoEstimado", Number(total.toFixed(2)));
   }, [items]);
 
   useEffect(() => {

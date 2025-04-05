@@ -105,7 +105,7 @@ export const RequisicaoEstoqueModal = ({
         return total + quantidade * valorUnitario;
       }, 0) || 0;
 
-    setValue("valorTotal", total);
+    setValue("valorTotal", Number(total.toFixed(2)));
   }, [items, setValue]);
 
   useEffect(() => {
