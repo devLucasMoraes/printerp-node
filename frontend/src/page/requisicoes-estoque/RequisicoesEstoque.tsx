@@ -18,7 +18,7 @@ const RequisicoesEstoque = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] = useState<{
-    data: RequisicaoEstoqueDto;
+    data?: RequisicaoEstoqueDto;
     type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
   }>();
   const [paginationModel, setPaginationModel] = useState({
@@ -182,7 +182,7 @@ const RequisicoesEstoque = () => {
           setSelectedRequisicaoEstoque(undefined);
         }}
         onConfirm={() => {
-          if (!selectedRequisicaoEstoque) return;
+          if (!selectedRequisicaoEstoque?.data) return;
           handleDelete(selectedRequisicaoEstoque.data.id);
         }}
         title="Deletar requisição"
@@ -201,7 +201,10 @@ const RequisicoesEstoque = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setFormOpen(true)}
+            onClick={() => {
+              setFormOpen(true);
+              setSelectedRequisicaoEstoque({ data: undefined, type: "CREATE" });
+            }}
           >
             nova requisição
           </Button>

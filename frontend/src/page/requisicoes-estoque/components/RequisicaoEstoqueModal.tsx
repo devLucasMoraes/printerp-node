@@ -35,33 +35,41 @@ import {
 import { useAlertStore } from "../../../stores/useAlertStore";
 import { InsumoDto, RequisicaoEstoqueDto } from "../../../types";
 
-interface RequisicaoEstoqueModalProps {
-  open: boolean;
-  onClose: () => void;
-  requisicaoEstoque?: {
-    data: RequisicaoEstoqueDto;
-    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
-  };
-}
+const defaultValues = {
+  id: null as any,
+  dataRequisicao: null as any,
+  ordemProducao: "",
+  obs: "",
+  setor: null as any,
+  requisitante: null as any,
+  armazem: null as any,
+  valorTotal: 0,
+  itens: [],
+};
 
 export const RequisicaoEstoqueModal = ({
   open,
   onClose,
   requisicaoEstoque,
-}: RequisicaoEstoqueModalProps) => {
+}: {
+  open: boolean;
+  onClose: () => void;
+  requisicaoEstoque?: {
+    data?: RequisicaoEstoqueDto;
+    type: "UPDATE" | "COPY" | "CREATE" | "DELETE";
+  };
+}) => {
   const { showAlert } = useAlertStore((state) => state);
 
   const queryClient = useQueryClient();
 
-  const schema =
-    requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE"
-      ? requisicaoEstoqueUpdateSchema
-      : requisicaoEstoqueCreateSchema;
+  const { useCreate, useUpdate } = useRequisicaoEstoqueQueries();
 
-  const {
-    useCreate: useCreateRequisicaoEstoque,
-    useUpdate: useUpdateRequisicaoEstoque,
-  } = useRequisicaoEstoqueQueries();
+  const isUpdate = requisicaoEstoque?.type === "UPDATE";
+
+  const schema = isUpdate
+    ? requisicaoEstoqueUpdateSchema
+    : requisicaoEstoqueCreateSchema;
 
   const {
     control,
@@ -69,23 +77,10 @@ export const RequisicaoEstoqueModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    resetField,
   } = useForm<RequisicaoEstoqueDto>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      id: null as any,
-      dataRequisicao: null as any,
-      ordemProducao: "",
-      obs: "",
-      setor: null as any,
-      requisitante: null as any,
-      armazem: null as any,
-      valorTotal: 0,
-      itens: [],
-    },
+    defaultValues,
   });
-
-  console.log(errors);
 
   const { fields, prepend, remove } = useFieldArray({
     control,
@@ -110,92 +105,58 @@ export const RequisicaoEstoqueModal = ({
   }, [items, setValue]);
 
   useEffect(() => {
-    if (requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE") {
-      reset({
-        id: requisicaoEstoque.data.id,
-        dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
-        ordemProducao: requisicaoEstoque.data.ordemProducao,
-        obs: requisicaoEstoque.data.obs,
-        setor: requisicaoEstoque.data.setor,
-        requisitante: requisicaoEstoque.data.requisitante,
-        armazem: requisicaoEstoque.data.armazem,
-        valorTotal: Number(requisicaoEstoque.data.valorTotal),
-        itens: requisicaoEstoque.data.itens.map((item) => ({
-          id: item.id,
-          insumo: item.insumo,
-          quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario),
-          unidade: item.unidade,
-        })),
-      });
-    } else if (requisicaoEstoque?.data && requisicaoEstoque.type === "COPY") {
-      reset({
-        id: null as any,
-        dataRequisicao: new Date(requisicaoEstoque.data.dataRequisicao),
-        ordemProducao: requisicaoEstoque.data.ordemProducao,
-        obs: requisicaoEstoque.data.obs,
-        setor: requisicaoEstoque.data.setor,
-        requisitante: requisicaoEstoque.data.requisitante,
-        armazem: requisicaoEstoque.data.armazem,
-        valorTotal: Number(requisicaoEstoque.data.valorTotal),
-        itens: requisicaoEstoque.data.itens.map((item) => ({
-          id: null as any,
-          insumo: item.insumo,
-          quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario),
-          unidade: item.unidade,
-        })),
-      });
-    } else {
-      reset({
-        id: null as any,
-        dataRequisicao: null as any,
-        ordemProducao: "",
-        obs: "",
-        setor: null as any,
-        requisitante: null as any,
-        armazem: null as any,
-        valorTotal: 0,
-        itens: [],
-      });
-      resetField("itens");
+    if (!requisicaoEstoque?.data) {
+      reset(defaultValues);
+      return;
     }
+
+    const { data, type } = requisicaoEstoque;
+
+    const formData: RequisicaoEstoqueDto = {
+      ...data,
+      id: type === "COPY" ? null : (data.id as any),
+      dataRequisicao: new Date(data.dataRequisicao),
+      valorTotal: Number(data.valorTotal),
+      itens: data.itens.map((item) => ({
+        id: type === "COPY" ? null : (item.id as any),
+        insumo: item.insumo,
+        quantidade: Number(item.quantidade),
+        valorUnitario: Number(item.valorUnitario),
+        unidade: item.unidade,
+      })),
+    };
+
+    reset(formData);
   }, [requisicaoEstoque, reset]);
 
-  const { mutate: createRequisicaoEstoque } = useCreateRequisicaoEstoque();
+  const { mutate: createRequisicaoEstoque } = useCreate();
+  const { mutate: updateRequisicaoEstoque } = useUpdate();
 
-  const { mutate: updateRequisicaoEstoque } = useUpdateRequisicaoEstoque();
+  const handleSuccess = () => {
+    onClose();
+    reset(defaultValues);
+    queryClient.invalidateQueries({ queryKey: ["estoque"] });
+    showAlert(
+      `Requisição ${isUpdate ? "atualizada" : "criada"} com sucesso`,
+      "success"
+    );
+  };
+
+  const handleError = (error: any) => {
+    console.error(error);
+    showAlert(error.response?.data.message || error.message, "error");
+  };
 
   const onSubmit = (data: RequisicaoEstoqueDto) => {
-    if (requisicaoEstoque?.data && requisicaoEstoque.type === "UPDATE") {
+    if (isUpdate && requisicaoEstoque?.data) {
       updateRequisicaoEstoque(
         { id: requisicaoEstoque.data.id, data },
-        {
-          onSuccess: () => {
-            onClose();
-            reset();
-            queryClient.invalidateQueries({ queryKey: ["estoque"] });
-            showAlert("Requisicao atualizada com sucesso", "success");
-          },
-          onError: (error) => {
-            console.error(error);
-            showAlert(error.response?.data.message || error.message, "error");
-          },
-        }
+        { onSuccess: handleSuccess, onError: handleError }
       );
     } else {
       createRequisicaoEstoque(data, {
-        onSuccess: () => {
-          onClose();
-          reset();
-          queryClient.invalidateQueries({ queryKey: ["estoque"] });
-
-          showAlert("Requisicao criada com sucesso", "success");
-        },
-        onError: (error) => {
-          console.error(error);
-          showAlert(error.response?.data.message || error.message, "error");
-        },
+        onSuccess: handleSuccess,
+        onError: handleError,
       });
     }
   };
@@ -221,8 +182,170 @@ export const RequisicaoEstoqueModal = ({
   };
 
   const handleClose = () => {
-    reset();
+    reset(defaultValues);
     onClose();
+  };
+
+  // Renderização dos itens da requisição
+  const renderItems = () => {
+    if (fields.length === 0) {
+      return (
+        <Box
+          sx={{
+            p: 3,
+            textAlign: "center",
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.02)"
+                : "rgba(0, 0, 0, 0.02)",
+          }}
+        >
+          <Typography color="text.secondary" sx={{ mb: 1 }}>
+            Nenhum item adicionado
+          </Typography>
+          <Button
+            startIcon={<IconPlus size={18} />}
+            onClick={handleAddItem}
+            variant="outlined"
+            size="small"
+          >
+            Adicionar Primeiro Item
+          </Button>
+        </Box>
+      );
+    }
+
+    return (
+      <Box>
+        {fields.map((field, index) => (
+          <Box
+            key={field.id}
+            sx={{
+              px: 2,
+              py: 2,
+              mb: 1,
+              borderBottom: "1px solid",
+              borderColor: "divider",
+              "&:hover": {
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.03)"
+                    : "rgba(0, 0, 0, 0.02)",
+              },
+            }}
+          >
+            <Grid2 container spacing={2}>
+              <Grid2 size={4}>
+                <Controller
+                  name={`itens.${index}.insumo`}
+                  control={control}
+                  render={({ field }) => (
+                    <InsumoAutoComplete
+                      size="small"
+                      field={{
+                        ...field,
+                        onChange: (value) => {
+                          field.onChange(value);
+                          handleInsumoChange(index, value);
+                        },
+                      }}
+                      error={errors.itens?.[index]?.insumo}
+                    />
+                  )}
+                />
+              </Grid2>
+
+              <Grid2 size={2}>
+                <Controller
+                  name={`itens.${index}.quantidade`}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      label="Quantidade"
+                      error={!!errors.itens?.[index]?.quantidade}
+                      helperText={errors.itens?.[index]?.quantidade?.message}
+                      fullWidth
+                      size="small"
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  )}
+                />
+              </Grid2>
+
+              <Grid2 size={3}>
+                <Controller
+                  name={`itens.${index}.unidade`}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Unidade"
+                      error={!!errors.itens?.[index]?.unidade}
+                      helperText={errors.itens?.[index]?.unidade?.message}
+                      value={field.value || ""}
+                      fullWidth
+                      select
+                      size="small"
+                    >
+                      {unidades.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </Grid2>
+
+              <Grid2 size={2}>
+                <Controller
+                  name={`itens.${index}.valorUnitario`}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      label="Valor Unitário"
+                      error={!!errors.itens?.[index]?.valorUnitario}
+                      helperText={errors.itens?.[index]?.valorUnitario?.message}
+                      disabled
+                      fullWidth
+                      size="small"
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">R$</InputAdornment>
+                          ),
+                        },
+                      }}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  )}
+                />
+              </Grid2>
+
+              <Grid2
+                size={1}
+                container
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-end"
+              >
+                <IconButton
+                  onClick={() => remove(index)}
+                  color="error"
+                  size="small"
+                >
+                  <IconCircleMinus />
+                </IconButton>
+              </Grid2>
+            </Grid2>
+          </Box>
+        ))}
+      </Box>
+    );
   };
 
   return (
@@ -235,14 +358,12 @@ export const RequisicaoEstoqueModal = ({
       maxWidth="xl"
       disableRestoreFocus
     >
-      <DialogTitle>
-        {requisicaoEstoque?.type === "UPDATE" ? "Editar" : "Nova"}
-      </DialogTitle>
+      <DialogTitle>{isUpdate ? "Editar" : "Nova"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {requisicaoEstoque?.type === "UPDATE"
-            ? "Preencha os campos abaixo para editar a requisicao de estoque"
-            : "Preencha os campos abaixo para criar uma nova requisicao de estoque"}
+          {isUpdate
+            ? "Preencha os campos abaixo para editar a requisição de estoque"
+            : "Preencha os campos abaixo para criar uma nova requisição de estoque"}
         </DialogContentText>
         <Grid2 container spacing={2} sx={{ mt: 2 }}>
           <Grid2 size="grow">
@@ -381,178 +502,7 @@ export const RequisicaoEstoqueModal = ({
                 </Button>
               </Stack>
 
-              {fields.length === 0 ? (
-                <Box
-                  sx={{
-                    p: 3,
-                    textAlign: "center",
-                    bgcolor: (theme) =>
-                      theme.palette.mode === "dark"
-                        ? "rgba(255, 255, 255, 0.02)"
-                        : "rgba(0, 0, 0, 0.02)",
-                  }}
-                >
-                  <Typography color="text.secondary" sx={{ mb: 1 }}>
-                    Nenhum item adicionado
-                  </Typography>
-                  <Button
-                    startIcon={<IconPlus size={18} />}
-                    onClick={handleAddItem}
-                    variant="outlined"
-                    size="small"
-                  >
-                    Adicionar Primeiro Item
-                  </Button>
-                </Box>
-              ) : (
-                <Box>
-                  {fields.map((field, index) => {
-                    return (
-                      <Box
-                        key={field.id}
-                        sx={{
-                          px: 2,
-                          py: 2,
-                          mb: 1,
-                          borderBottom: "1px solid",
-                          borderColor: "divider",
-                          "&:hover": {
-                            bgcolor: (theme) =>
-                              theme.palette.mode === "dark"
-                                ? "rgba(255, 255, 255, 0.03)"
-                                : "rgba(0, 0, 0, 0.02)",
-                          },
-                        }}
-                      >
-                        <Grid2 container spacing={2}>
-                          <Grid2 size={4}>
-                            <Controller
-                              name={`itens.${index}.insumo`}
-                              control={control}
-                              render={({ field }) => (
-                                <InsumoAutoComplete
-                                  size="small"
-                                  field={{
-                                    ...field,
-                                    onChange: (value) => {
-                                      field.onChange(value);
-                                      handleInsumoChange(index, value);
-                                    },
-                                  }}
-                                  error={errors.itens?.[index]?.insumo}
-                                />
-                              )}
-                            />
-                          </Grid2>
-
-                          <Grid2 size={2}>
-                            <Controller
-                              name={`itens.${index}.quantidade`}
-                              control={control}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  type="number"
-                                  label="Quantidade"
-                                  error={!!errors.itens?.[index]?.quantidade}
-                                  helperText={
-                                    errors.itens?.[index]?.quantidade?.message
-                                  }
-                                  fullWidth
-                                  size="small"
-                                  onChange={(e) =>
-                                    field.onChange(Number(e.target.value))
-                                  }
-                                />
-                              )}
-                            />
-                          </Grid2>
-
-                          <Grid2 size={3}>
-                            <Controller
-                              name={`itens.${index}.unidade`}
-                              control={control}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  label="Unidade"
-                                  error={!!errors.itens?.[index]?.unidade}
-                                  helperText={
-                                    errors.itens?.[index]?.unidade?.message
-                                  }
-                                  value={field.value || ""}
-                                  fullWidth
-                                  select
-                                  size="small"
-                                >
-                                  {unidades.map((option) => (
-                                    <MenuItem
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </TextField>
-                              )}
-                            />
-                          </Grid2>
-
-                          <Grid2 size={2}>
-                            <Controller
-                              name={`itens.${index}.valorUnitario`}
-                              control={control}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  type="number"
-                                  label="Valor Unitário"
-                                  error={!!errors.itens?.[index]?.valorUnitario}
-                                  helperText={
-                                    errors.itens?.[index]?.valorUnitario
-                                      ?.message
-                                  }
-                                  disabled
-                                  fullWidth
-                                  size="small"
-                                  slotProps={{
-                                    input: {
-                                      startAdornment: (
-                                        <InputAdornment position="start">
-                                          R$
-                                        </InputAdornment>
-                                      ),
-                                    },
-                                  }}
-                                  onChange={(e) =>
-                                    field.onChange(Number(e.target.value))
-                                  }
-                                />
-                              )}
-                            />
-                          </Grid2>
-
-                          <Grid2
-                            size={1}
-                            container
-                            direction="row"
-                            alignItems="center"
-                            justifyContent="flex-end"
-                          >
-                            <IconButton
-                              onClick={() => remove(index)}
-                              color="error"
-                              size="small"
-                            >
-                              <IconCircleMinus />
-                            </IconButton>
-                          </Grid2>
-                        </Grid2>
-                      </Box>
-                    );
-                  })}
-                </Box>
-              )}
+              {renderItems()}
             </Box>
           </Grid2>
         </Grid2>
