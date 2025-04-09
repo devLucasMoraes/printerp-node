@@ -2,9 +2,8 @@ import { Box, Grid } from "@mui/material";
 import PageContainer from "../../components/container/PageContainer";
 
 // components
-import Blog from "./components/Blog";
+import { EstimativasEstoque } from "./components/EstimativasEstoque";
 import MonthlyEarnings from "./components/MonthlyEarnings";
-import ProductPerformance from "./components/ProductPerformance";
 import RecentTransactions from "./components/RecentTransactions";
 import SalesOverview from "./components/SalesOverview";
 import YearlyBreakup from "./components/YearlyBreakup";
@@ -31,10 +30,7 @@ const Dashboard = () => {
             <RecentTransactions />
           </Grid>
           <Grid item xs={12} lg={8}>
-            <ProductPerformance />
-          </Grid>
-          <Grid item xs={12}>
-            <Blog />
+            <EstimativasEstoque />
           </Grid>
         </Grid>
       </Box>

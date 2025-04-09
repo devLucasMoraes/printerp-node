@@ -10,48 +10,27 @@ import {
 } from "@mui/material";
 import DashboardCard from "../../../components/cards/DashboardCard";
 
-const products = [
+const estimativas = [
   {
     id: "1",
-    name: "Sunil Joshi",
-    post: "Web Designer",
-    pname: "Elite Admin",
-    priority: "Low",
-    pbg: "primary.main",
-    budget: "3.9",
-  },
-  {
-    id: "2",
-    name: "Andrew McDownland",
-    post: "Project Manager",
-    pname: "Real Homes WP Theme",
-    priority: "Medium",
-    pbg: "secondary.main",
-    budget: "24.5",
-  },
-  {
-    id: "3",
-    name: "Christopher Jamil",
-    post: "Project Manager",
-    pname: "MedicalPro WP Theme",
-    priority: "High",
-    pbg: "error.main",
-    budget: "12.8",
-  },
-  {
-    id: "4",
-    name: "Nirav Joshi",
-    post: "Frontend Engineer",
-    pname: "Hosting Press HTML",
-    priority: "Critical",
-    pbg: "success.main",
-    budget: "2.4",
+    insumo: {
+      id: "1",
+      descricao: "IPA 70/30",
+      unidade: "LITRO",
+      categoria: "ALCOÓIS",
+    },
+    abaixoMinimo: true,
+    consumoMedioDiario: "1",
+    diasRestantes: "30",
+    pbg: "08/04/2025",
+    previsaoEstoqueMinimo: "08/04/2025",
+    previsaoFimEstoque: "08/04/2025",
   },
 ];
 
-const ProductPerformance = () => {
+export const EstimativasEstoque = () => {
   return (
-    <DashboardCard title="Product Performance">
+    <DashboardCard title="Estimativas de estoque">
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         <Table
           aria-label="simple table"
@@ -64,44 +43,39 @@ const ProductPerformance = () => {
             <TableRow>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Id
+                  Insumo
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Assigned
+                  Consumo médio diário
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Name
+                  Abaixo do estoque mínimo
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Priority
+                  Dias restantes
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  Previsão estoque mínimo
                 </Typography>
               </TableCell>
               <TableCell align="right">
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Budget
+                  Previsão fim de estoque
                 </Typography>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.name}>
-                <TableCell>
-                  <Typography
-                    sx={{
-                      fontSize: "15px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    {product.id}
-                  </Typography>
-                </TableCell>
+            {estimativas.map((item) => (
+              <TableRow key={item.insumo.id}>
                 <TableCell>
                   <Box
                     sx={{
@@ -111,7 +85,7 @@ const ProductPerformance = () => {
                   >
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600}>
-                        {product.name}
+                        {item.insumo.descricao}
                       </Typography>
                       <Typography
                         color="textSecondary"
@@ -119,33 +93,60 @@ const ProductPerformance = () => {
                           fontSize: "13px",
                         }}
                       >
-                        {product.post}
+                        {item.insumo.categoria}
                       </Typography>
                     </Box>
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle2"
-                    fontWeight={400}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
                   >
-                    {product.pname}
-                  </Typography>
+                    <Box>
+                      <Typography
+                        color="textSecondary"
+                        variant="subtitle2"
+                        fontWeight={400}
+                      >
+                        {item.consumoMedioDiario}
+                      </Typography>
+                      <Typography
+                        color="textSecondary"
+                        sx={{
+                          fontSize: "13px",
+                        }}
+                      >
+                        {item.insumo.unidade}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </TableCell>
                 <TableCell>
                   <Chip
                     sx={{
                       px: "4px",
-                      backgroundColor: product.pbg,
+                      backgroundColor: item.pbg,
                       color: "#fff",
                     }}
                     size="small"
-                    label={product.priority}
+                    label={item.abaixoMinimo ? "Sim" : "Nao"}
                   ></Chip>
                 </TableCell>
                 <TableCell align="right">
-                  <Typography variant="h6">${product.budget}k</Typography>
+                  <Typography variant="h6">{item.diasRestantes}</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">
+                    {item.previsaoEstoqueMinimo}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">
+                    {item.previsaoFimEstoque}
+                  </Typography>
                 </TableCell>
               </TableRow>
             ))}
@@ -155,5 +156,3 @@ const ProductPerformance = () => {
     </DashboardCard>
   );
 };
-
-export default ProductPerformance;
