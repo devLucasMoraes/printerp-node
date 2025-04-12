@@ -19,6 +19,7 @@ export const registrarSaidaEstoqueUseCase = {
       documentoOrigem: string;
       observacao?: string;
       userId: string;
+      data: Date;
     },
     manager: EntityManager
   ): Promise<void> {
@@ -32,6 +33,7 @@ export const registrarSaidaEstoqueUseCase = {
       documentoOrigem,
       observacao,
       userId,
+      data,
     } = params;
 
     const estoque = await inicializarEstoqueUseCase.execute(
@@ -50,7 +52,7 @@ export const registrarSaidaEstoqueUseCase = {
 
     const movimento = movimentoEstoqueRepository.create({
       tipo: "SAIDA",
-      data: new Date(),
+      data,
       insumo,
       quantidade,
       valorUnitario,

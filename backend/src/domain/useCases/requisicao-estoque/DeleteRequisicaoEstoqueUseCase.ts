@@ -11,7 +11,7 @@ export const deleteRequisicaoEstoqueUseCase = {
         const requisicaoToDelete = await findRequisicaoToDelete(id, manager);
 
         await reverterMovimentacoes(requisicaoToDelete, manager);
-        await manager.softDelete(RequisicaoEstoque, id);
+        await manager.softRemove(RequisicaoEstoque, requisicaoToDelete);
       }
     );
   },
@@ -56,6 +56,7 @@ async function reverterMovimentacoes(
         tipoDocumento: "ESTORNO_REQUISICAO",
         observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,
         userId: requisicaoToDelete.userId,
+        data: requisicaoToDelete.dataRequisicao,
       },
       manager
     );

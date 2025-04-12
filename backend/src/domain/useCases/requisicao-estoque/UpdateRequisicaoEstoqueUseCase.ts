@@ -151,6 +151,7 @@ async function reverterMovimentacoes(
       observacao: "Movimentação gerada por atualização de requisição",
       tipoDocumento: "ESTORNO_REQUISICAO",
       userId: requisicaoToUpdate.userId,
+      data: requisicaoToUpdate.dataRequisicao,
     };
 
     await registrarEntradaEstoqueUseCase.execute(params, manager);
@@ -223,6 +224,7 @@ async function processarNovasMovimentacoes(
       observacao: "",
       userId: requisicao.userId,
       tipoDocumento: "REQUISICAO",
+      data: requisicao.dataRequisicao,
     };
 
     await registrarSaidaEstoqueUseCase.execute(params, manager);

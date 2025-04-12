@@ -104,6 +104,7 @@ async function processarMovimentacoes(
         documentoOrigem: requisicao.id.toString(),
         tipoDocumento: "REQUISICAO",
         userId: requisicao.userId,
+        data: requisicao.dataRequisicao,
       },
       manager
     );

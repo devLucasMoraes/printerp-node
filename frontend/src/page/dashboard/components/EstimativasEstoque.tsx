@@ -12,7 +12,6 @@ import DashboardCard from "../../../components/cards/DashboardCard";
 
 const estimativas = [
   {
-    id: "1",
     insumo: {
       id: "1",
       descricao: "IPA 70/30",
