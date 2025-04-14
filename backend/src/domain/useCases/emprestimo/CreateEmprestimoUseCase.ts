@@ -105,6 +105,7 @@ async function processarMovimentacoes(
           documentoOrigem: emprestimo.id.toString(),
           tipoDocumento: "EMPRESTIMO",
           userId: emprestimo.userId,
+          data: emprestimo.dataEmprestimo,
         },
         manager
       );
@@ -120,6 +121,7 @@ async function processarMovimentacoes(
           documentoOrigem: emprestimo.id.toString(),
           tipoDocumento: "EMPRESTIMO",
           userId: emprestimo.userId,
+          data: emprestimo.dataEmprestimo,
         },
         manager
       );

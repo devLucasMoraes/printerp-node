@@ -10,7 +10,7 @@ export const deleteEmprestimoUseCase = {
       const emprestimoToDelete = await findEmprestimoToDelete(id, manager);
 
       await reverterMovimentacoes(emprestimoToDelete, manager);
-      await manager.softDelete(Emprestimo, id);
+      await manager.softRemove(Emprestimo, emprestimoToDelete);
     });
   },
 };
@@ -56,6 +56,7 @@ async function reverterMovimentacoes(
         tipoDocumento: "ESTORNO_EMPRESTIMO",
         observacao: `Estorno da movimentação ${emprestimoToDelete.id} - emprestimo deletado`,
         userId: emprestimoToDelete.userId,
+        data: emprestimoToDelete.dataEmprestimo,
       },
       manager
     );

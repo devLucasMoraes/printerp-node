@@ -158,6 +158,7 @@ async function reverterMovimentacoes(
         documentoOrigem: emprestimoToUpdate.id.toString(),
         observacao: "Movimentação gerada por atualização de emprestimo",
         userId: emprestimoToUpdate.userId,
+        data: emprestimoToUpdate.dataEmprestimo,
       };
 
       if (emprestimoToUpdate.tipo === "SAIDA") {
@@ -196,6 +197,7 @@ async function reverterMovimentacoes(
       documentoOrigem: emprestimoToUpdate.id.toString(),
       observacao: "Movimentação gerada por atualização de emprestimo",
       userId: emprestimoToUpdate.userId,
+      data: emprestimoToUpdate.dataEmprestimo,
     };
 
     if (emprestimoToUpdate.tipo === "SAIDA") {
@@ -300,6 +302,7 @@ async function processarNovasMovimentacoes(
         documentoOrigem: emprestimo.id.toString(),
         observacao: "",
         userId: emprestimo.userId,
+        data: emprestimo.dataEmprestimo,
       };
 
       if (emprestimo.tipo === "SAIDA") {
@@ -337,6 +340,7 @@ async function processarNovasMovimentacoes(
       documentoOrigem: emprestimo.id.toString(),
       observacao: "",
       userId: emprestimo.userId,
+      data: emprestimo.dataEmprestimo,
     };
 
     if (emprestimo.tipo === "SAIDA") {
