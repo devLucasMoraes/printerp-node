@@ -5,6 +5,7 @@ import { Insumo } from "../../entities/Insumo";
 import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
 import { Unidade } from "../../entities/Unidade";
 import { movimentoEstoqueRepository } from "../../repositories";
+import { atualizarConsumoMedioDiarioUseCase } from "./AtualizarConsumoMedioDiarioUseCase";
 import { inicializarEstoqueUseCase } from "./InicializarEstoqueUseCase";
 
 export const registrarSaidaEstoqueUseCase = {
@@ -69,5 +70,12 @@ export const registrarSaidaEstoqueUseCase = {
 
     estoque.quantidade = Number(estoque.quantidade) - Number(quantidade);
     await manager.save(Estoque, estoque);
+
+    await atualizarConsumoMedioDiarioUseCase.execute(
+      insumo.id,
+      armazem.id,
+      manager,
+      true // Forçar atualização
+    );
   },
 };

@@ -8,7 +8,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
 import DashboardCard from "../../../components/cards/DashboardCard";
+import { useEstoqueQueries } from "../../../hooks/queries/useEstoqueQueries";
+import { useEntityChangeSocket } from "../../../hooks/useEntityChangeSocket";
+import { formatDateBR } from "../../../util/formatDateBR";
 
 const estimativas = [
   {
@@ -28,6 +32,24 @@ const estimativas = [
 ];
 
 export const EstimativasEstoque = () => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const isSocketConnected = useEntityChangeSocket("estoque");
+
+  const { useGetAllPaginated: useGetEstoquesPaginated } = useEstoqueQueries();
+
+  const { data, isLoading } = useGetEstoquesPaginated(
+    {
+      page: paginationModel.page,
+      size: paginationModel.pageSize,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   return (
     <DashboardCard title="Estimativas de estoque">
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
@@ -73,7 +95,7 @@ export const EstimativasEstoque = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {estimativas.map((item) => (
+            {data?.content.map((item) => (
               <TableRow key={item.insumo.id}>
                 <TableCell>
                   <Box
@@ -92,7 +114,7 @@ export const EstimativasEstoque = () => {
                           fontSize: "13px",
                         }}
                       >
-                        {item.insumo.categoria}
+                        {item.insumo.categoria.nome}
                       </Typography>
                     </Box>
                   </Box>
@@ -118,7 +140,7 @@ export const EstimativasEstoque = () => {
                           fontSize: "13px",
                         }}
                       >
-                        {item.insumo.unidade}
+                        {item.insumo.undEstoque}
                       </Typography>
                     </Box>
                   </Box>
@@ -127,7 +149,7 @@ export const EstimativasEstoque = () => {
                   <Chip
                     sx={{
                       px: "4px",
-                      backgroundColor: item.pbg,
+                      backgroundColor: "#f44336",
                       color: "#fff",
                     }}
                     size="small"
@@ -139,12 +161,12 @@ export const EstimativasEstoque = () => {
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="h6">
-                    {item.previsaoEstoqueMinimo}
+                    {formatDateBR(item.previsaoEstoqueMinimo)}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="h6">
-                    {item.previsaoFimEstoque}
+                    {formatDateBR(item.previsaoFimEstoque)}
                   </Typography>
                 </TableCell>
               </TableRow>

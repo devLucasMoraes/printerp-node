@@ -114,6 +114,12 @@ export type EstoqueDto = {
   quantidade: number;
   armazem: ArmazemDto;
   insumo: InsumoDto;
+  consumoMedioDiario: number;
+  ultimaAtualizacaoConsumo: Date;
+  abaixoMinimo: boolean;
+  diasRestantes: number;
+  previsaoFimEstoque: Date;
+  previsaoEstoqueMinimo: Date;
   createdAt: Date;
   updatedAt: Date;
 };

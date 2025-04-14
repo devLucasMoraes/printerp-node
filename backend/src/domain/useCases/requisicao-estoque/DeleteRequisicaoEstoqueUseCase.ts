@@ -2,6 +2,7 @@ import { EntityManager } from "typeorm";
 import { NotFoundError } from "../../../shared/errors";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
 import { requisicaoEstoqueRepository } from "../../repositories";
+import { atualizarConsumoMedioDiarioUseCase } from "../estoque/AtualizarConsumoMedioDiarioUseCase";
 import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
 
 export const deleteRequisicaoEstoqueUseCase = {
@@ -11,6 +12,7 @@ export const deleteRequisicaoEstoqueUseCase = {
         const requisicaoToDelete = await findRequisicaoToDelete(id, manager);
 
         await reverterMovimentacoes(requisicaoToDelete, manager);
+        await atualizarConsumoMedioDiario(requisicaoToDelete, manager);
         await manager.softRemove(RequisicaoEstoque, requisicaoToDelete);
       }
     );
@@ -59,6 +61,20 @@ async function reverterMovimentacoes(
         data: requisicaoToDelete.dataRequisicao,
       },
       manager
+    );
+  }
+}
+
+async function atualizarConsumoMedioDiario(
+  requisicaoToDelete: RequisicaoEstoque,
+  manager: EntityManager
+): Promise<void> {
+  for (const item of requisicaoToDelete.itens) {
+    await atualizarConsumoMedioDiarioUseCase.execute(
+      item.insumo.id,
+      requisicaoToDelete.armazem.id,
+      manager,
+      true // Forçar atualização
     );
   }
 }

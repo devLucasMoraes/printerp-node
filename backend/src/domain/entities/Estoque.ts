@@ -19,6 +19,22 @@ export class Estoque {
   @Column({ type: "numeric", precision: 10, scale: 2, default: 0 })
   quantidade: number = 0;
 
+  @Column({
+    name: "consumo_medio_diario",
+    type: "numeric",
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
+  consumoMedioDiario: number | null;
+
+  @Column({
+    name: "ultima_atualizacao_consumo",
+    type: "timestamp",
+    nullable: true,
+  })
+  ultimaAtualizacaoConsumo: Date | null;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
@@ -38,5 +54,44 @@ export class Estoque {
 
   possuiQuantidadeSuficiente(quantidadeDesejada: number): boolean {
     return this.quantidade >= quantidadeDesejada;
+  }
+
+  estaAbaixoMinimo(): boolean {
+    return this.quantidade < this.insumo.estoqueMinimo;
+  }
+
+  calcularDiasRestantes(): number | null {
+    if (!this.consumoMedioDiario || this.consumoMedioDiario <= 0) {
+      return null;
+    }
+    return Math.floor(this.quantidade / this.consumoMedioDiario);
+  }
+
+  calcularPrevisaoFimEstoque(): Date | null {
+    const diasRestantes = this.calcularDiasRestantes();
+    if (diasRestantes === null) {
+      return null;
+    }
+
+    const dataPrevisao = new Date();
+    dataPrevisao.setDate(dataPrevisao.getDate() + diasRestantes);
+    return dataPrevisao;
+  }
+
+  calcularPrevisaoEstoqueMinimo(): Date | null {
+    if (!this.consumoMedioDiario || this.consumoMedioDiario <= 0) {
+      return null;
+    }
+
+    const diasAteEstoqueMinimo = Math.floor(
+      (this.quantidade - this.insumo.estoqueMinimo) / this.consumoMedioDiario
+    );
+    if (diasAteEstoqueMinimo < 0) {
+      return null; // Já está abaixo do mínimo
+    }
+
+    const dataPrevisao = new Date();
+    dataPrevisao.setDate(dataPrevisao.getDate() + diasAteEstoqueMinimo);
+    return dataPrevisao;
   }
 }

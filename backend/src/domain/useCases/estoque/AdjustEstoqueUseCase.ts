@@ -7,6 +7,7 @@ import {
   estoqueRepository,
   movimentoEstoqueRepository,
 } from "../../repositories";
+import { atualizarConsumoMedioDiarioUseCase } from "./AtualizarConsumoMedioDiarioUseCase";
 
 export const adjustEstoqueUseCase = {
   async execute(id: number, dto: AdjustEstoqueDTO): Promise<Estoque> {
@@ -19,6 +20,7 @@ export const adjustEstoqueUseCase = {
         dto,
         manager
       );
+      await atualizarConsumoMedioDiario(adjustedEstoque, manager);
 
       return adjustedEstoque;
     });
@@ -120,4 +122,16 @@ async function processarMovimentacoes(
 
     await manager.save(MovimentoEstoque, movimentacaoSaida);
   }
+}
+
+async function atualizarConsumoMedioDiario(
+  estoque: Estoque,
+  manager: EntityManager
+): Promise<void> {
+  await atualizarConsumoMedioDiarioUseCase.execute(
+    estoque.insumo.id,
+    estoque.armazem.id,
+    manager,
+    true // Forçar atualização
+  );
 }
