@@ -12,7 +12,7 @@ interface SocketState {
   setError: (error: string | null) => void;
 }
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 export const useSocketStore = create<SocketState>((set, get) => ({
   socket: null,
