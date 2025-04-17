@@ -3,6 +3,7 @@ import { NotFoundError } from "../../../shared/errors";
 import { Emprestimo } from "../../entities/Emprestimo";
 import { emprestimoRepository } from "../../repositories";
 import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
+import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
 
 export const deleteEmprestimoUseCase = {
   async execute(id: number): Promise<void> {
@@ -45,20 +46,60 @@ async function reverterMovimentacoes(
   manager: EntityManager
 ): Promise<void> {
   for (const item of emprestimoToDelete.itens) {
-    await registrarEntradaEstoqueUseCase.execute(
-      {
-        insumo: item.insumo,
+    for (const devolucaoItem of item.devolucaoItens) {
+      const params = {
+        insumo: devolucaoItem.insumo,
         armazem: emprestimoToDelete.armazem,
-        quantidade: item.quantidade,
-        valorUnitario: item.valorUnitario,
-        undEstoque: item.unidade,
+        quantidade: devolucaoItem.quantidade,
+        valorUnitario: devolucaoItem.valorUnitario,
+        undEstoque: devolucaoItem.unidade,
         documentoOrigem: emprestimoToDelete.id.toString(),
-        tipoDocumento: "ESTORNO_EMPRESTIMO",
-        observacao: `Estorno da movimentação ${emprestimoToDelete.id} - emprestimo deletado`,
+        observacao: "Movimentação gerada por atualização de emprestimo",
         userId: emprestimoToDelete.userId,
         data: emprestimoToDelete.dataEmprestimo,
-      },
-      manager
-    );
+        estorno: true,
+      };
+
+      if (emprestimoToDelete.tipo === "SAIDA") {
+        await registrarSaidaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "EMPRESTIMO" },
+          manager
+        );
+      }
+
+      if (emprestimoToDelete.tipo === "ENTRADA") {
+        await registrarEntradaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: "EMPRESTIMO" },
+          manager
+        );
+      }
+    }
+
+    const params = {
+      insumo: item.insumo,
+      armazem: emprestimoToDelete.armazem,
+      quantidade: item.quantidade,
+      valorUnitario: item.valorUnitario,
+      undEstoque: item.unidade,
+      documentoOrigem: emprestimoToDelete.id.toString(),
+      observacao: "Movimentação gerada por atualização de emprestimo",
+      userId: emprestimoToDelete.userId,
+      data: emprestimoToDelete.dataEmprestimo,
+      estorno: true,
+    };
+
+    if (emprestimoToDelete.tipo === "SAIDA") {
+      await registrarEntradaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "EMPRESTIMO" },
+        manager
+      );
+    }
+
+    if (emprestimoToDelete.tipo === "ENTRADA") {
+      await registrarSaidaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: "EMPRESTIMO" },
+        manager
+      );
+    }
   }
 }

@@ -21,6 +21,7 @@ export const registrarSaidaEstoqueUseCase = {
       observacao?: string;
       userId: string;
       data: Date;
+      estorno?: boolean;
     },
     manager: EntityManager
   ): Promise<void> {
@@ -35,6 +36,7 @@ export const registrarSaidaEstoqueUseCase = {
       observacao,
       userId,
       data,
+      estorno,
     } = params;
 
     const estoque = await inicializarEstoqueUseCase.execute(
@@ -64,6 +66,7 @@ export const registrarSaidaEstoqueUseCase = {
       observacao,
       regularizado: true,
       userId,
+      estorno,
     });
 
     await manager.save(MovimentoEstoque, movimento);

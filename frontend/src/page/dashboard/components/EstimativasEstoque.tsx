@@ -14,6 +14,7 @@ import { useEstoqueQueries } from "../../../hooks/queries/useEstoqueQueries";
 import { useEntityChangeSocket } from "../../../hooks/useEntityChangeSocket";
 import { formatDateBR } from "../../../util/formatDateBR";
 
+/*
 const estimativas = [
   {
     insumo: {
@@ -30,9 +31,9 @@ const estimativas = [
     previsaoFimEstoque: "08/04/2025",
   },
 ];
-
+*/
 export const EstimativasEstoque = () => {
-  const [paginationModel, setPaginationModel] = useState({
+  const [paginationModel, _] = useState({
     page: 0,
     pageSize: 10,
   });
@@ -41,7 +42,7 @@ export const EstimativasEstoque = () => {
 
   const { useGetAllPaginated: useGetEstoquesPaginated } = useEstoqueQueries();
 
-  const { data, isLoading } = useGetEstoquesPaginated(
+  const { data } = useGetEstoquesPaginated(
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,

@@ -4,7 +4,6 @@ import { BadRequestError, NotFoundError } from "../../../shared/errors";
 import { Armazem } from "../../entities/Armazem";
 import { Insumo } from "../../entities/Insumo";
 import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { RequisicaoEstoqueItem } from "../../entities/RequisicaoEstoqueItem";
 import { Requisitante } from "../../entities/Requisitante";
 import { Setor } from "../../entities/Setor";
 import { requisicaoEstoqueRepository } from "../../repositories";
@@ -19,21 +18,14 @@ export const updateRequisicaoEstoqueUseCase = {
     return await requisicaoEstoqueRepository.manager.transaction(
       async (manager) => {
         const requisicaoToUpdate = await findRequisicaoToUpdate(id, manager);
-        const oldItems = new Map(
-          requisicaoToUpdate.itens.map((item) => [item.id, item])
-        );
         await validate(requisicaoToUpdate, dto, manager);
-        await reverterMovimentacoes(requisicaoToUpdate, dto, manager);
+        await reverterMovimentacoes(requisicaoToUpdate, manager);
         const requisicaoAtualizada = await updateRequisicao(
           requisicaoToUpdate,
           dto,
           manager
         );
-        await processarNovasMovimentacoes(
-          oldItems,
-          requisicaoAtualizada,
-          manager
-        );
+        await processarNovasMovimentacoes(requisicaoAtualizada, manager);
 
         return requisicaoAtualizada;
       }
@@ -126,7 +118,6 @@ async function validate(
 
 async function reverterMovimentacoes(
   requisicaoToUpdate: RequisicaoEstoque,
-  requisicaoDTO: UpdateRequisicaoEstoqueDTO,
   manager: EntityManager
 ): Promise<void> {
   for (const item of requisicaoToUpdate.itens) {
@@ -189,11 +180,9 @@ async function updateRequisicao(
 }
 
 async function processarNovasMovimentacoes(
-  oldItems: Map<number, RequisicaoEstoqueItem>,
   requisicao: RequisicaoEstoque,
   manager: EntityManager
 ): Promise<void> {
-  // Criar novas movimentações para cada item
   for (const item of requisicao.itens) {
     const params = {
       insumo: item.insumo,

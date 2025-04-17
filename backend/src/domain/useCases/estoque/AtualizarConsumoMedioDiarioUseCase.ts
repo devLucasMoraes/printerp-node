@@ -3,12 +3,20 @@ import { Estoque } from "../../entities/Estoque";
 
 const MAX_DOCUMENTOS_ORIGEM = 10;
 
+interface QueryResult {
+  documento_origem: string;
+  data: Date;
+  total_saidas: number;
+  total_estornos: number;
+  saida_liquida: number;
+}
+
 export const atualizarConsumoMedioDiarioUseCase = {
   async execute(
     insumoId: number,
     armazemId: number,
     manager: EntityManager,
-    forcarAtualizacao: boolean = false
+    forcarAtualizacao: boolean = true
   ): Promise<void> {
     // Buscar o estoque e verificar se precisa atualizar
     const estoque = await manager.findOne(Estoque, {
@@ -35,44 +43,69 @@ export const atualizarConsumoMedioDiarioUseCase = {
     }
 
     // Consulta otimizada
-    const resultado = await manager.query(
+    const resultado: QueryResult[] = await manager.query(
       `
-      WITH documentos_recentes AS (
-        -- Selecionar os documentos mais recentes baseados na data de movimento
-        SELECT DISTINCT ON (me.documento_origem) 
-          me.documento_origem, 
-          me.data
-        FROM movimentos_estoque me
-        WHERE me.insumo_id = $1 
-          AND me.tipo = 'SAIDA'
-        ORDER BY me.documento_origem, me.updated_at DESC
-        LIMIT ${MAX_DOCUMENTOS_ORIGEM}
+      WITH latest_por_documento AS (
+      -- 1) Para cada documento_origem, escolhe o movimento SAÍDA com o updated_at mais recente
+      SELECT DISTINCT ON (me.documento_origem)
+        me.documento_origem,
+        me.data           AS ultima_data,
+        me.updated_at
+      FROM movimentos_estoque me
+      WHERE me.insumo_id = $1
+        AND me.tipo = 'SAIDA'
+      ORDER BY me.documento_origem,
+                me.updated_at DESC
+      ),
+      datas_recentes AS (
+      -- 2) Pega as 10 datas distintas mais recentes, a partir da ultima_data de cada documento
+      SELECT DISTINCT
+        DATE(ultima_data) AS data
+      FROM latest_por_documento
+      ORDER BY DATE(ultima_data) DESC
+      LIMIT ${MAX_DOCUMENTOS_ORIGEM}
+      ),
+      docs_filtrados AS (
+      -- 3) Filtra somente os documentos cujas ultimas datas estão nessas 10 datas
+      SELECT
+        lpd.documento_origem,
+        lpd.ultima_data
+      FROM latest_por_documento lpd
+      WHERE DATE(lpd.ultima_data) IN (
+        SELECT data FROM datas_recentes
+      )
       ),
       estatisticas_por_documento AS (
-        -- Calcular as estatísticas por documento
-        SELECT 
-          dr.documento_origem,
-          dr.data,
-          SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) as total_saidas,
-          SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END) as total_estornos,
-          (SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) - 
-           SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)) as saida_liquida
-        FROM documentos_recentes dr
-        JOIN movimentos_estoque me ON dr.documento_origem = me.documento_origem
-        WHERE me.insumo_id = $1
-          AND (me.tipo = 'SAIDA' OR me.estorno = 'true')
-        GROUP BY dr.documento_origem, dr.data
-        HAVING (SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) - 
-                SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)) > 0
+      -- 4) Agora calcula as estatísticas para todos os movimentos desses documentos
+      SELECT
+        d.documento_origem,
+        d.ultima_data     AS data,
+        SUM(CASE WHEN me.tipo = 'SAIDA'   THEN me.quantidade ELSE 0 END) AS total_saidas,
+        SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END) AS total_estornos,
+        -- saída líquida
+        (SUM(CASE WHEN me.tipo = 'SAIDA'   THEN me.quantidade ELSE 0 END)
+          - SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)
+        ) AS saida_liquida
+      FROM movimentos_estoque me
+        JOIN docs_filtrados d
+          ON me.documento_origem = d.documento_origem
+      WHERE me.insumo_id = $1
+        AND (me.tipo = 'SAIDA' OR me.estorno = 'true')
+      GROUP BY d.documento_origem, d.ultima_data
+      HAVING
+        -- somente documentos com saída líquida positiva
+        (SUM(CASE WHEN me.tipo = 'SAIDA'   THEN me.quantidade ELSE 0 END)
+          - SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)
+        ) > 0
       )
-      SELECT 
-        documento_origem,
-        data,
-        total_saidas,
-        total_estornos,
-        saida_liquida
+      SELECT
+      documento_origem,
+      data,
+      total_saidas,
+      total_estornos,
+      saida_liquida
       FROM estatisticas_por_documento
-      ORDER BY data DESC
+      ORDER BY data DESC, documento_origem;
     `,
       [insumoId]
     );
