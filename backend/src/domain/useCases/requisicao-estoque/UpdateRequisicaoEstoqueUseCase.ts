@@ -130,17 +130,6 @@ async function reverterMovimentacoes(
   manager: EntityManager
 ): Promise<void> {
   for (const item of requisicaoToUpdate.itens) {
-    const itemCorrespondente = requisicaoDTO.itens.find(
-      (i) => i.id === item.id
-    );
-
-    if (
-      itemCorrespondente &&
-      !(Number(itemCorrespondente.quantidade) !== Number(item.quantidade))
-    ) {
-      continue;
-    }
-
     const params = {
       insumo: item.insumo,
       armazem: requisicaoToUpdate.armazem,
@@ -149,9 +138,10 @@ async function reverterMovimentacoes(
       undEstoque: item.unidade,
       documentoOrigem: requisicaoToUpdate.id.toString(),
       observacao: "Movimentação gerada por atualização de requisição",
-      tipoDocumento: "ESTORNO_REQUISICAO",
+      tipoDocumento: "REQUISICAO",
       userId: requisicaoToUpdate.userId,
       data: requisicaoToUpdate.dataRequisicao,
+      estorno: true,
     };
 
     await registrarEntradaEstoqueUseCase.execute(params, manager);
@@ -205,15 +195,6 @@ async function processarNovasMovimentacoes(
 ): Promise<void> {
   // Criar novas movimentações para cada item
   for (const item of requisicao.itens) {
-    const itemAntigo = item.id ? oldItems.get(item.id) : null;
-
-    // Se o item nao foi alterado, nao precisa criar movimentação
-    if (
-      itemAntigo &&
-      Number(itemAntigo.quantidade) === Number(item.quantidade)
-    ) {
-      continue;
-    }
     const params = {
       insumo: item.insumo,
       armazem: requisicao.armazem,

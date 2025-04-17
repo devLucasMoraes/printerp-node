@@ -1,6 +1,5 @@
 import { EntityManager } from "typeorm";
 import { Estoque } from "../../entities/Estoque";
-import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
 
 const MAX_DOCUMENTOS_ORIGEM = 10;
 
@@ -35,102 +34,85 @@ export const atualizarConsumoMedioDiarioUseCase = {
       }
     }
 
-    // Buscar documentos de origem e suas movimentações em uma única consulta
-    /*
-    SELECT
-    movimento.documento_origem AS "documentoOrigem",
-    MAX(movimento.data) AS "dataMaxima",
-    SUM(CASE 
-        WHEN movimento.tipo = 'SAIDA' 
-        THEN movimento.quantidade 
-        ELSE 0 
-    END) AS "totalSaidas",
-    SUM(CASE 
-        WHEN movimento.tipo_documento = 'ESTORNO_REQUISICAO' 
-        THEN movimento.quantidade 
-        ELSE 0 
-    END) AS "totalEstornos",
-    MIN(CASE 
-        WHEN movimento.tipo = 'SAIDA' 
-        THEN movimento.data 
-        ELSE NULL 
-    END) AS "dataPrimeiraSaida"
-FROM
-    movimento_estoque movimento
-WHERE
-    movimento.insumo_id = 123  -- Substituir pelo ID real do insumo
-    AND (
-        (movimento.tipo = 'SAIDA')
-        OR movimento.tipo_documento = 'ESTORNO_REQUISICAO'
-    )
-GROUP BY
-    movimento.documento_origem
-ORDER BY
-    "dataMaxima" DESC
-LIMIT 10;  -- MAX_DOCUMENTOS_ORIGEM = 10
-    */
-    const documentosComMovimentacoes = await manager
-      .createQueryBuilder(MovimentoEstoque, "movimento")
-      .select("movimento.documentoOrigem", "documentoOrigem")
-      .addSelect("MAX(movimento.data)", "data")
-      .addSelect(
-        "SUM(CASE WHEN movimento.tipo = 'SAIDA' THEN movimento.quantidade ELSE 0 END)",
-        "totalSaidas"
+    // Consulta otimizada
+    const resultado = await manager.query(
+      `
+      WITH documentos_recentes AS (
+        -- Selecionar os documentos mais recentes baseados na data de movimento
+        SELECT DISTINCT ON (me.documento_origem) 
+          me.documento_origem, 
+          me.data
+        FROM movimentos_estoque me
+        WHERE me.insumo_id = $1 
+          AND me.tipo = 'SAIDA'
+        ORDER BY me.documento_origem, me.updated_at DESC
+        LIMIT ${MAX_DOCUMENTOS_ORIGEM}
+      ),
+      estatisticas_por_documento AS (
+        -- Calcular as estatísticas por documento
+        SELECT 
+          dr.documento_origem,
+          dr.data,
+          SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) as total_saidas,
+          SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END) as total_estornos,
+          (SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) - 
+           SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)) as saida_liquida
+        FROM documentos_recentes dr
+        JOIN movimentos_estoque me ON dr.documento_origem = me.documento_origem
+        WHERE me.insumo_id = $1
+          AND (me.tipo = 'SAIDA' OR me.estorno = 'true')
+        GROUP BY dr.documento_origem, dr.data
+        HAVING (SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) - 
+                SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END)) > 0
       )
-      .addSelect(
-        "SUM(CASE WHEN movimento.tipoDocumento = 'ESTORNO_REQUISICAO' THEN movimento.quantidade ELSE 0 END)",
-        "totalEstornos"
-      )
-      .addSelect(
-        "MIN(CASE WHEN movimento.tipo = 'SAIDA' THEN movimento.data ELSE NULL END)",
-        "dataPrimeiraSaida"
-      )
-      .where("movimento.insumo_id = :insumoId", { insumoId })
-      .andWhere(
-        "(movimento.tipo = 'SAIDA') OR movimento.tipoDocumento = 'ESTORNO_REQUISICAO'"
-      )
-      .groupBy("movimento.documentoOrigem")
-      .orderBy("data", "DESC")
-      .limit(MAX_DOCUMENTOS_ORIGEM)
-      .getRawMany();
-
-    if (documentosComMovimentacoes.length === 0) {
-      await this.atualizarEstoqueComConsumoZero(manager, estoque);
-      return;
-    }
-
-    // Filtrar documentos válidos (onde saídas - estornos > 0)
-    const documentosValidos = documentosComMovimentacoes.filter(
-      (doc) => Number(doc.totalSaidas) - Number(doc.totalEstornos) > 0
+      SELECT 
+        documento_origem,
+        data,
+        total_saidas,
+        total_estornos,
+        saida_liquida
+      FROM estatisticas_por_documento
+      ORDER BY data DESC
+    `,
+      [insumoId]
     );
 
-    if (documentosValidos.length === 0) {
+    if (!resultado || resultado.length === 0) {
       await this.atualizarEstoqueComConsumoZero(manager, estoque);
       return;
     }
 
-    // Encontrar a data mais antiga entre as movimentações válidas
-    const datasMinimasValidas = documentosValidos
-      .map((doc) => doc.dataPrimeiraSaida)
-      .filter((data) => data !== null);
-
-    if (datasMinimasValidas.length === 0) {
-      await this.atualizarEstoqueComConsumoZero(manager, estoque);
-      return;
-    }
-
+    // Calcular o período em dias
+    const datasDocumentos = resultado.map((doc) => new Date(doc.data));
     const dataInicial = new Date(
-      Math.min(...datasMinimasValidas.map((data) => new Date(data).getTime()))
+      Math.min(...datasDocumentos.map((d) => d.getTime()))
     );
     const dataFinal = new Date();
-    const diferencaMs = dataFinal.getTime() - dataInicial.getTime();
-    const periodoDias = Math.max(1, diferencaMs / (1000 * 60 * 60 * 24));
 
-    // Calcular o total de saídas líquidas (saídas - estornos)
-    const totalSaidas = documentosValidos.reduce((soma, doc) => {
-      const saidaLiquida = Number(doc.totalSaidas) - Number(doc.totalEstornos);
-      return soma + saidaLiquida;
-    }, 0);
+    // Truncar as horas para calcular dias completos
+    const dataInicialSemHora = new Date(
+      dataInicial.getFullYear(),
+      dataInicial.getMonth(),
+      dataInicial.getDate()
+    );
+    const dataFinalSemHora = new Date(
+      dataFinal.getFullYear(),
+      dataFinal.getMonth(),
+      dataFinal.getDate()
+    );
+
+    // Adicionar 1 para incluir ambos os dias (inicial e final) na contagem
+    const periodoDias =
+      Math.ceil(
+        (dataFinalSemHora.getTime() - dataInicialSemHora.getTime()) /
+          (1000 * 60 * 60 * 24)
+      ) + 1;
+
+    // Calcular o total de saídas líquidas
+    const totalSaidas = resultado.reduce(
+      (soma, doc) => soma + Number(doc.saida_liquida),
+      0
+    );
 
     const consumoMedioDiario = totalSaidas / periodoDias;
 

@@ -53,6 +53,9 @@ export class MovimentoEstoque {
   @Column({ type: "boolean", default: false })
   regularizado: boolean;
 
+  @Column({ type: "boolean", default: false })
+  estorno: boolean;
+
   @Column({ type: "text", nullable: true })
   observacao?: string;
 
