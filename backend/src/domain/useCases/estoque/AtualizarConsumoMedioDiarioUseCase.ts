@@ -1,7 +1,7 @@
 import { EntityManager } from "typeorm";
 import { Estoque } from "../../entities/Estoque";
 
-const MAX_DOCUMENTOS_ORIGEM = 10;
+const MAX_DATAS_RECENTES = 10;
 
 interface QueryResult {
   documento_origem: string;
@@ -63,7 +63,7 @@ export const atualizarConsumoMedioDiarioUseCase = {
         DATE(ultima_data) AS data
       FROM latest_por_documento
       ORDER BY DATE(ultima_data) DESC
-      LIMIT ${MAX_DOCUMENTOS_ORIGEM}
+      LIMIT ${MAX_DATAS_RECENTES}
       ),
       docs_filtrados AS (
       -- 3) Filtra somente os documentos cujas ultimas datas estão nessas 10 datas

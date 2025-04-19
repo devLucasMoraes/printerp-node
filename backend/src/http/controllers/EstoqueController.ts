@@ -9,11 +9,24 @@ export class EstoqueController {
   constructor(private readonly estoqueService: EstoqueService) {}
 
   listPaginated: RequestHandler = async (req, res) => {
-    const { page, size, sort } = req.query;
+    const { page, size, sort, insumo, abaixoMinimo } = req.query;
     // arrumar isso aqui depois para fazer a verificação de tipo com o zod
-    const result = await this.estoqueService.listPaginated(
-      pageable(page as string, size as string, sort as string | string[])
+
+    const filters: Record<string, any> = {};
+
+    if (insumo) filters.insumo = insumo;
+
+    if (abaixoMinimo) filters.abaixoMinimo = abaixoMinimo;
+
+    const pageRequest = pageable(
+      page as string,
+      size as string,
+      sort as string | string[]
     );
+
+    pageRequest.filters = filters;
+
+    const result = await this.estoqueService.listPaginated(pageRequest);
 
     const mappedResult = {
       ...result,

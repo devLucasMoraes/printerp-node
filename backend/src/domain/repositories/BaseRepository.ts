@@ -40,6 +40,7 @@ export interface PageRequest {
   page?: number; // Número da página solicitada
   size?: number; // Tamanho da página solicitada
   sort?: string | string[]; // Critérios de ordenação
+  filters?: Record<string, any>; // Filtros a serem aplicados
 }
 
 export abstract class BaseRepository<
@@ -84,6 +85,8 @@ export abstract class BaseRepository<
     };
 
     const [content, totalElements] = await this.findAndCount(findOptions);
+
+    console.log("\n where", where);
 
     const sort: Sort = {
       empty: !hasSort,

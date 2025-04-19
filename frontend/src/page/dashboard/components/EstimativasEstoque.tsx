@@ -1,42 +1,50 @@
 import {
   Box,
   Chip,
+  debounce,
   Table,
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardCard from "../../../components/cards/DashboardCard";
 import { useEstoqueQueries } from "../../../hooks/queries/useEstoqueQueries";
 import { useEntityChangeSocket } from "../../../hooks/useEntityChangeSocket";
 import { formatDateBR } from "../../../util/formatDateBR";
 
-/*
-const estimativas = [
-  {
-    insumo: {
-      id: "1",
-      descricao: "IPA 70/30",
-      unidade: "LITRO",
-      categoria: "ALCOÓIS",
-    },
-    abaixoMinimo: true,
-    consumoMedioDiario: "1",
-    diasRestantes: "30",
-    pbg: "08/04/2025",
-    previsaoEstoqueMinimo: "08/04/2025",
-    previsaoFimEstoque: "08/04/2025",
-  },
-];
-*/
 export const EstimativasEstoque = () => {
-  const [paginationModel, _] = useState({
+  const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 5,
   });
+
+  const [filters, setFilters] = useState({
+    insumo: "",
+  });
+
+  const [searchInput, setSearchInput] = useState("");
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setFilters((prev) => ({ ...prev, insumo: value }));
+        // Volta para a primeira página quando filtra
+        setPaginationModel((prev) => ({ ...prev, page: 0 }));
+      }, 500),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchInput);
+    return () => {
+      debouncedSearch.clear();
+    };
+  }, [searchInput, debouncedSearch]);
 
   const isSocketConnected = useEntityChangeSocket("estoque");
 
@@ -46,13 +54,26 @@ export const EstimativasEstoque = () => {
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
+      filters,
     },
     {
       staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
     }
   );
   return (
-    <DashboardCard title="Estimativas de estoque">
+    <DashboardCard
+      title="Estimativas de estoque"
+      action={
+        <>
+          <TextField
+            label="Filtrar por insumo"
+            size="small"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+        </>
+      }
+    >
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         <Table
           aria-label="simple table"
@@ -174,6 +195,25 @@ export const EstimativasEstoque = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={data?.totalElements || 0}
+          rowsPerPage={paginationModel.pageSize}
+          page={paginationModel.page}
+          onPageChange={(_, newPage) => {
+            setPaginationModel({
+              ...paginationModel,
+              page: newPage,
+            });
+          }}
+          onRowsPerPageChange={(e) => {
+            setPaginationModel({
+              ...paginationModel,
+              pageSize: parseInt(e.target.value, 10),
+            });
+          }}
+        />
       </Box>
     </DashboardCard>
   );

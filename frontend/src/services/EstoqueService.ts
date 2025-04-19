@@ -3,9 +3,14 @@ import { EstoqueDto, Page, PageParams } from "../types";
 import { api } from "./api/axios";
 
 class EstoqueService {
-  async getAllPaginated({ page = 0, size = 20, sort }: PageParams = {}) {
+  async getAllPaginated({
+    page = 0,
+    size = 20,
+    sort,
+    filters,
+  }: PageParams = {}) {
     const response = await api.get<Page<EstoqueDto>>("/estoques", {
-      params: { page, size, sort },
+      params: { page, size, sort, ...filters },
     });
     return response.data;
   }

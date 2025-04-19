@@ -20,12 +20,13 @@ export function useEstoqueQueries() {
       "queryKey" | "queryFn"
     >
   ) => {
-    const { page = 0, size = 20, sort } = params;
+    const { page = 0, size = 20, sort, filters = {} } = params;
 
     return useQuery({
       ...queryOptions,
-      queryKey: [resourceKey, "paginated", page, size, sort],
-      queryFn: () => estoqueService.getAllPaginated({ page, size, sort }),
+      queryKey: [resourceKey, "paginated", page, size, sort, filters],
+      queryFn: () =>
+        estoqueService.getAllPaginated({ page, size, sort, filters }),
     });
   };
 

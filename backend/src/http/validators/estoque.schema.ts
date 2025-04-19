@@ -17,32 +17,11 @@ export const estoqueParamsSchema = z.object({
 export type EstoqueParamsSchema = z.infer<typeof estoqueParamsSchema>;
 
 export const estoqueQuerySchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .transform((val) => (val ? Number(val) : 1))
-    .refine((val) => val >= 0, "Page must be greater than or equal to 0"),
-  size: z
-    .string()
-    .optional()
-    .transform((val) => (val ? Number(val) : 10))
-    .refine((val) => val >= 0, "Page must be greater than or equal to 0"),
-  sort: z
-    .union([
-      z.string().refine((val) => {
-        const [field, direction] = val.split(",");
-        return !direction || ["ASC", "DESC", "asc", "desc"].includes(direction);
-      }, "Direction must be ASC or DESC"),
-      z.array(
-        z.string().refine((val) => {
-          const [field, direction] = val.split(",");
-          return (
-            !direction || ["ASC", "DESC", "asc", "desc"].includes(direction)
-          );
-        }, "Direction must be ASC or DESC")
-      ),
-    ])
-    .optional(),
+  page: z.string().optional(),
+  size: z.string().optional(),
+  sort: z.union([z.string(), z.array(z.string())]).optional(),
+  // Adicionando filtros
+  insumo: z.string().optional(),
 });
 
 export type EstoqueQuerySchema = z.infer<typeof estoqueQuerySchema>;

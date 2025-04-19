@@ -165,6 +165,7 @@ export interface PageParams {
   page?: number;
   size?: number;
   sort?: string | string[];
+  filters?: Record<string, any>;
 }
 
 export interface ErrorResponse {
