@@ -12,9 +12,92 @@ import DashboardCard from "../../../components/cards/DashboardCard";
 
 import { Link, Typography } from "@mui/material";
 
+const movimentacoes = [
+  {
+    tipo: "ENTRADA",
+    data: "2023-10-01",
+    quantidade: 2,
+    valor_unitario: 100.0,
+    unidade: "UN",
+    documento_origem: "10",
+    tipo_documento_origem: "NFE",
+    obs: "",
+    user_id: "123",
+    insumo: {
+      id: 1,
+      descricao: "Insumo A",
+      unidade: "UN",
+    },
+  },
+  {
+    tipo: "SAIDA",
+    data: "2023-10-01",
+    quantidade: 2,
+    valor_unitario: 100.0,
+    unidade: "UN",
+    documento_origem: "10",
+    tipo_documento_origem: "REQUISICAO",
+    obs: "",
+    user_id: "123",
+    insumo: {
+      id: 1,
+      descricao: "Insumo A",
+      unidade: "UN",
+    },
+  },
+  {
+    tipo: "SAIDA",
+    data: "2023-10-01",
+    quantidade: 2,
+    valor_unitario: 100.0,
+    unidade: "UN",
+    documento_origem: "10",
+    tipo_documento_origem: "EMPRESTIMO",
+    obs: "Venda de produtos",
+    user_id: "123",
+    insumo: {
+      id: 1,
+      descricao: "Insumo A",
+      unidade: "UN",
+    },
+  },
+  {
+    tipo: "SAIDA",
+    data: "2023-10-01",
+    quantidade: 2,
+    valor_unitario: 100.0,
+    unidade: "UN",
+    documento_origem: "10",
+    tipo_documento_origem: "EMPRESTIMO",
+    obs: "Venda de produtos",
+    user_id: "123",
+    insumo: {
+      id: 1,
+      descricao: "Insumo A",
+      unidade: "UN",
+    },
+  },
+  {
+    tipo: "SAIDA",
+    data: "2023-10-01",
+    quantidade: 2,
+    valor_unitario: 100.0,
+    unidade: "UN",
+    documento_origem: "10",
+    tipo_documento_origem: "EMPRESTIMO",
+    obs: "Venda de produtos",
+    user_id: "123",
+    insumo: {
+      id: 1,
+      descricao: "Insumo A",
+      unidade: "UN",
+    },
+  },
+];
+
 const RecentTransactions = () => {
   return (
-    <DashboardCard title="Recent Transactions">
+    <DashboardCard title="Movimentações recentes">
       <>
         <Timeline
           className="theme-timeline"
@@ -23,7 +106,7 @@ const RecentTransactions = () => {
           onResizeCapture={undefined}
           sx={{
             p: 0,
-            mb: "-40px",
+
             "& .MuiTimelineConnector-root": {
               width: "1px",
               backgroundColor: "#efefef",
@@ -34,69 +117,38 @@ const RecentTransactions = () => {
             },
           }}
         >
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="primary" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              Payment received from John Doe of $385.90
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>10:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="secondary" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New sale recorded</Typography>{" "}
-              <Link href="/" underline="none">
-                #ML-3467
-              </Link>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>12:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="success" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              Payment was made of $64.95 to Michael
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="warning" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New sale recorded</Typography>{" "}
-              <Link href="/" underline="none">
-                #ML-3467
-              </Link>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>09:30 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="error" variant="outlined" />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Typography fontWeight="600">New arrival recorded</Typography>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineOppositeContent>12:00 am</TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color="success" variant="outlined" />
-            </TimelineSeparator>
-            <TimelineContent>Payment Received</TimelineContent>
-          </TimelineItem>
+          {movimentacoes.map((mov, index) => (
+            <TimelineItem key={index}>
+              <TimelineOppositeContent>
+                <Typography noWrap>{mov.data}</Typography>
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot
+                  color={
+                    mov.tipo_documento_origem === "REQUISICAO"
+                      ? "success"
+                      : mov.tipo_documento_origem === "EMPRESTIMO"
+                      ? "warning"
+                      : "error"
+                  }
+                  variant="outlined"
+                />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography fontWeight="600">
+                  {`saída de ${mov.quantidade} ${mov.unidade} do ${
+                    mov.insumo.descricao
+                  } valor total de R$ ${(
+                    mov.quantidade * mov.valor_unitario
+                  ).toFixed(2)}`}
+                </Typography>
+                <Link href="/" underline="none">
+                  {mov.tipo_documento_origem}-{mov.documento_origem}
+                </Link>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
         </Timeline>
       </>
     </DashboardCard>

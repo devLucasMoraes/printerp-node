@@ -171,8 +171,9 @@ export const EstimativasEstoque = () => {
                   <Chip
                     sx={{
                       px: "4px",
-                      backgroundColor: "#f44336",
-                      color: "#fff",
+                      backgroundColor: {
+                        true: "red",
+                      },
                     }}
                     size="small"
                     label={item.abaixoMinimo ? "Sim" : "Nao"}
