@@ -3,8 +3,8 @@ import PageContainer from "../../components/container/PageContainer";
 
 // components
 import { EstimativasEstoque } from "./components/EstimativasEstoque";
-import MovimetacoesRecentes from "./components/MonthlyEarnings";
 import MovimentacoesRecentes from "./components/MovimentacoesRecentes";
+import MovimetacoesRecentes from "./components/SaidasMensais";
 import SalesOverview from "./components/SalesOverview";
 import YearlyBreakup from "./components/YearlyBreakup";
 

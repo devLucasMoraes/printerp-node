@@ -171,3 +171,10 @@ export interface PageParams {
 export interface ErrorResponse {
   message: string;
 }
+
+export type SaidasMensaisResponse = {
+  total: number;
+  percentual: number;
+  seriesData: number[];
+  xaxisData: string[];
+};

@@ -1,22 +1,34 @@
 import { Avatar, Fab, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { IconArrowDownRight, IconCurrencyDollar } from "@tabler/icons-react";
+import {
+  IconArrowDownRight,
+  IconArrowUpRight,
+  IconCurrencyDollar,
+} from "@tabler/icons-react";
 import Chart from "react-apexcharts";
 import DashboardCard from "../../../components/cards/DashboardCard";
+import { useChartsQueries } from "../../../hooks/queries/useChartsQueries";
+import { useEntityChangeSocket } from "../../../hooks/useEntityChangeSocket";
 
-const MonthlyEarnings = () => {
+const SaidasMensais = () => {
   // chart color
   const theme = useTheme();
   const secondary = theme.palette.secondary.main;
   const secondarylight = "#f5fcff";
   const errorlight = "#fdede8";
+  const successlight = theme.palette.success.light;
 
-  const saidasMensais = {
-    total: 6820,
-    percentual: 9,
-    seriesData: [25, 66, 20, 40, 12, 58, 20],
-    xaxisData: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
-  };
+  const isSocketConnected = useEntityChangeSocket(
+    "charts",
+    { dependsOn: ["requisicaoEstoque"] },
+    { showNotifications: false }
+  );
+
+  const { chartSaidasMensais } = useChartsQueries();
+
+  const { data } = chartSaidasMensais({
+    staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+  });
 
   // chart
   const optionscolumnchart: ApexCharts.ApexOptions = {
@@ -49,14 +61,14 @@ const MonthlyEarnings = () => {
       theme: theme.palette.mode === "dark" ? "dark" : "light",
     },
     xaxis: {
-      categories: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
+      categories: data?.xaxisData || [],
     },
   };
   const seriescolumnchart = [
     {
       name: "R$",
       color: secondary,
-      data: [25, 66, 20, 40, 12, 58, 20],
+      data: data?.seriesData || [],
     },
   ];
 
@@ -79,14 +91,27 @@ const MonthlyEarnings = () => {
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
-          $6,820
+          {data?.total
+            ? data.total.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            : "R$ 0,00"}
         </Typography>
         <Stack direction="row" spacing={1} my={1} alignItems="center">
-          <Avatar sx={{ bgcolor: errorlight, width: 27, height: 27 }}>
-            <IconArrowDownRight width={20} color="#FA896B" />
-          </Avatar>
+          {data?.percentual && data.percentual === 0 ? (
+            ""
+          ) : data?.percentual && data?.percentual < 0 ? (
+            <Avatar sx={{ bgcolor: errorlight, width: 27, height: 27 }}>
+              <IconArrowDownRight width={20} color="#FA896B" />
+            </Avatar>
+          ) : (
+            <Avatar sx={{ bgcolor: successlight, width: 27, height: 27 }}>
+              <IconArrowUpRight width={20} color="#39B69A" />
+            </Avatar>
+          )}
           <Typography variant="subtitle2" fontWeight="600">
-            +9%
+            {`${data?.percentual || 0} %`}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
             ano passado
@@ -97,4 +122,4 @@ const MonthlyEarnings = () => {
   );
 };
 
-export default MonthlyEarnings;
+export default SaidasMensais;

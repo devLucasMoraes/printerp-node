@@ -168,16 +168,25 @@ export const EstimativasEstoque = () => {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    sx={{
-                      px: "4px",
-                      backgroundColor: {
-                        true: "red",
-                      },
-                    }}
-                    size="small"
-                    label={item.abaixoMinimo ? "Sim" : "Nao"}
-                  ></Chip>
+                  {item.abaixoMinimo ? (
+                    <Chip
+                      sx={{
+                        px: "4px",
+                        backgroundColor: "#fdede8",
+                        color: "#FA896B",
+                      }}
+                      size="small"
+                      label="Sim"
+                    ></Chip>
+                  ) : (
+                    <Chip
+                      sx={{
+                        px: "4px",
+                      }}
+                      size="small"
+                      label="Não"
+                    ></Chip>
+                  )}
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="h6">{item.diasRestantes}</Typography>

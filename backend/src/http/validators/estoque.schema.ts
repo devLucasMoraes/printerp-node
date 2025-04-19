@@ -20,7 +20,7 @@ export const estoqueQuerySchema = z.object({
   page: z.string().optional(),
   size: z.string().optional(),
   sort: z.union([z.string(), z.array(z.string())]).optional(),
-  // Adicionando filtros
+  //filtros
   insumo: z.string().optional(),
   abaixoMinimo: z.boolean().optional(),
 });
