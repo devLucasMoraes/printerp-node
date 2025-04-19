@@ -95,7 +95,7 @@ const movimentacoes = [
   },
 ];
 
-const RecentTransactions = () => {
+const MovimentacoesRecentes = () => {
   return (
     <DashboardCard title="Movimentações recentes">
       <>
@@ -155,4 +155,4 @@ const RecentTransactions = () => {
   );
 };
 
-export default RecentTransactions;
+export default MovimentacoesRecentes;
