@@ -3,14 +3,17 @@ import { Estoque } from "../../domain/entities/Estoque";
 import { EstoqueService } from "../../domain/services/EstoqueService";
 import { EstoqueServiceImpl } from "../../services/estoque/EstoqueService";
 import { pageable } from "../../shared/utils/pageable";
-import { AdjustEstoqueDTO } from "../validators/estoque.schema";
+import {
+  AdjustEstoqueDTO,
+  EstoqueQuerySchema,
+} from "../validators/estoque.schema";
 
 export class EstoqueController {
   constructor(private readonly estoqueService: EstoqueService) {}
 
   listPaginated: RequestHandler = async (req, res) => {
-    const { page, size, sort, insumo, abaixoMinimo } = req.query;
-    // arrumar isso aqui depois para fazer a verificação de tipo com o zod
+    const { page, size, sort, insumo, abaixoMinimo }: EstoqueQuerySchema =
+      req.query;
 
     const filters: Record<string, any> = {};
 
@@ -18,11 +21,7 @@ export class EstoqueController {
 
     if (abaixoMinimo) filters.abaixoMinimo = abaixoMinimo;
 
-    const pageRequest = pageable(
-      page as string,
-      size as string,
-      sort as string | string[]
-    );
+    const pageRequest = pageable(page, size, sort);
 
     pageRequest.filters = filters;
 

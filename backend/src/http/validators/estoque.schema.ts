@@ -22,6 +22,7 @@ export const estoqueQuerySchema = z.object({
   sort: z.union([z.string(), z.array(z.string())]).optional(),
   // Adicionando filtros
   insumo: z.string().optional(),
+  abaixoMinimo: z.boolean().optional(),
 });
 
 export type EstoqueQuerySchema = z.infer<typeof estoqueQuerySchema>;

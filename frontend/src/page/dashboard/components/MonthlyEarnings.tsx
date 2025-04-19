@@ -11,6 +11,13 @@ const MonthlyEarnings = () => {
   const secondarylight = "#f5fcff";
   const errorlight = "#fdede8";
 
+  const saidasMensais = {
+    total: 6820,
+    percentual: 9,
+    seriesData: [25, 66, 20, 40, 12, 58, 20],
+    xaxisData: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
+  };
+
   // chart
   const optionscolumnchart: ApexCharts.ApexOptions = {
     chart: {
@@ -41,10 +48,13 @@ const MonthlyEarnings = () => {
     tooltip: {
       theme: theme.palette.mode === "dark" ? "dark" : "light",
     },
+    xaxis: {
+      categories: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"],
+    },
   };
   const seriescolumnchart = [
     {
-      name: "",
+      name: "R$",
       color: secondary,
       data: [25, 66, 20, 40, 12, 58, 20],
     },
@@ -52,7 +62,7 @@ const MonthlyEarnings = () => {
 
   return (
     <DashboardCard
-      title="Monthly Earnings"
+      title="Saídas Mensais"
       action={
         <Fab color="secondary" size="medium" sx={{ color: "#ffffff" }}>
           <IconCurrencyDollar width={24} />
@@ -79,7 +89,7 @@ const MonthlyEarnings = () => {
             +9%
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            last year
+            ano passado
           </Typography>
         </Stack>
       </>
