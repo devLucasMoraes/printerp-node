@@ -86,8 +86,6 @@ export abstract class BaseRepository<
 
     const [content, totalElements] = await this.findAndCount(findOptions);
 
-    console.log("\n where", where);
-
     const sort: Sort = {
       empty: !hasSort,
       sorted: hasSort,

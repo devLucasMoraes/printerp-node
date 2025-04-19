@@ -12,7 +12,6 @@ export class EstoqueRepository extends BaseRepository<Estoque> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Estoque>> {
     const filters = pageRequest?.filters || {};
 
-    console.log("\nfilters", filters);
     const where: FindOptionsWhere<Estoque> = {};
     if (Object.keys(filters).length > 0) {
       where.insumo = {};
