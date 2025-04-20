@@ -4,8 +4,8 @@ import PageContainer from "../../components/container/PageContainer";
 // components
 import { EstimativasEstoque } from "./components/EstimativasEstoque";
 import MovimentacoesRecentes from "./components/MovimentacoesRecentes";
-import MovimetacoesRecentes from "./components/SaidasMensais";
-import SalesOverview from "./components/SalesOverview";
+import SaidasMensais from "./components/SaidasMensais";
+import VisaoGeralInsumosPorSetor from "./components/VisaoGeralInsumosPorSetor";
 import YearlyBreakup from "./components/YearlyBreakup";
 
 const Dashboard = () => {
@@ -14,7 +14,7 @@ const Dashboard = () => {
       <Box>
         <Grid container spacing={3}>
           <Grid item xs={12} lg={8}>
-            <SalesOverview />
+            <VisaoGeralInsumosPorSetor />
           </Grid>
           <Grid item xs={12} lg={4}>
             <Grid container spacing={3}>
@@ -22,7 +22,7 @@ const Dashboard = () => {
                 <YearlyBreakup />
               </Grid>
               <Grid item xs={12}>
-                <MovimetacoesRecentes />
+                <SaidasMensais />
               </Grid>
             </Grid>
           </Grid>

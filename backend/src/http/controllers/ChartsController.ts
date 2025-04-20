@@ -10,6 +10,15 @@ export class ChartsController {
 
     res.status(200).json(result);
   };
+
+  chartInsumosPorSetor: RequestHandler = async (req, res) => {
+    const { periodo } = req.params;
+    const result = await this.chartService.chartInsumosPorSetor(
+      parseInt(periodo)
+    );
+
+    res.status(200).json(result);
+  };
 }
 
 export const chartsController = new ChartsController(new ChartsServiceImpl());

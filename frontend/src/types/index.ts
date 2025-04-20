@@ -198,3 +198,12 @@ export type SaidasMensaisResponse = {
   seriesData: number[];
   xaxisData: string[];
 };
+
+export type InsumosPorSetorResponse = {
+  xaxisData: string[];
+  series: {
+    name: string;
+    data: number[];
+  }[];
+  totalGeral: number;
+};

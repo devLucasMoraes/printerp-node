@@ -1,7 +1,11 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { chartsService } from "../../services/ChartsService";
-import { ErrorResponse, SaidasMensaisResponse } from "../../types";
+import {
+  ErrorResponse,
+  InsumosPorSetorResponse,
+  SaidasMensaisResponse,
+} from "../../types";
 
 const resourceKey = "charts";
 export function useChartsQueries() {
@@ -13,12 +17,27 @@ export function useChartsQueries() {
   ) => {
     return useQuery({
       ...queryOptions,
-      queryKey: [resourceKey],
+      queryKey: [resourceKey, "saidas-mensais"],
       queryFn: () => chartsService.chartSaidasMensais(),
+    });
+  };
+
+  const chartInsumosPorSetor = (
+    periodo: string,
+    queryOptions?: Omit<
+      UseQueryOptions<InsumosPorSetorResponse, AxiosError<ErrorResponse>>,
+      "queryKey" | "queryFn"
+    >
+  ) => {
+    return useQuery({
+      ...queryOptions,
+      queryKey: [resourceKey, "insumos-por-setor", periodo],
+      queryFn: () => chartsService.chartInsumosPorSetor(periodo),
     });
   };
 
   return {
     chartSaidasMensais,
+    chartInsumosPorSetor,
   };
 }

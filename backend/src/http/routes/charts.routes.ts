@@ -10,4 +10,10 @@ chartsRoutes.get(
   chartsController.chartSaidasMensais
 );
 
+chartsRoutes.get(
+  "/charts/insumos-por-setor/:periodo",
+  isAuth,
+  chartsController.chartInsumosPorSetor
+);
+
 export default chartsRoutes;

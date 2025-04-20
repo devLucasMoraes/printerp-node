@@ -5,6 +5,16 @@ export type SaidasMensaisResponse = {
   xaxisData: string[];
 };
 
+export type InsumosPorSetorResponse = {
+  xaxisData: string[];
+  series: {
+    name: string;
+    data: number[];
+  }[];
+  totalGeral: number;
+};
+
 export interface ChartsService {
   chartSaidasMensais(): Promise<SaidasMensaisResponse>;
+  chartInsumosPorSetor(periodo: number): Promise<InsumosPorSetorResponse>;
 }
