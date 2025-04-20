@@ -112,7 +112,7 @@ async function processarMovimentacoes(
       quantidade: Math.abs(diferenca),
       valorUnitario: estoque.insumo.valorUntMed,
       undidade: estoque.insumo.undEstoque,
-      armazemDestino: estoque.armazem,
+      armazemOrigem: estoque.armazem,
       documentoOrigem: estoque.id.toString(),
       tipoDocumento: "ESTOQUE",
       regularizado: true,
