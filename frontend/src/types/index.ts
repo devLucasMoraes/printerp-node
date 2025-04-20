@@ -124,6 +124,26 @@ export type EstoqueDto = {
   updatedAt: Date;
 };
 
+export type MovimentoEstoqueDto = {
+  id: number;
+  armazemDestino: ArmazemDto;
+  armazemOrigem: ArmazemDto;
+  insumo: InsumoDto;
+  tipo: "ENTRADA" | "SAIDA";
+  data: Date;
+  valorUnitario: number;
+  unidade: Unidade;
+  documentoOrigem: string;
+  tipoDocumento: string;
+  regularizado: boolean;
+  observacao: string | null;
+  userId: string;
+  quantidade: number;
+  estorno: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type Setting = {
   key: string;
   value: string;

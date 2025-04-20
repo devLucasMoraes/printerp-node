@@ -11,6 +11,12 @@ export class MovimentoEstoqueRepository extends BaseRepository<MovimentoEstoque>
   async findAllPaginated(
     pageRequest?: PageRequest
   ): Promise<Page<MovimentoEstoque>> {
-    return this.paginate(pageRequest, {}, {});
+    return this.paginate(
+      pageRequest,
+      {},
+      {
+        insumo: true,
+      }
+    );
   }
 }

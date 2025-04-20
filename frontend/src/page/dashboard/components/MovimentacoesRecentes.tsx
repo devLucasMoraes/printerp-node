@@ -11,91 +11,29 @@ import {
 import DashboardCard from "../../../components/cards/DashboardCard";
 
 import { Link, Typography } from "@mui/material";
-
-const movimentacoes = [
-  {
-    tipo: "ENTRADA",
-    data: "2023-10-01",
-    quantidade: 2,
-    valor_unitario: 100.0,
-    unidade: "UN",
-    documento_origem: "10",
-    tipo_documento_origem: "NFE",
-    obs: "",
-    user_id: "123",
-    insumo: {
-      id: 1,
-      descricao: "Insumo A",
-      unidade: "UN",
-    },
-  },
-  {
-    tipo: "SAIDA",
-    data: "2023-10-01",
-    quantidade: 2,
-    valor_unitario: 100.0,
-    unidade: "UN",
-    documento_origem: "10",
-    tipo_documento_origem: "REQUISICAO",
-    obs: "",
-    user_id: "123",
-    insumo: {
-      id: 1,
-      descricao: "Insumo A",
-      unidade: "UN",
-    },
-  },
-  {
-    tipo: "SAIDA",
-    data: "2023-10-01",
-    quantidade: 2,
-    valor_unitario: 100.0,
-    unidade: "UN",
-    documento_origem: "10",
-    tipo_documento_origem: "EMPRESTIMO",
-    obs: "Venda de produtos",
-    user_id: "123",
-    insumo: {
-      id: 1,
-      descricao: "Insumo A",
-      unidade: "UN",
-    },
-  },
-  {
-    tipo: "SAIDA",
-    data: "2023-10-01",
-    quantidade: 2,
-    valor_unitario: 100.0,
-    unidade: "UN",
-    documento_origem: "10",
-    tipo_documento_origem: "EMPRESTIMO",
-    obs: "Venda de produtos",
-    user_id: "123",
-    insumo: {
-      id: 1,
-      descricao: "Insumo A",
-      unidade: "UN",
-    },
-  },
-  {
-    tipo: "SAIDA",
-    data: "2023-10-01",
-    quantidade: 2,
-    valor_unitario: 100.0,
-    unidade: "UN",
-    documento_origem: "10",
-    tipo_documento_origem: "EMPRESTIMO",
-    obs: "Venda de produtos",
-    user_id: "123",
-    insumo: {
-      id: 1,
-      descricao: "Insumo A",
-      unidade: "UN",
-    },
-  },
-];
+import { useMovimentoEstoqueQueries } from "../../../hooks/queries/useMovimentoEstoqueQueries";
+import { useEntityChangeSocket } from "../../../hooks/useEntityChangeSocket";
+import { formatDateBR } from "../../../util/formatDateBR";
 
 const MovimentacoesRecentes = () => {
+  const { useGetAllPaginated: useGetMovimentacoes } =
+    useMovimentoEstoqueQueries();
+
+  const isSocketConnected = useEntityChangeSocket(
+    "movimento-estoque",
+    { dependsOn: ["requisicaoEstoque", "emprestimo"] },
+    { showNotifications: false }
+  );
+
+  const { data: movimentacoes } = useGetMovimentacoes(
+    {
+      page: 0,
+      size: 5,
+    },
+    {
+      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
+    }
+  );
   return (
     <DashboardCard title="Movimentações recentes">
       <>
@@ -117,17 +55,17 @@ const MovimentacoesRecentes = () => {
             },
           }}
         >
-          {movimentacoes.map((mov, index) => (
+          {movimentacoes?.content.map((mov, index) => (
             <TimelineItem key={index}>
               <TimelineOppositeContent>
-                <Typography noWrap>{mov.data}</Typography>
+                <Typography noWrap>{formatDateBR(mov.data)}</Typography>
               </TimelineOppositeContent>
               <TimelineSeparator>
                 <TimelineDot
                   color={
-                    mov.tipo_documento_origem === "REQUISICAO"
+                    mov.tipoDocumento === "REQUISICAO"
                       ? "success"
-                      : mov.tipo_documento_origem === "EMPRESTIMO"
+                      : mov.tipoDocumento === "EMPRESTIMO"
                       ? "warning"
                       : "error"
                   }
@@ -137,14 +75,16 @@ const MovimentacoesRecentes = () => {
               </TimelineSeparator>
               <TimelineContent>
                 <Typography fontWeight="600">
-                  {`saída de ${mov.quantidade} ${mov.unidade} do ${
+                  {`${mov.estorno ? "ESTORNO" : mov.tipo} de ${
+                    mov.quantidade
+                  } ${mov.unidade} do ${
                     mov.insumo.descricao
                   } valor total de R$ ${(
-                    mov.quantidade * mov.valor_unitario
+                    mov.quantidade * mov.valorUnitario
                   ).toFixed(2)}`}
                 </Typography>
-                <Link href="/" underline="none">
-                  {mov.tipo_documento_origem}-{mov.documento_origem}
+                <Link href="#" underline="none">
+                  {mov.tipoDocumento}-{mov.documentoOrigem}
                 </Link>
               </TimelineContent>
             </TimelineItem>

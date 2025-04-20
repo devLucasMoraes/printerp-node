@@ -6,6 +6,7 @@ import chartsRoutes from "./charts.routes";
 import emprestimoRoutes from "./emprestimo.routes";
 import estoqueRoutes from "./estoque.routes";
 import insumoRoutes from "./insumo.routes";
+import movimentoEstoqueRoutes from "./movimentoEstoque.routes";
 import parceiroRoutes from "./parceiro.routes";
 import requisicaoEstoqueRoutes from "./requisicaoEstoque.routes";
 import requisitanteRoutes from "./requisitantes.routes";
@@ -26,5 +27,6 @@ routes.use("/api/v1", estoqueRoutes);
 routes.use("/api/v1", emprestimoRoutes);
 routes.use("/api/v1", parceiroRoutes);
 routes.use("/api/v1", chartsRoutes);
+routes.use("/api/v1", movimentoEstoqueRoutes);
 
 export default routes;
