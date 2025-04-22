@@ -29,6 +29,7 @@ const MovimentacoesRecentes = () => {
     {
       page: 0,
       size: 5,
+      sort: "updatedAt,desc",
     },
     {
       staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
