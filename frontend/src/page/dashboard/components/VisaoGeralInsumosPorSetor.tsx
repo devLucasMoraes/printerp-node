@@ -79,10 +79,7 @@ const VisaoGeralInsumosPorSetor = () => {
       enabled: false,
     },
     legend: {
-      show: true,
-      position: "bottom",
-      horizontalAlign: "center",
-      fontSize: "12px",
+      show: false,
     },
     grid: {
       borderColor: "rgba(0,0,0,0.1)",

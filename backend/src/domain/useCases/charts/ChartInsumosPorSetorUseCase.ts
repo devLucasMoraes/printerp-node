@@ -14,43 +14,46 @@ export const chartInsumosPorSetorUseCase = {
     const manager = appDataSource.manager;
 
     // Determinar o período com base no parâmetro
-    const periodoMap: Record<number, string> = {
-      1: "1 month",
-      2: "3 months",
-      3: "6 months",
+    const periodoMap: Record<
+      number,
+      { intervalo: string; usaMesIncompleto: boolean }
+    > = {
+      1: { intervalo: "1 month", usaMesIncompleto: true }, // 1 mês (atual incompleto)
+      2: { intervalo: "90 days", usaMesIncompleto: false }, // 3 meses (90 dias)
+      3: { intervalo: "180 days", usaMesIncompleto: false }, // 6 meses (180 dias)
     };
 
-    const periodoIntervalo = periodoMap[periodo] || "1 month";
+    const periodoConfig = periodoMap[periodo] || periodoMap[1]; // Default para 1 mês
 
-    // Consulta para obter os valores totais dos insumos por setor
+    // Monta a condição de data dinamicamente
+    const condicaoData = periodoConfig.usaMesIncompleto
+      ? `re.data_requisicao >= DATE_TRUNC('month', CURRENT_DATE)`
+      : `re.data_requisicao >= CURRENT_DATE - INTERVAL '${periodoConfig.intervalo}'`;
+
     const insumosPorSetorQuery = `
-      SELECT 
-        s.id AS setor_id,
-        s.nome AS setor_nome,
-        i.id AS insumo_id,
-        i.descricao AS insumo_descricao,
-        SUM(rei.quantidade * rei.valor_unitario) AS valor_total
-      FROM 
-        requisicoes_estoque re
-      INNER JOIN
-        requisicoes_estoque_itens rei ON re.id = rei.requisicoes_estoque_id
-      INNER JOIN
-        insumos i ON rei.insumos_id = i.id
-      INNER JOIN
-        setores s ON re.setor_id = s.id
-      WHERE 
-        re.deleted_at IS NULL
-        AND rei.deleted_at IS NULL
-        AND i.deleted_at IS NULL
-        AND s.deleted_at IS NULL
-        AND re.data_requisicao >= DATE_TRUNC('day', CURRENT_DATE) - INTERVAL '${periodoIntervalo}'
-        AND re.data_requisicao < DATE_TRUNC('day', CURRENT_DATE) + INTERVAL '1 day'
-      GROUP BY 
-        s.id, s.nome, i.id, i.descricao
-      ORDER BY 
-        valor_total DESC
-    `;
-
+  SELECT
+      s.id AS setor_id,
+      s.nome AS setor_nome,
+      i.id AS insumo_id,
+      i.descricao AS insumo_descricao,
+      SUM(rei.quantidade * rei.valor_unitario) AS valor_total
+  FROM
+      requisicoes_estoque re
+      INNER JOIN requisicoes_estoque_itens rei ON re.id = rei.requisicoes_estoque_id
+      INNER JOIN insumos i ON rei.insumos_id = i.id
+      INNER JOIN setores s ON re.setor_id = s.id
+  WHERE
+      re.deleted_at IS NULL
+      AND rei.deleted_at IS NULL
+      AND i.deleted_at IS NULL
+      AND s.deleted_at IS NULL
+      -- Condição de data dinâmica
+      AND ${condicaoData}
+      AND re.data_requisicao < CURRENT_DATE + INTERVAL '1 day'  -- Até hoje
+  GROUP BY
+      s.id, s.nome, i.id, i.descricao
+  ORDER BY valor_total DESC;
+`;
     const dadosInsumoSetor: DadoInsumoSetor[] = await manager.query(
       insumosPorSetorQuery
     );
