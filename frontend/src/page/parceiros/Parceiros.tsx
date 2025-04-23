@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { IconCopy, IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
@@ -26,6 +26,8 @@ const Parceiros = () => {
     pageSize: 10,
   });
 
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
   const isSocketConnected = useEntityChangeSocket(
     "parceiro",
     {
@@ -49,6 +51,7 @@ const Parceiros = () => {
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
+      sort: sortModel.map((s) => `${s.field},${s.sort}`).join(","),
     },
     {
       staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
@@ -172,6 +175,7 @@ const Parceiros = () => {
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           totalRowCount={data?.totalElements}
+          setSortModel={setSortModel}
         />
       </DashboardCard>
     </PageContainer>

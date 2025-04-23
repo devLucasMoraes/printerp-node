@@ -3,6 +3,7 @@ import {
   DataGrid,
   GridColDef,
   GridRowIdGetter,
+  GridSortModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -79,6 +80,7 @@ interface ServerDataTableProps {
     }>
   >;
   customGetRowId?: GridRowIdGetter;
+  setSortModel: Dispatch<SetStateAction<GridSortModel>>;
 }
 
 export const ServerDataTable = ({
@@ -89,6 +91,7 @@ export const ServerDataTable = ({
   customGetRowId,
   paginationModel,
   isLoading,
+  setSortModel,
 }: ServerDataTableProps) => {
   const [rowCountState, setRowCountState] = useState(totalRowCount || 0);
 
@@ -127,6 +130,8 @@ export const ServerDataTable = ({
         rowCount={rowCountState}
         paginationModel={paginationModel}
         paginationMode="server"
+        onSortModelChange={setSortModel}
+        sortingMode="server"
         onPaginationModelChange={handlePaginationModelChange}
         loading={isLoading}
       />

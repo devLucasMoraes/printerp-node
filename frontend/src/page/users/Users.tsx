@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { IconEdit, IconEraser } from "@tabler/icons-react";
 import { useState } from "react";
 import DashboardCard from "../../components/cards/DashboardCard";
@@ -19,6 +19,8 @@ const Users = () => {
     pageSize: 10,
   });
 
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
   const { showAlert } = useAlertStore((state) => state);
 
   const { useGetAllPaginated: useGetUsersPaginated, useDelete: useDeleteUser } =
@@ -27,6 +29,7 @@ const Users = () => {
   const { data, isLoading } = useGetUsersPaginated({
     page: paginationModel.page,
     size: paginationModel.pageSize,
+    sort: sortModel.map((s) => `${s.field},${s.sort}`).join(","),
   });
   const { mutate: deleteById } = useDeleteUser();
 
@@ -122,6 +125,7 @@ const Users = () => {
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           totalRowCount={data?.totalElements}
+          setSortModel={setSortModel}
         />
       </DashboardCard>
     </PageContainer>
