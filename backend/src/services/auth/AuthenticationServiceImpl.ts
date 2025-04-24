@@ -17,12 +17,12 @@ export class AuthenticationServiceImpl implements AuthenticationService {
       where: { email },
     });
     if (!user) {
-      throw new UnauthorizedError("Invalid credentials");
+      throw new UnauthorizedError("Email incorreto");
     }
 
     const isValidPassword = await user.validatePassword(password);
     if (!isValidPassword) {
-      throw new UnauthorizedError("Invalid credentials");
+      throw new UnauthorizedError("Senha incorreta");
     }
 
     return this.generateTokens(user);
