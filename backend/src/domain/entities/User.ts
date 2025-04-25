@@ -26,6 +26,9 @@ export class User {
   @Column({ type: "varchar", length: 255, default: "user" })
   role: "user" | "admin";
 
+  @Column({ type: "boolean", default: true })
+  ativo: boolean;
+
   @Column({
     name: "token_version",
     type: "varchar",

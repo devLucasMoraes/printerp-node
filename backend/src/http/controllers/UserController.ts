@@ -3,7 +3,7 @@ import { User } from "../../domain/entities/User";
 import { UserService } from "../../domain/services/UserService";
 import { UserServiceImpl } from "../../services/user/UserServiceImpl";
 import { pageable } from "../../shared/utils/pageable";
-import { UserCreateSchema, UserUpdateSchema } from "../validators/user.schemas";
+import { CreateUserDTO, UpdateUserDTO } from "../validators/user.schemas";
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -32,7 +32,7 @@ export class UserController {
   };
 
   create: RequestHandler = async (req, res) => {
-    const { email, name, password, role }: UserCreateSchema = req.body;
+    const { email, name, password, role }: CreateUserDTO = req.body;
 
     const user = new User({
       email,
@@ -60,7 +60,7 @@ export class UserController {
 
   update: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const { email, name, password, role }: UserUpdateSchema = req.body;
+    const { email, name, password, role }: UpdateUserDTO = req.body;
 
     const user = new User({
       email,
