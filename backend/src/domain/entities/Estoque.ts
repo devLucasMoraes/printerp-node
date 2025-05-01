@@ -57,7 +57,14 @@ export class Estoque {
   }
 
   estaAbaixoMinimo(): boolean {
-    return this.quantidade < this.insumo.estoqueMinimo;
+    console.log(
+      "\n estaAbaixoMinimo: ",
+      this.insumo.descricao,
+      this.quantidade,
+      this.insumo.estoqueMinimo,
+      Number(this.quantidade) < Number(this.insumo.estoqueMinimo)
+    );
+    return Number(this.quantidade) < Number(this.insumo.estoqueMinimo);
   }
 
   calcularDiasRestantes(): number | null {
